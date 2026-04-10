@@ -3,11 +3,11 @@ import { api } from '@/lib/api';
 
 export interface Task {
   _id: string;
-  title: str;
-  start_time: str;
-  end_time: str;
-  status: str;
-  type: str;
+  title: string;
+  start_time: string;
+  end_time: string;
+  status: string;
+  type: string;
 }
 
 export interface MiniHabit {

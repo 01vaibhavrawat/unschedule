@@ -23,3 +23,53 @@ body {
   border: 1px solid var(--card-border);
   border-radius: 0.75rem;
 }
+
+/* FullCalendar Custom Theme Overrides for Dark Mode */
+.calendar-container {
+  --fc-page-bg-color: #0f172a; /* Slate 900 */
+  --fc-neutral-bg-color: #1e293b; /* Slate 800 */
+  --fc-neutral-text-color: #94a3b8; /* Slate 400 */
+  --fc-border-color: #334155; /* Slate 700 */
+  --fc-button-text-color: #fff;
+  --fc-button-bg-color: #3b82f6; /* Blue 500 */
+  --fc-button-border-color: #2563eb; /* Blue 600 */
+  --fc-button-hover-bg-color: #2563eb;
+  --fc-button-hover-border-color: #1d4ed8;
+  --fc-button-active-bg-color: #1d4ed8;
+  --fc-button-active-border-color: #1e3a8a;
+  
+  --fc-event-bg-color: #3b82f6;
+  --fc-event-border-color: #2563eb;
+  --fc-event-text-color: #fff;
+  
+  --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.25);
+  --fc-more-link-bg-color: #334155;
+  --fc-more-link-text-color: inherit;
+  --fc-event-resizer-thickness: 8px;
+  --fc-event-resizer-dot-total-width: 8px;
+  --fc-event-resizer-dot-border-width: 1px;
+  --fc-non-business-color: rgba(215, 215, 215, 0.05); /* very subtle for dark mode */
+  --fc-bg-event-color: #1e40af; /* Blue 800 */
+  --fc-bg-event-opacity: 0.3;
+  --fc-highlight-color: rgba(59, 130, 246, 0.15); /* Blue 500 at 15% opacity */
+  --fc-today-bg-color: rgba(255, 255, 255, 0.05); /* slightly lighter for today */
+  --fc-now-indicator-color: #ef4444; /* Red 500 */
+}
+
+/* Fix FullCalendar header toolbar styling */
+.fc-theme-standard .fc-toolbar-title {
+  color: #f8fafc; /* Slate 50 */
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+.fc-theme-standard th {
+  padding: 8px 0;
+  color: #cbd5e1; /* Slate 300 */
+  font-weight: 600;
+}
+.fc-daygrid-day-number {
+  color: #cbd5e1;
+}
+.fc-col-header-cell-cushion {
+  color: #cbd5e1;
+}

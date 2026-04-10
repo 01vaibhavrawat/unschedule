@@ -3,9 +3,15 @@ import React, { useEffect } from 'react';
 import { useStore, Task, MiniHabit } from '@/store/useStore';
 import { CheckCircle2, User, Calendar, Plus, Trophy, Goal as GoalIcon } from 'lucide-react';
 import { format } from 'date-fns';
+import dynamic from 'next/dynamic';
+
+const DynamicCalendar = dynamic(() => import('@/components/CalendarComponent'), {
+  ssr: false,
+  loading: () => <div className="h-[700px] w-full bg-slate-900 animate-pulse rounded-xl flex items-center justify-center text-slate-500">Loading Calendar view...</div>
+});
 
 export default function Home() {
-  const { tasks, habits, goals, habitLogs, streaks, fetchInitialData, toggleHabitLog } = useStore();
+  const { tasks, habits, goals, habitLogs, streaks, fetchInitialData, toggleHabitLog, updateTask, addTask } = useStore();
 
   useEffect(() => {
     fetchInitialData();
@@ -90,30 +96,15 @@ export default function Home() {
           <section className="bg-slate-800 border border-slate-700 p-5 rounded-xl shadow h-full min-h-[500px]">
              <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-bold flex items-center gap-2 text-white">
-                  <Calendar className="h-5 w-5 text-blue-400" /> Weekly Schedule
+                  <Calendar className="h-5 w-5 text-blue-400" /> Schedule
                 </h2>
-                <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors">
-                  <Plus className="h-4 w-4" /> New Task
-                </button>
              </div>
              
-             {/* Calendar Grid Mockup */}
-             <div className="grid grid-cols-7 gap-2 overflow-x-auto pb-4">
-                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, idx) => (
-                  <div key={day} className="flex flex-col min-w-[100px]">
-                    <div className="text-center font-semibold text-sm mb-4 text-slate-400">{day}</div>
-                    <div className="flex-1 bg-slate-900/50 rounded-lg p-2 min-h-[300px] border border-slate-700/50 flex flex-col gap-2">
-                      {/* Render tasks for the day here... For MVP just list all tasks loosely */}
-                      {idx === 0 && tasks.map(task => (
-                        <div key={task._id} className="p-2 bg-blue-900/40 border border-blue-500/30 rounded text-xs">
-                          <div className="font-semibold text-blue-200">{task.title}</div>
-                          <div className="text-blue-400/70">{task.start_time.split(' ')[0]}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-             </div>
+             <DynamicCalendar 
+                tasks={tasks}
+                onUpdateTask={updateTask}
+                onCreateTask={addTask}
+             />
           </section>
         </div>
 
