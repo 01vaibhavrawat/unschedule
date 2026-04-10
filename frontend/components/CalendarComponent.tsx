@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import { EventClickArg, EventDropArg } from '@fullcalendar/core';
 import { EventResizeDoneArg } from '@fullcalendar/interaction';
-import { TaskModal } from './TaskModal';
 
 interface Task {
   _id: string;
@@ -22,13 +21,12 @@ interface CalendarComponentProps {
   tasks: Task[];
   onUpdateTask: (id: string, updatedTask: Partial<Task>) => void;
   onCreateTask: (task: Omit<Task, '_id'>) => void;
+  calendarRef?: React.RefObject<FullCalendar | null>;
+  onDateSelect?: (start: Date, end: Date | null) => void;
 }
 
-export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask }: CalendarComponentProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalStart, setModalStart] = useState<Date | null>(null);
-  const [modalEnd, setModalEnd] = useState<Date | null>(null);
-  const calendarRef = useRef<FullCalendar>(null);
+export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, calendarRef, onDateSelect }: CalendarComponentProps) {
+
 
   // Map Backend Task model to FullCalendar Event model
   const events = tasks.map(task => ({
@@ -42,17 +40,14 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask }:
   }));
 
   const handleDateClick = (arg: DateClickArg) => {
-    setModalStart(arg.date);
-    // DateClick usually doesn't have an end time, we'll let the modal handle default 1h duration
-    setModalEnd(null); 
-    setIsModalOpen(true);
+    if (onDateSelect) onDateSelect(arg.date, null);
   };
 
   const handleSelect = (arg: any) => {
-    setModalStart(arg.start);
-    setModalEnd(arg.end);
-    setIsModalOpen(true);
-    calendarRef.current?.getApi().unselect();
+    if (onDateSelect) onDateSelect(arg.start, arg.end);
+    if (calendarRef?.current) {
+      calendarRef.current.getApi().unselect();
+    }
   };
 
   const handleEventDrop = (arg: EventDropArg) => {
@@ -77,26 +72,15 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask }:
     }
   };
 
-  const handleModalSave = (taskData: { title: string; start_time: string; end_time: string }) => {
-    onCreateTask({
-      ...taskData,
-      status: 'pending',
-      type: 'task',
-    });
-    setIsModalOpen(false);
-  };
+
 
   return (
-    <div className="h-full w-full bg-slate-900 rounded-xl overflow-hidden calendar-container">
+    <div className="flex-1 w-full bg-white overflow-hidden calendar-container">
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"
-        headerToolbar={{
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        }}
+        headerToolbar={false}
         events={events}
         editable={true} // enables dragging and resizing
         selectable={true} // enables click and drag to select range
@@ -108,18 +92,10 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask }:
         eventDrop={handleEventDrop}
         eventResize={handleEventResize}
         nowIndicator={true}
-        height="700px"
+        height="100%"
         allDaySlot={false}
         slotMinTime="06:00:00"
         slotMaxTime="24:00:00"
-      />
-
-      <TaskModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleModalSave}
-        initialStart={modalStart}
-        initialEnd={modalEnd}
       />
     </div>
   );
