@@ -30,15 +30,39 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
 
 
   // Map Backend Task model to FullCalendar Event model
-  const events = tasks.map(task => ({
-    id: task._id,
-    title: task.title,
-    start: task.start_time,
-    end: task.end_time,
-    backgroundColor: task.status === 'completed' ? '#059669' : '#3b82f6', // emerald-600 vs blue-500
-    borderColor: task.status === 'completed' ? '#047857' : '#2563eb',
-    classNames: ['text-sm', 'font-medium', 'rounded-md', 'border-0', 'shadow-sm', 'p-1', 'cursor-pointer'],
-  }));
+  const events = tasks.map(task => {
+    const baseEvent: any = {
+      id: task._id,
+      title: task.title,
+      backgroundColor: task.status === 'completed' ? '#059669' : '#3b82f6', // emerald-600 vs blue-500
+      borderColor: task.status === 'completed' ? '#047857' : '#2563eb',
+      classNames: ['text-sm', 'font-medium', 'rounded-md', 'border-0', 'shadow-sm', 'p-1', 'cursor-pointer'],
+    };
+
+    if (task.recurrence && task.recurrence !== 'none') {
+      const st = new Date(task.start_time);
+      const et = new Date(task.end_time);
+      
+      // FullCalendar expects 'HH:MM' string for startTime/endTime
+      baseEvent.startTime = st.toTimeString().slice(0, 5);
+      baseEvent.endTime = et.toTimeString().slice(0, 5);
+      baseEvent.startRecur = task.start_time.split('T')[0];
+      
+      if (task.recurrence === 'weekdays') {
+        baseEvent.daysOfWeek = [1, 2, 3, 4, 5];
+      } else if (task.recurrence === 'daily') {
+        baseEvent.daysOfWeek = [0, 1, 2, 3, 4, 5, 6];
+      } else {
+        // Assume comma-separated list of day numbers (e.g., "1,3,5")
+        baseEvent.daysOfWeek = task.recurrence.split(',').map(Number);
+      }
+    } else {
+      baseEvent.start = task.start_time;
+      baseEvent.end = task.end_time;
+    }
+    
+    return baseEvent;
+  });
 
   const handleDateClick = (arg: DateClickArg) => {
     if (onDateSelect) onDateSelect(arg.date, null);

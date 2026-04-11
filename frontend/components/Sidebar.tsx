@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Users, ChevronDown, ChevronRight, Check } from 'lucide-react';
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, format, isSameMonth, subMonths, addMonths } from 'date-fns';
 import { MiniHabit } from '@/store/useStore';
 
 interface SidebarProps {
@@ -9,6 +10,8 @@ interface SidebarProps {
   habitLogs: Record<string, any[]>;
   toggleHabitLog: (id: string, date: string) => void;
   todayStr: string;
+  onMiniCalendarSelect: (dateStr: string) => void;
+  currentDate: Date;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
@@ -17,10 +20,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
   habits,
   habitLogs,
   toggleHabitLog,
-  todayStr
+  todayStr,
+  onMiniCalendarSelect,
+  currentDate
 }) => {
   const [habitsExpanded, setHabitsExpanded] = useState(true);
   const [goalsExpanded, setGoalsExpanded] = useState(true);
+  
+  const [miniCalendarMonth, setMiniCalendarMonth] = useState(currentDate);
+
+  useEffect(() => {
+    setMiniCalendarMonth(currentDate);
+  }, [currentDate]);
+
+  const monthStart = startOfMonth(miniCalendarMonth);
+  const monthEnd = endOfMonth(monthStart);
+  const startDate = startOfWeek(monthStart);
+  const endDate = endOfWeek(monthEnd);
+
+  const days = [];
+  let day = startDate;
+  while (day <= endDate) {
+    days.push(day);
+    day = addDays(day, 1);
+  }
+
+  const handleMiniPrev = () => setMiniCalendarMonth(subMonths(miniCalendarMonth, 1));
+  const handleMiniNext = () => setMiniCalendarMonth(addMonths(miniCalendarMonth, 1));
 
   return (
     <div className="w-64 flex-shrink-0 flex flex-col h-full bg-white border-r border-gray-200 overflow-y-auto">
@@ -38,29 +64,43 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      {/* Mini Calendar Mockup */}
-      <div className="px-6 pb-4">
+      {/* Mini Calendar */}
+      <div className="px-6 pb-4 pt-2">
         <div className="text-sm font-medium text-gray-700 mb-2 flex items-center justify-between">
-          <span>April 2026</span>
+          <span>{format(miniCalendarMonth, 'MMMM yyyy')}</span>
           <div className="flex gap-1">
-            <ChevronLeft className="w-4 h-4 text-gray-500 cursor-pointer" />
-            <ChevronRight className="w-4 h-4 text-gray-500 cursor-pointer" />
+            <ChevronLeft className="w-4 h-4 text-gray-500 cursor-pointer hover:bg-gray-100 rounded" onClick={handleMiniPrev} />
+            <ChevronRight className="w-4 h-4 text-gray-500 cursor-pointer hover:bg-gray-100 rounded" onClick={handleMiniNext} />
           </div>
         </div>
-        {/* Simple 7x6 Grid Mockup without functional logic for MVP */}
         <div className="grid grid-cols-7 gap-1 text-center text-xs mb-1">
           {['S','M','T','W','T','F','S'].map((d, i) => <div key={i} className="text-gray-500 font-medium">{d}</div>)}
         </div>
         <div className="grid grid-cols-7 gap-y-1 text-center text-xs">
-          {/* Mock days */}
-          {[29,30,31,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,1,2].map((d, i) => (
-             <div 
-                key={i} 
-                className={`w-6 h-6 flex items-center justify-center rounded-full mx-auto ${d === 10 && i > 5 && i < 20 ? 'bg-blue-600 text-white' : (i < 3 || i > 32) ? 'text-gray-400' : 'text-gray-700 hover:bg-gray-100 cursor-pointer'}`}
-             >
-               {d}
-             </div>
-          ))}
+          {days.map((dayItem, i) => {
+            const isSelected = format(dayItem, 'yyyy-MM-dd') === format(currentDate, 'yyyy-MM-dd');
+            const isToday = format(dayItem, 'yyyy-MM-dd') === todayStr;
+            const currentMonth = isSameMonth(dayItem, miniCalendarMonth);
+            
+            let bgClass = 'text-gray-700 hover:bg-gray-100 cursor-pointer rounded-full';
+            if (isToday) {
+              bgClass = 'bg-blue-600 text-white rounded-full cursor-pointer';
+            } else if (isSelected) {
+              bgClass = 'bg-blue-100 text-blue-700 rounded-full cursor-pointer';
+            } else if (!currentMonth) {
+              bgClass = 'text-gray-400 hover:bg-gray-100 cursor-pointer rounded-full';
+            }
+
+            return (
+               <div 
+                  key={i} 
+                  onClick={() => onMiniCalendarSelect(format(dayItem, 'yyyy-MM-dd'))}
+                  className={`w-6 h-6 flex items-center justify-center mx-auto transition-colors ${bgClass}`}
+               >
+                 {format(dayItem, 'd')}
+               </div>
+            );
+          })}
         </div>
       </div>
 

@@ -8,6 +8,7 @@ export interface Task {
   end_time: string;
   status: string;
   type: string;
+  recurrence?: string;
 }
 
 export interface MiniHabit {

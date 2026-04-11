@@ -26,6 +26,7 @@ class Task(BaseModel):
     end_time: str
     status: str = "pending"
     type: str = "task"
+    recurrence: Optional[str] = "none"
 
     class Config:
         populate_by_name = True

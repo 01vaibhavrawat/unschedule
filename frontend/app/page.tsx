@@ -64,6 +64,14 @@ export default function Home() {
     }
   };
 
+  const handleMiniCalendarSelect = (dateStr: string) => {
+    const api = calendarRef.current?.getApi();
+    if (api) {
+      api.gotoDate(dateStr);
+      setCurrentDate(api.getDate());
+    }
+  };
+
   // Modal Handlers
   const openCreateModal = (start?: Date, end?: Date | null) => {
     setEditingTask(null);
@@ -79,7 +87,7 @@ export default function Home() {
     setIsModalOpen(true);
   };
 
-  const handleModalSave = (taskData: { title: string; start_time: string; end_time: string }) => {
+  const handleModalSave = (taskData: { title: string; start_time: string; end_time: string; recurrence?: string }) => {
     if (editingTask) {
       updateTask(editingTask._id, taskData);
     } else {
@@ -118,6 +126,8 @@ export default function Home() {
           habitLogs={habitLogs}
           toggleHabitLog={toggleHabitLog}
           todayStr={todayStr}
+          onMiniCalendarSelect={handleMiniCalendarSelect}
+          currentDate={currentDate}
         />
         
         <main className="flex-1 overflow-hidden p-2 flex flex-col">
