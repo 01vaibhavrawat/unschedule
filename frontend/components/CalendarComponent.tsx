@@ -46,7 +46,6 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
       // FullCalendar expects 'HH:MM' string for startTime/endTime
       baseEvent.startTime = st.toTimeString().slice(0, 5);
       baseEvent.endTime = et.toTimeString().slice(0, 5);
-      baseEvent.startRecur = task.start_time.split('T')[0];
       
       if (task.recurrence === 'weekdays') {
         baseEvent.daysOfWeek = [1, 2, 3, 4, 5];
