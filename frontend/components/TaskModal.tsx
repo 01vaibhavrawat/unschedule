@@ -54,22 +54,26 @@ export const TaskModal: React.FC<TaskModalProps> = ({
         const st = new Date(editingTask.start_time);
         const et = new Date(editingTask.end_time);
         
+        const formatTime = (d: Date) => d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
+        
         // Handle timezone offset appropriately to map exactly to the selected day
         setDateInput(editingTask.start_time.split('T')[0]);
-        setStartTimeInput(st.toTimeString().slice(0, 5));
-        setEndTimeInput(et.toTimeString().slice(0, 5));
+        setStartTimeInput(formatTime(st));
+        setEndTimeInput(formatTime(et));
       } else {
         setTitle('');
         setSelectedDays([]);
         const st = initialStart || new Date();
         const et = initialEnd || new Date(st.getTime() + 60 * 60 * 1000);
         
+        const formatTime = (d: Date) => d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
+        
         const offset = st.getTimezoneOffset() * 60000;
         const localDateStr = new Date(st.getTime() - offset).toISOString().split('T')[0];
         
         setDateInput(localDateStr);
-        setStartTimeInput(st.toTimeString().slice(0, 5));
-        setEndTimeInput(et.toTimeString().slice(0, 5));
+        setStartTimeInput(formatTime(st));
+        setEndTimeInput(formatTime(et));
       }
     }
   }, [isOpen, editingTask, initialStart, initialEnd]);

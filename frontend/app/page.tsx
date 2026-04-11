@@ -133,7 +133,12 @@ export default function Home() {
         <main className="flex-1 overflow-hidden p-2 flex flex-col">
           <DynamicCalendar 
             tasks={tasks}
-            onUpdateTask={updateTask}
+            onUpdateTask={(id, partialTask) => {
+              const existing = tasks.find(t => t._id === id);
+              if (existing) {
+                updateTask(id, { ...existing, ...partialTask });
+              }
+            }}
             onCreateTask={addTask}
             calendarRef={calendarRef}
             onDateSelect={(start: Date, end: Date | null) => openCreateModal(start, end)}
