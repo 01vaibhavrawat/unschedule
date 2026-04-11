@@ -11,12 +11,12 @@ interface TaskModalProps {
   editingTask?: { title: string; start_time: string; end_time: string; recurrence?: string } | null;
 }
 
-export const TaskModal: React.FC<TaskModalProps> = ({ 
-  isOpen, 
-  onClose, 
+export const TaskModal: React.FC<TaskModalProps> = ({
+  isOpen,
+  onClose,
   onSave,
   onDelete,
-  initialStart, 
+  initialStart,
   initialEnd,
   editingTask
 }) => {
@@ -28,6 +28,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     { label: 'Thursday', value: 4 },
     { label: 'Friday', value: 5 },
     { label: 'Saturday', value: 6 },
+    { label: 'Weekdays', value: 7 },
+    { label: 'Daily', value: 8 },
   ];
 
   const [title, setTitle] = useState('');
@@ -36,12 +38,13 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   const [endTimeInput, setEndTimeInput] = useState('');
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [showRecDropdown, setShowRecDropdown] = useState(false);
-  
+
+
   useEffect(() => {
     if (isOpen) {
       if (editingTask) {
         setTitle(editingTask.title);
-        
+
         if (editingTask.recurrence === 'daily') {
           setSelectedDays([0, 1, 2, 3, 4, 5, 6]);
         } else if (editingTask.recurrence === 'weekdays') {
@@ -53,9 +56,9 @@ export const TaskModal: React.FC<TaskModalProps> = ({
         }
         const st = new Date(editingTask.start_time);
         const et = new Date(editingTask.end_time);
-        
+
         const formatTime = (d: Date) => d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
-        
+
         // Handle timezone offset appropriately to map exactly to the selected day
         setDateInput(editingTask.start_time.split('T')[0]);
         setStartTimeInput(formatTime(st));
@@ -65,12 +68,12 @@ export const TaskModal: React.FC<TaskModalProps> = ({
         setSelectedDays([]);
         const st = initialStart || new Date();
         const et = initialEnd || new Date(st.getTime() + 60 * 60 * 1000);
-        
+
         const formatTime = (d: Date) => d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
-        
+
         const offset = st.getTimezoneOffset() * 60000;
         const localDateStr = new Date(st.getTime() - offset).toISOString().split('T')[0];
-        
+
         setDateInput(localDateStr);
         setStartTimeInput(formatTime(st));
         setEndTimeInput(formatTime(et));
@@ -82,13 +85,13 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
   const handleSave = () => {
     if (!title.trim() || !dateInput || !startTimeInput || !endTimeInput) return;
-    
+
     const startIso = new Date(`${dateInput}T${startTimeInput}:00`).toISOString();
     const endIso = new Date(`${dateInput}T${endTimeInput}:00`).toISOString();
 
     let computedRecurrence = 'none';
-    if (selectedDays.length === 7) computedRecurrence = 'daily';
-    else if (selectedDays.length === 5 && [1, 2, 3, 4, 5].every(d => selectedDays.includes(d))) computedRecurrence = 'weekdays';
+    if (selectedDays.length > 7) computedRecurrence = 'daily';
+    else if (selectedDays.length === 6 && [1, 2, 3, 4, 5].every(d => selectedDays.includes(d))) computedRecurrence = 'weekdays';
     else if (selectedDays.length > 0) computedRecurrence = selectedDays.sort().join(',');
 
     onSave({
@@ -99,26 +102,47 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     });
   };
 
+  const allDays = [0, 1, 2, 3, 4, 5, 6, 8];
+  const weekDays = [1, 2, 3, 4, 5, 7];
+
+  const handlSetSelectedDays = (num: number): void => {
+    if (num === 7) setSelectedDays([...selectedDays, ...weekDays]);
+
+    if (num === 8) setSelectedDays([...selectedDays, ...allDays]);
+
+    if (num <= 6) setSelectedDays([...selectedDays, num]);
+
+  }
+
+  const handleUnselectDays = (num: number): void => {
+    if (num === 7) setSelectedDays(selectedDays.filter(d => !weekDays.includes(d)));
+
+    if (num === 8) setSelectedDays(selectedDays.filter(d => !allDays.includes(d)));
+
+    if (num <= 6) setSelectedDays(selectedDays.filter(d => d != num));
+
+  }
+
   const getRecurrenceText = () => {
     if (selectedDays.length === 0) return 'Does not repeat';
     if (selectedDays.length === 7) return 'Daily';
     if (selectedDays.length === 5 && [1, 2, 3, 4, 5].every(d => selectedDays.includes(d))) return 'Every weekday (Monday to Friday)';
-    
+
     // Custom format: "Weekly on Mon, Wed"
     const sortedDays = [...selectedDays].sort();
-    const dayLabels = sortedDays.map(d => DAYS_OF_WEEK.find(dw => dw.value === d)?.label.slice(0, 3));
+    const dayLabels = sortedDays.map(d => DAYS_OF_WEEK.slice(0, 5).find(dw => dw.value === d)?.label.slice(0, 3));
     return `Weekly on ${dayLabels.join(', ')}`;
   };
 
   return (
-    <div 
+    <div
       className="fixed top-0 left-0 w-full h-full z-[9999] flex items-center justify-center p-4 shadow-xl"
     >
       {/* Click outside to close */}
       <div className="absolute inset-0 bg-transparent" onClick={onClose} />
-      
+
       <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] w-full max-w-[480px] overflow-hidden relative z-10 flex flex-col pointer-events-auto border border-gray-100">
-        
+
         {/* Top Handle / Close Bar */}
         <div className="flex justify-between items-center px-4 py-3 bg-[#f8f9fa] border-b border-gray-100">
           <button className="p-1.5 hover:bg-gray-200 rounded text-gray-500 transition-colors">
@@ -133,7 +157,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
         <div className="px-6 py-4">
           {/* Title Input */}
           <div className="ml-10 mb-4">
-            <input 
+            <input
               type="text"
               autoFocus
               className="w-full text-[22px] text-gray-700 bg-transparent border-b-2 border-blue-600 pb-1 focus:outline-none placeholder-gray-500 font-normal"
@@ -173,13 +197,13 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                   <input type="time" className="p-1 border border-gray-300 rounded text-sm outline-none focus:border-blue-500" value={endTimeInput} onChange={(e) => setEndTimeInput(e.target.value)} />
                 </div>
                 <div className="relative text-sm mt-1">
-                  <div 
+                  <div
                     className="flex items-center gap-1 cursor-pointer text-gray-600 hover:bg-gray-100 px-2 py-1 rounded w-fit -ml-2"
                     onClick={() => setShowRecDropdown(!showRecDropdown)}
                   >
                     <span>{getRecurrenceText()}</span>
                   </div>
-                  
+
                   {showRecDropdown && (
                     <>
                       <div className="fixed inset-0 z-40" onClick={() => setShowRecDropdown(false)} />
@@ -188,16 +212,18 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                           Repeat on
                         </div>
                         {DAYS_OF_WEEK.map(day => (
-                          <label key={day.value} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 cursor-pointer">
-                            <input 
-                              type="checkbox" 
+                          <label key={day.value} className="flex items-center gap-3 px-4 py-1 hover:bg-gray-50 cursor-pointer">
+                            <input
+                              type="checkbox"
                               className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
                               checked={selectedDays.includes(day.value)}
                               onChange={(e) => {
                                 if (e.target.checked) {
-                                  setSelectedDays([...selectedDays, day.value]);
+                                  // setSelectedDays([...selectedDays, day.value]);
+                                  handlSetSelectedDays(day.value);
                                 } else {
-                                  setSelectedDays(selectedDays.filter(d => d !== day.value));
+                                  // setSelectedDays(selectedDays.filter(d => d !== day.value));
+                                  handleUnselectDays(day.value);
                                 }
                               }}
                             />
@@ -254,7 +280,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
         <div className="px-6 py-4 bg-white flex justify-between items-center mt-2">
           <div>
             {editingTask && onDelete && (
-              <button 
+              <button
                 type="button"
                 onClick={onDelete}
                 className="text-sm font-medium text-red-600 hover:bg-red-50 px-3 py-2 rounded transition-colors"
@@ -264,13 +290,13 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             )}
           </div>
           <div className="flex items-center gap-4">
-            <button 
+            <button
               type="button"
               className="text-sm font-medium text-[#1a73e8] hover:bg-blue-50 px-3 py-2 rounded transition-colors"
             >
               More options
             </button>
-            <button 
+            <button
               onClick={handleSave}
               disabled={!title.trim()}
               className="bg-[#1a73e8] hover:bg-blue-600 text-white text-sm font-medium px-6 py-2 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
