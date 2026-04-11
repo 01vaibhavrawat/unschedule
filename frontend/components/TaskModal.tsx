@@ -5,24 +5,32 @@ interface TaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (taskData: { title: string; start_time: string; end_time: string }) => void;
+  onDelete?: () => void;
   initialStart?: Date | null;
   initialEnd?: Date | null;
+  editingTask?: { title: string; start_time: string; end_time: string } | null;
 }
 
 export const TaskModal: React.FC<TaskModalProps> = ({ 
   isOpen, 
   onClose, 
-  onSave, 
+  onSave,
+  onDelete,
   initialStart, 
-  initialEnd 
+  initialEnd,
+  editingTask
 }) => {
   const [title, setTitle] = useState('');
   
   useEffect(() => {
     if (isOpen) {
-      setTitle('');
+      if (editingTask) {
+        setTitle(editingTask.title);
+      } else {
+        setTitle('');
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, editingTask]);
 
   if (!isOpen) return null;
 
@@ -158,20 +166,33 @@ export const TaskModal: React.FC<TaskModalProps> = ({
         </div>
 
         {/* Footer Area */}
-        <div className="px-6 py-4 bg-white flex justify-end items-center gap-4 mt-2">
-          <button 
-            type="button"
-            className="text-sm font-medium text-[#1a73e8] hover:bg-blue-50 px-3 py-2 rounded transition-colors"
-          >
-            More options
-          </button>
-          <button 
-            onClick={handleSave}
-            disabled={!title.trim()}
-            className="bg-[#1a73e8] hover:bg-blue-600 text-white text-sm font-medium px-6 py-2 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-          >
-            Save
-          </button>
+        <div className="px-6 py-4 bg-white flex justify-between items-center mt-2">
+          <div>
+            {editingTask && onDelete && (
+              <button 
+                type="button"
+                onClick={onDelete}
+                className="text-sm font-medium text-red-600 hover:bg-red-50 px-3 py-2 rounded transition-colors"
+              >
+                Delete
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-4">
+            <button 
+              type="button"
+              className="text-sm font-medium text-[#1a73e8] hover:bg-blue-50 px-3 py-2 rounded transition-colors"
+            >
+              More options
+            </button>
+            <button 
+              onClick={handleSave}
+              disabled={!title.trim()}
+              className="bg-[#1a73e8] hover:bg-blue-600 text-white text-sm font-medium px-6 py-2 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+            >
+              Save
+            </button>
+          </div>
         </div>
 
       </div>

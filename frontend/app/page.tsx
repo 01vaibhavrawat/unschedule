@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from 'react';
-import { useStore } from '@/store/useStore';
+import { useStore, Task } from '@/store/useStore';
 import { format } from 'date-fns';
 import dynamic from 'next/dynamic';
 import FullCalendar from '@fullcalendar/react';
@@ -14,7 +14,7 @@ const DynamicCalendar = dynamic(() => import('@/components/CalendarComponent'), 
 });
 
 export default function Home() {
-  const { tasks, habits, goals, habitLogs, streaks, fetchInitialData, toggleHabitLog, updateTask, addTask } = useStore();
+  const { tasks, habits, goals, habitLogs, streaks, fetchInitialData, toggleHabitLog, updateTask, addTask, deleteTask } = useStore();
   const calendarRef = useRef<FullCalendar>(null);
   
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -23,6 +23,7 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalStart, setModalStart] = useState<Date | null>(null);
   const [modalEnd, setModalEnd] = useState<Date | null>(null);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   useEffect(() => {
     fetchInitialData();
@@ -65,17 +66,36 @@ export default function Home() {
 
   // Modal Handlers
   const openCreateModal = (start?: Date, end?: Date | null) => {
+    setEditingTask(null);
     setModalStart(start || new Date());
     setModalEnd(end || null);
     setIsModalOpen(true);
   };
 
+  const handleEventClick = (task: Task) => {
+    setEditingTask(task);
+    setModalStart(new Date(task.start_time));
+    setModalEnd(new Date(task.end_time));
+    setIsModalOpen(true);
+  };
+
   const handleModalSave = (taskData: { title: string; start_time: string; end_time: string }) => {
-    addTask({
-      ...taskData,
-      status: 'pending',
-      type: 'task',
-    });
+    if (editingTask) {
+      updateTask(editingTask._id, taskData);
+    } else {
+      addTask({
+        ...taskData,
+        status: 'pending',
+        type: 'task',
+      });
+    }
+    setIsModalOpen(false);
+  };
+
+  const handleModalDelete = () => {
+    if (editingTask) {
+      deleteTask(editingTask._id);
+    }
     setIsModalOpen(false);
   };
 
@@ -107,6 +127,7 @@ export default function Home() {
             onCreateTask={addTask}
             calendarRef={calendarRef}
             onDateSelect={(start: Date, end: Date | null) => openCreateModal(start, end)}
+            onEventClick={handleEventClick}
           />
         </main>
       </div>
@@ -115,8 +136,10 @@ export default function Home() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleModalSave}
+        onDelete={handleModalDelete}
         initialStart={modalStart}
         initialEnd={modalEnd}
+        editingTask={editingTask}
       />
     </div>
   );

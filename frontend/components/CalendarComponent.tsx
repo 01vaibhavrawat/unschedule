@@ -23,9 +23,10 @@ interface CalendarComponentProps {
   onCreateTask: (task: Omit<Task, '_id'>) => void;
   calendarRef?: React.RefObject<FullCalendar | null>;
   onDateSelect?: (start: Date, end: Date | null) => void;
+  onEventClick?: (task: Task) => void;
 }
 
-export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, calendarRef, onDateSelect }: CalendarComponentProps) {
+export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, calendarRef, onDateSelect, onEventClick }: CalendarComponentProps) {
 
 
   // Map Backend Task model to FullCalendar Event model
@@ -72,6 +73,15 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
     }
   };
 
+  const handleEventClick = (arg: EventClickArg) => {
+    if (onEventClick) {
+      const task = tasks.find(t => t._id === arg.event.id);
+      if (task) {
+        onEventClick(task);
+      }
+    }
+  };
+
 
 
   return (
@@ -89,6 +99,7 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
         weekends={true}
         dateClick={handleDateClick}
         select={handleSelect}
+        eventClick={handleEventClick}
         eventDrop={handleEventDrop}
         eventResize={handleEventResize}
         nowIndicator={true}
