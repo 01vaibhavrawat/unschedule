@@ -15,6 +15,7 @@ interface Task {
   end_time: string;
   status: string;
   type: string;
+  recurrence: string;
 }
 
 interface CalendarComponentProps {
@@ -42,11 +43,11 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
     if (task.recurrence && task.recurrence !== 'none') {
       const st = new Date(task.start_time);
       const et = new Date(task.end_time);
-      
+
       // FullCalendar expects 'HH:MM' string for startTime/endTime
       baseEvent.startTime = st.toTimeString().slice(0, 5);
       baseEvent.endTime = et.toTimeString().slice(0, 5);
-      
+
       if (task.recurrence === 'weekdays') {
         baseEvent.daysOfWeek = [1, 2, 3, 4, 5];
       } else if (task.recurrence === 'daily') {
@@ -59,7 +60,7 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
       baseEvent.start = task.start_time;
       baseEvent.end = task.end_time;
     }
-    
+
     return baseEvent;
   });
 
@@ -78,9 +79,9 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
     const updatedStart = arg.event.start?.toISOString();
     const updatedEnd = arg.event.end?.toISOString() || updatedStart;
     if (updatedStart) {
-      onUpdateTask(arg.event.id, { 
-        start_time: updatedStart, 
-        end_time: updatedEnd 
+      onUpdateTask(arg.event.id, {
+        start_time: updatedStart,
+        end_time: updatedEnd
       });
     }
   };
@@ -89,9 +90,9 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
     const updatedStart = arg.event.start?.toISOString();
     const updatedEnd = arg.event.end?.toISOString();
     if (updatedStart && updatedEnd) {
-      onUpdateTask(arg.event.id, { 
-        start_time: updatedStart, 
-        end_time: updatedEnd 
+      onUpdateTask(arg.event.id, {
+        start_time: updatedStart,
+        end_time: updatedEnd
       });
     }
   };
