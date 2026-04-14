@@ -103,7 +103,13 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   };
 
   const allDays = [0, 1, 2, 3, 4, 5, 6, 8];
-  const weekDays = [1, 2, 3, 4, 5, 7];
+  const weekDays = [1, 2, 3, 4, 5, 6,];
+
+  const filterUniqueDays = (days: (string | undefined)[]): (string | undefined)[] => {
+    const uniqueDays = new Set(days)
+
+    return [...uniqueDays];
+  }
 
   const handlSetSelectedDays = (num: number): void => {
     if (num === 7) setSelectedDays([...selectedDays, ...weekDays]);
@@ -115,7 +121,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   }
 
   const handleUnselectDays = (num: number): void => {
-    if (num === 7) setSelectedDays(selectedDays.filter(d => !weekDays.includes(d)));
+    if (num === 7) setSelectedDays((selectedDays.filter(d => !weekDays.includes(d))));
 
     if (num === 8) setSelectedDays(selectedDays.filter(d => !allDays.includes(d)));
 
@@ -125,13 +131,13 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
   const getRecurrenceText = () => {
     if (selectedDays.length === 0) return 'Does not repeat';
-    if (selectedDays.length === 7) return 'Daily';
-    if (selectedDays.length === 5 && [1, 2, 3, 4, 5].every(d => selectedDays.includes(d))) return 'Every weekday (Monday to Friday)';
+    if (selectedDays.length === 8) return 'Daily';
+    if (selectedDays.length === 6 && [1, 2, 3, 4, 5].every(d => selectedDays.includes(d))) return 'Every weekday (Monday to Friday)';
 
     // Custom format: "Weekly on Mon, Wed"
     const sortedDays = [...selectedDays].sort();
-    const dayLabels = sortedDays.map(d => DAYS_OF_WEEK.slice(0, 5).find(dw => dw.value === d)?.label.slice(0, 3));
-    return `Weekly on ${dayLabels.join(', ')}`;
+    const dayLabels = sortedDays.map(d => DAYS_OF_WEEK.slice(0, 6).find(dw => dw.value === d)?.label.slice(0, 3));
+    return `Weekly on ${filterUniqueDays(dayLabels).join(', ')}`;
   };
 
   return (
