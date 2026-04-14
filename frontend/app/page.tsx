@@ -80,21 +80,26 @@ export default function Home() {
     setIsModalOpen(true);
   };
 
-  const handleEventClick = (task: Task) => {
+  const handleEventClick = (task: Task, instanceStart?: Date) => {
     setEditingTask(task);
-    setModalStart(new Date(task.start_time));
-    setModalEnd(new Date(task.end_time));
+    const dateToUse = instanceStart || new Date(task.start_time);
+    const startObj = new Date(task.start_time);
+    const endObj = new Date(task.end_time);
+    const durationMs = endObj.getTime() - startObj.getTime();
+    
+    setModalStart(dateToUse);
+    setModalEnd(new Date(dateToUse.getTime() + durationMs));
     setIsModalOpen(true);
   };
 
-  const handleModalSave = (taskData: { title: string; start_time: string; end_time: string; recurrence?: string }) => {
+  const handleModalSave = (taskData: { title: string; start_time: string; end_time: string; recurrence?: string; type?: string }) => {
     if (editingTask) {
       updateTask(editingTask._id, taskData);
     } else {
       addTask({
         ...taskData,
         status: 'pending',
-        type: 'task',
+        type: taskData.type || 'task',
       });
     }
     setIsModalOpen(false);
@@ -133,6 +138,8 @@ export default function Home() {
         <main className="flex-1 overflow-hidden p-2 flex flex-col">
           <DynamicCalendar 
             tasks={tasks}
+            streaks={streaks}
+            habitLogs={habitLogs}
             onUpdateTask={(id, partialTask) => {
               const existing = tasks.find(t => t._id === id);
               if (existing) {
@@ -155,6 +162,8 @@ export default function Home() {
         initialStart={modalStart}
         initialEnd={modalEnd}
         editingTask={editingTask}
+        onToggleHabit={toggleHabitLog}
+        habitLogs={habitLogs}
       />
     </div>
   );

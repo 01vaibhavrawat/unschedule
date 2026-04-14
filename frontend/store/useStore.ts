@@ -52,15 +52,18 @@ export const useStore = create<AppState>((set, get) => ({
       ]);
       set({ tasks, habits, goals });
       
-      // Fetch logs for all habits
-      habits.forEach(async (h: any) => {
-        const result = await api.getHabitLogs(h._id);
-        const currentLogs = get().habitLogs;
-        const currentStreaks = get().streaks;
-        set({
-          habitLogs: { ...currentLogs, [h._id]: result.logs },
-          streaks: { ...currentStreaks, [h._id]: result.streak }
-        });
+      // Fetch logs for all habits and atomic habits
+      const itemsToFetchLogs = [
+        ...habits,
+        ...tasks.filter((t: any) => t.type === 'atomic_habit')
+      ];
+
+      itemsToFetchLogs.forEach(async (item: any) => {
+        const result = await api.getHabitLogs(item._id);
+        set((state) => ({
+          habitLogs: { ...state.habitLogs, [item._id]: result.logs },
+          streaks: { ...state.streaks, [item._id]: result.streak }
+        }));
       });
     } catch (e) {
       console.error("Failed to load initial data", e);

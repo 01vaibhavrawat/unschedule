@@ -24,20 +24,31 @@ interface CalendarComponentProps {
   onCreateTask: (task: Omit<Task, '_id'>) => void;
   calendarRef?: React.RefObject<FullCalendar | null>;
   onDateSelect?: (start: Date, end: Date | null) => void;
-  onEventClick?: (task: Task) => void;
+  onEventClick?: (task: Task, instanceStart: Date) => void;
+  streaks?: Record<string, number>;
+  habitLogs?: Record<string, any[]>;
 }
 
-export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, calendarRef, onDateSelect, onEventClick }: CalendarComponentProps) {
+export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, calendarRef, onDateSelect, onEventClick, streaks = {}, habitLogs = {} }: CalendarComponentProps) {
 
 
   // Map Backend Task model to FullCalendar Event model
   const events = tasks.map(task => {
+    const isAtomicHabit = task.type === 'atomic_habit';
+    let displayTitle = task.title;
+    
+    if (isAtomicHabit) {
+      const streakCount = streaks[task._id] || 0;
+      displayTitle = `🔥 ${streakCount} ${task.title}`;
+    }
+
     const baseEvent: any = {
       id: task._id,
-      title: task.title,
-      backgroundColor: task.status === 'completed' ? '#059669' : '#3b82f6', // emerald-600 vs blue-500
-      borderColor: task.status === 'completed' ? '#047857' : '#2563eb',
+      title: displayTitle,
+      backgroundColor: isAtomicHabit ? '#8b5cf6' : (task.status === 'completed' ? '#059669' : '#3b82f6'), // purple vs emerald vs blue
+      borderColor: isAtomicHabit ? '#7c3aed' : (task.status === 'completed' ? '#047857' : '#2563eb'),
       classNames: ['text-sm', 'font-medium', 'rounded-md', 'border-0', 'shadow-sm', 'p-1', 'cursor-pointer'],
+      extendedProps: { type: task.type, status: task.status }
     };
 
     if (task.recurrence && task.recurrence !== 'none') {
@@ -103,7 +114,7 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
     if (onEventClick) {
       const task = tasks.find(t => t._id === arg.event.id);
       if (task) {
-        onEventClick(task);
+        onEventClick(task, arg.event.start || new Date(task.start_time));
       }
     }
   };

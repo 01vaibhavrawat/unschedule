@@ -4,11 +4,13 @@ import { X, GripHorizontal, Clock, Users, Video, MapPin, AlignLeft, Calendar as 
 interface TaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (taskData: { title: string; start_time: string; end_time: string; recurrence?: string }) => void;
+  onSave: (taskData: { title: string; start_time: string; end_time: string; recurrence?: string; type?: string }) => void;
   onDelete?: () => void;
   initialStart?: Date | null;
   initialEnd?: Date | null;
-  editingTask?: { title: string; start_time: string; end_time: string; recurrence?: string } | null;
+  editingTask?: { _id?: string; title: string; start_time: string; end_time: string; recurrence?: string; type?: string } | null;
+  onToggleHabit?: (habitId: string, date: string) => Promise<void>;
+  habitLogs?: Record<string, any[]>;
 }
 
 export const TaskModal: React.FC<TaskModalProps> = ({
@@ -18,7 +20,9 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   onDelete,
   initialStart,
   initialEnd,
-  editingTask
+  editingTask,
+  onToggleHabit,
+  habitLogs
 }) => {
   const DAYS_OF_WEEK = [
     { label: 'Sunday', value: 0 },
@@ -38,12 +42,13 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   const [endTimeInput, setEndTimeInput] = useState('');
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [showRecDropdown, setShowRecDropdown] = useState(false);
-
+  const [taskType, setTaskType] = useState<'event' | 'task' | 'atomic_habit'>('event');
 
   useEffect(() => {
     if (isOpen) {
       if (editingTask) {
         setTitle(editingTask.title);
+        setTaskType((editingTask.type as any) || 'event');
 
         if (editingTask.recurrence === 'daily') {
           setSelectedDays([0, 1, 2, 3, 4, 5, 6]);
@@ -65,6 +70,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
         setEndTimeInput(formatTime(et));
       } else {
         setTitle('');
+        setTaskType('event');
         setSelectedDays([]);
         const st = initialStart || new Date();
         const et = initialEnd || new Date(st.getTime() + 60 * 60 * 1000);
@@ -99,6 +105,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       start_time: startIso,
       end_time: endIso,
       recurrence: computedRecurrence,
+      type: taskType,
     });
   };
 
@@ -140,6 +147,9 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     return `Weekly on ${filterUniqueDays(dayLabels).join(', ')}`;
   };
 
+  const isEditingHabit = editingTask?.type === 'atomic_habit' && editingTask?._id;
+  const isCompletedForSelectedDay = isEditingHabit && habitLogs?.[editingTask._id as string]?.some((log: any) => log.date === dateInput && log.completed);
+
   return (
     <div
       className="fixed top-0 left-0 w-full h-full z-[9999] flex items-center justify-center p-4 shadow-xl"
@@ -178,16 +188,28 @@ export const TaskModal: React.FC<TaskModalProps> = ({
           </div>
 
           {/* Type Tabs */}
-          <div className="ml-10 flex items-center gap-2 mb-6">
-            <button className="px-3 py-1.5 bg-[#e8f0fe] text-[#1a73e8] text-sm font-medium rounded-md hover:bg-blue-100 transition-colors">
+          <div className="ml-10 flex items-center gap-2 mb-6 overflow-x-auto whitespace-nowrap">
+            <button
+              onClick={() => setTaskType('event')}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${taskType === 'event' ? 'bg-[#e8f0fe] text-[#1a73e8]' : 'text-gray-600 hover:bg-gray-100'}`}
+            >
               Event
             </button>
-            <button className="px-3 py-1.5 text-gray-600 text-sm font-medium rounded-md hover:bg-gray-100 transition-colors">
+            <button
+              onClick={() => setTaskType('task')}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${taskType === 'task' ? 'bg-[#e8f0fe] text-[#1a73e8]' : 'text-gray-600 hover:bg-gray-100'}`}
+            >
               Task
             </button>
-            <div className="flex items-center gap-2 px-3 py-1.5 text-gray-600 text-sm font-medium rounded-md hover:bg-gray-100 transition-colors cursor-pointer">
-              Appointment schedule
-              <span className="bg-[#1a73e8] text-white text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">New</span>
+            <div
+              onClick={() => {
+                setTaskType('atomic_habit');
+                setSelectedDays([0, 1, 2, 3, 4, 5, 6]); // Default daily for habits
+              }}
+              className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer ${taskType === 'atomic_habit' ? 'bg-[#f3e8fe] text-[#7e22ce]' : 'text-gray-600 hover:bg-gray-100'}`}
+            >
+              Atomic Habit
+              <span className={`text-white text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${taskType === 'atomic_habit' ? 'bg-[#7e22ce]' : 'bg-[#1a73e8]'}`}>New</span>
             </div>
           </div>
 
@@ -296,6 +318,15 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             )}
           </div>
           <div className="flex items-center gap-4">
+            {isEditingHabit && onToggleHabit && (
+              <button
+                type="button"
+                onClick={() => onToggleHabit(editingTask._id!, dateInput)}
+                className={`text-sm font-medium px-4 py-2 rounded-full transition-colors flex items-center gap-2 ${isCompletedForSelectedDay ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              >
+                {isCompletedForSelectedDay ? '✓ Completed' : 'Mark Complete'}
+              </button>
+            )}
             <button
               type="button"
               className="text-sm font-medium text-[#1a73e8] hover:bg-blue-50 px-3 py-2 rounded transition-colors"
