@@ -157,14 +157,14 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       {/* Click outside to close */}
       <div className="absolute inset-0 bg-transparent" onClick={onClose} />
 
-      <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] w-full max-w-[480px] overflow-hidden relative z-10 flex flex-col pointer-events-auto border border-gray-100">
+      <div className="relative z-10 flex w-full max-w-[480px] flex-col overflow-hidden rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] shadow-[var(--shadow-modal)] pointer-events-auto">
 
         {/* Top Handle / Close Bar */}
-        <div className="flex justify-between items-center px-4 py-3 bg-[#f8f9fa] border-b border-gray-100">
-          <button className="p-1.5 hover:bg-gray-200 rounded text-gray-500 transition-colors">
+        <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-surface-muted)] px-4 py-3">
+          <button className="rounded p-1.5 text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-border-strong)]">
             <GripHorizontal className="w-5 h-5" />
           </button>
-          <button onClick={onClose} className="p-1.5 hover:bg-gray-200 rounded-full text-gray-600 transition-colors">
+          <button onClick={onClose} className="rounded-full p-1.5 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-border-strong)]">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -176,7 +176,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             <input
               type="text"
               autoFocus
-              className="w-full text-[22px] text-gray-700 bg-transparent border-b-2 border-blue-600 pb-1 focus:outline-none placeholder-gray-500 font-normal"
+              className="w-full border-b-2 border-[var(--color-brand-primary-hover)] bg-transparent pb-1 text-[22px] font-normal text-[var(--color-text-secondary)] placeholder-[var(--color-text-muted)] focus:outline-none"
               placeholder="Add title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -191,13 +191,13 @@ export const TaskModal: React.FC<TaskModalProps> = ({
           <div className="ml-10 flex items-center gap-2 mb-6 overflow-x-auto whitespace-nowrap">
             <button
               onClick={() => setTaskType('event')}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${taskType === 'event' ? 'bg-[#e8f0fe] text-[#1a73e8]' : 'text-gray-600 hover:bg-gray-100'}`}
+              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${taskType === 'event' ? 'bg-[var(--color-brand-primary-soft)] text-[var(--color-brand-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'}`}
             >
               Event
             </button>
             <button
               onClick={() => setTaskType('task')}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${taskType === 'task' ? 'bg-[#e8f0fe] text-[#1a73e8]' : 'text-gray-600 hover:bg-gray-100'}`}
+              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${taskType === 'task' ? 'bg-[var(--color-brand-primary-soft)] text-[var(--color-brand-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'}`}
             >
               Task
             </button>
@@ -206,27 +206,27 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                 setTaskType('atomic_habit');
                 setSelectedDays([0, 1, 2, 3, 4, 5, 6]); // Default daily for habits
               }}
-              className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer ${taskType === 'atomic_habit' ? 'bg-[#f3e8fe] text-[#7e22ce]' : 'text-gray-600 hover:bg-gray-100'}`}
+              className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${taskType === 'atomic_habit' ? 'bg-[var(--color-brand-purple-soft)] text-[var(--color-brand-purple-strong)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'}`}
             >
               Atomic Habit
-              <span className={`text-white text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${taskType === 'atomic_habit' ? 'bg-[#7e22ce]' : 'bg-[#1a73e8]'}`}>New</span>
+              <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase text-[var(--color-text-inverse)] ${taskType === 'atomic_habit' ? 'bg-[var(--color-brand-purple-strong)]' : 'bg-[var(--color-brand-primary)]'}`}>New</span>
             </div>
           </div>
 
           <div className="space-y-4">
             {/* Time Row */}
             <div className="flex items-start gap-4">
-              <Clock className="w-5 h-5 text-gray-500 mt-1" />
+              <Clock className="mt-1 h-5 w-5 text-[var(--color-text-muted)]" />
               <div>
                 <div className="flex gap-2 items-center mb-1">
-                  <input type="date" className="p-1 border border-gray-300 rounded text-sm outline-none focus:border-blue-500" value={dateInput} onChange={(e) => setDateInput(e.target.value)} />
-                  <input type="time" className="p-1 border border-gray-300 rounded text-sm outline-none focus:border-blue-500" value={startTimeInput} onChange={(e) => setStartTimeInput(e.target.value)} />
-                  <span className="text-gray-500">&ndash;</span>
-                  <input type="time" className="p-1 border border-gray-300 rounded text-sm outline-none focus:border-blue-500" value={endTimeInput} onChange={(e) => setEndTimeInput(e.target.value)} />
+                  <input type="date" className="rounded border border-[var(--color-border-strong)] p-1 text-sm outline-none focus:border-[var(--color-brand-primary-hover)]" value={dateInput} onChange={(e) => setDateInput(e.target.value)} />
+                  <input type="time" className="rounded border border-[var(--color-border-strong)] p-1 text-sm outline-none focus:border-[var(--color-brand-primary-hover)]" value={startTimeInput} onChange={(e) => setStartTimeInput(e.target.value)} />
+                  <span className="text-[var(--color-text-muted)]">&ndash;</span>
+                  <input type="time" className="rounded border border-[var(--color-border-strong)] p-1 text-sm outline-none focus:border-[var(--color-brand-primary-hover)]" value={endTimeInput} onChange={(e) => setEndTimeInput(e.target.value)} />
                 </div>
                 <div className="relative text-sm mt-1">
                   <div
-                    className="flex items-center gap-1 cursor-pointer text-gray-600 hover:bg-gray-100 px-2 py-1 rounded w-fit -ml-2"
+                    className="ml-[-0.5rem] flex w-fit cursor-pointer items-center gap-1 rounded px-2 py-1 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]"
                     onClick={() => setShowRecDropdown(!showRecDropdown)}
                   >
                     <span>{getRecurrenceText()}</span>
@@ -235,15 +235,15 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                   {showRecDropdown && (
                     <>
                       <div className="fixed inset-0 z-40" onClick={() => setShowRecDropdown(false)} />
-                      <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 shadow-lg rounded-md py-2 z-50 w-56">
-                        <div className="px-3 pb-2 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-100">
+                      <div className="absolute left-0 top-full z-50 mt-1 w-56 rounded-md border border-[var(--color-border-muted)] bg-[var(--color-bg-surface)] py-2 shadow-lg">
+                        <div className="mb-2 border-b border-[var(--color-border-subtle)] px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
                           Repeat on
                         </div>
                         {DAYS_OF_WEEK.map(day => (
-                          <label key={day.value} className="flex items-center gap-3 px-4 py-1 hover:bg-gray-50 cursor-pointer">
+                          <label key={day.value} className="flex cursor-pointer items-center gap-3 px-4 py-1 hover:bg-[var(--color-bg-hover-subtle)]">
                             <input
                               type="checkbox"
-                              className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
+                              className="h-4 w-4 cursor-pointer rounded border-[var(--color-border-strong)] text-[var(--color-brand-primary-hover)] focus:ring-[var(--color-brand-primary-hover)]"
                               checked={selectedDays.includes(day.value)}
                               onChange={(e) => {
                                 if (e.target.checked) {
@@ -255,7 +255,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                                 }
                               }}
                             />
-                            <span className="text-sm text-gray-700 select-none">{day.label}</span>
+                            <span className="select-none text-sm text-[var(--color-text-secondary)]">{day.label}</span>
                           </label>
                         ))}
                       </div>
@@ -267,36 +267,36 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
             {/* Guests Row */}
             <div className="flex items-center gap-4">
-              <Users className="w-5 h-5 text-gray-500" />
-              <div className="text-sm text-gray-600 hover:text-gray-800 cursor-pointer">Add guests</div>
+              <Users className="h-5 w-5 text-[var(--color-text-muted)]" />
+              <div className="cursor-pointer text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">Add guests</div>
             </div>
 
             {/* Meet Row */}
             <div className="flex items-center gap-4">
-              <Video className="w-5 h-5 text-blue-500" />
-              <button className="bg-[#f1f3f4] hover:bg-[#e8eaed] text-gray-700 text-sm font-medium py-2 px-4 rounded transition-colors w-full text-left">
+              <Video className="h-5 w-5 text-[var(--color-brand-primary-hover)]" />
+              <button className="w-full rounded bg-[var(--color-bg-surface-soft)] px-4 py-2 text-left text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-surface-soft-hover)]">
                 Add Google Meet video conferencing
               </button>
             </div>
 
             {/* Location Row */}
             <div className="flex items-center gap-4">
-              <MapPin className="w-5 h-5 text-gray-500" />
-              <div className="text-sm text-gray-600 hover:text-gray-800 cursor-pointer">Add location</div>
+              <MapPin className="h-5 w-5 text-[var(--color-text-muted)]" />
+              <div className="cursor-pointer text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">Add location</div>
             </div>
 
             {/* Description Row */}
             <div className="flex items-center gap-4">
-              <AlignLeft className="w-5 h-5 text-gray-500" />
-              <div className="text-sm text-gray-600 hover:text-gray-800 cursor-pointer">Add description or a Google Drive attachment</div>
+              <AlignLeft className="h-5 w-5 text-[var(--color-text-muted)]" />
+              <div className="cursor-pointer text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">Add description or a Google Drive attachment</div>
             </div>
 
             {/* Calendar Owner Row */}
             <div className="flex items-start gap-4">
-              <CalendarIcon className="w-5 h-5 text-gray-500 mt-1" />
+              <CalendarIcon className="mt-1 h-5 w-5 text-[var(--color-text-muted)]" />
               <div>
-                <div className="text-sm text-gray-700 flex items-center gap-2">
-                  Vaibhav Rawat <span className="w-3 h-3 bg-[#039be5] rounded-full inline-block"></span>
+                <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+                  Vaibhav Rawat <span className="inline-block h-3 w-3 rounded-full bg-[var(--color-brand-cyan)]"></span>
                 </div>
                 <div className="text-xs text-gray-500 mt-0.5">Busy · Default visibility · Notify 30 minutes before</div>
               </div>
@@ -305,13 +305,13 @@ export const TaskModal: React.FC<TaskModalProps> = ({
         </div>
 
         {/* Footer Area */}
-        <div className="px-6 py-4 bg-white flex justify-between items-center mt-2">
+        <div className="mt-2 flex items-center justify-between bg-[var(--color-bg-surface)] px-6 py-4">
           <div>
             {editingTask && onDelete && (
               <button
                 type="button"
                 onClick={onDelete}
-                className="text-sm font-medium text-red-600 hover:bg-red-50 px-3 py-2 rounded transition-colors"
+                className="rounded px-3 py-2 text-sm font-medium text-[var(--color-brand-red-strong)] transition-colors hover:bg-[var(--color-brand-red-soft)]"
               >
                 Delete
               </button>
@@ -322,21 +322,21 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               <button
                 type="button"
                 onClick={() => onToggleHabit(editingTask._id!, dateInput)}
-                className={`text-sm font-medium px-4 py-2 rounded-full transition-colors flex items-center gap-2 ${isCompletedForSelectedDay ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${isCompletedForSelectedDay ? 'bg-[var(--color-brand-success-soft)] text-[var(--color-brand-success-strong)] hover:bg-[var(--color-brand-success-soft)]' : 'bg-[var(--color-bg-hover)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border-strong)]'}`}
               >
                 {isCompletedForSelectedDay ? '✓ Completed' : 'Mark Complete'}
               </button>
             )}
             <button
               type="button"
-              className="text-sm font-medium text-[#1a73e8] hover:bg-blue-50 px-3 py-2 rounded transition-colors"
+              className="rounded px-3 py-2 text-sm font-medium text-[var(--color-brand-primary)] transition-colors hover:bg-[var(--color-brand-primary-softer)]"
             >
               More options
             </button>
             <button
               onClick={handleSave}
               disabled={!title.trim()}
-              className="bg-[#1a73e8] hover:bg-blue-600 text-white text-sm font-medium px-6 py-2 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+              className="rounded-full bg-[var(--color-brand-primary)] px-6 py-2 text-sm font-medium text-[var(--color-text-inverse)] shadow-sm transition-colors hover:bg-[var(--color-brand-primary-hover)] disabled:cursor-not-allowed disabled:opacity-50"
             >
               Save
             </button>

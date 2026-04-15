@@ -45,8 +45,12 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
     const baseEvent: any = {
       id: task._id,
       title: displayTitle,
-      backgroundColor: isAtomicHabit ? '#8b5cf6' : (task.status === 'completed' ? '#059669' : '#3b82f6'), // purple vs emerald vs blue
-      borderColor: isAtomicHabit ? '#7c3aed' : (task.status === 'completed' ? '#047857' : '#2563eb'),
+      backgroundColor: isAtomicHabit
+        ? 'var(--calendar-event-habit-bg)'
+        : (task.status === 'completed' ? 'var(--calendar-event-completed-bg)' : 'var(--calendar-event-default-bg)'),
+      borderColor: isAtomicHabit
+        ? 'var(--calendar-event-habit-border)'
+        : (task.status === 'completed' ? 'var(--calendar-event-completed-border)' : 'var(--calendar-event-default-border)'),
       classNames: ['text-sm', 'font-medium', 'rounded-md', 'border-0', 'shadow-sm', 'p-1', 'cursor-pointer'],
       extendedProps: { type: task.type, status: task.status }
     };
@@ -122,7 +126,7 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
 
 
   return (
-    <div className="flex-1 w-full bg-white overflow-hidden calendar-container">
+    <div className="calendar-container flex-1 w-full overflow-hidden bg-[var(--color-bg-surface)]">
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}

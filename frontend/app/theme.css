@@ -1,0 +1,71 @@
+:root {
+  --color-bg-app: #ffffff;
+  --color-bg-surface: #ffffff;
+  --color-bg-surface-muted: #f8f9fa;
+  --color-bg-surface-soft: #f1f3f4;
+  --color-bg-surface-soft-hover: #e8eaed;
+  --color-bg-hover: #f1f3f4;
+  --color-bg-hover-subtle: #f9fafb;
+
+  --color-text-primary: #3c4043;
+  --color-text-secondary: #5f6368;
+  --color-text-muted: #70757a;
+  --color-text-subtle: #9aa0a6;
+  --color-text-inverse: #ffffff;
+
+  --color-border-default: #dadce0;
+  --color-border-muted: #e5e7eb;
+  --color-border-subtle: #f3f4f6;
+  --color-border-strong: #d1d5db;
+
+  --color-brand-primary: #1a73e8;
+  --color-brand-primary-hover: #2563eb;
+  --color-brand-primary-soft: #e8f0fe;
+  --color-brand-primary-softer: #eff6ff;
+  --color-brand-primary-strong: #1d4ed8;
+
+  --color-brand-success: #059669;
+  --color-brand-success-hover: #047857;
+  --color-brand-success-soft: #dcfce7;
+  --color-brand-success-strong: #15803d;
+
+  --color-brand-purple: #8b5cf6;
+  --color-brand-purple-hover: #7c3aed;
+  --color-brand-purple-soft: #f3e8fe;
+  --color-brand-purple-strong: #7e22ce;
+
+  --color-brand-cyan: #039be5;
+  --color-brand-sky-soft: #8ab4f8;
+  --color-brand-teal: #0d9488;
+  --color-brand-red: #ea4335;
+  --color-brand-red-soft: #fef2f2;
+  --color-brand-red-strong: #dc2626;
+  --color-brand-yellow: #fbbc05;
+  --color-brand-green: #34a853;
+  --color-brand-blue: #4285f4;
+
+  --color-overlay-selected: rgba(0, 0, 0, 0.25);
+  --color-overlay-inset: rgba(255, 255, 255, 0.3);
+  --color-highlight-soft: rgba(26, 115, 232, 0.1);
+
+  --shadow-event: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+  --shadow-modal: 0 8px 30px rgba(0, 0, 0, 0.12);
+
+  /* --calendar-event-default-bg: #3b82f6; */
+  /* --calendar-event-default-bg: #8DBDB9; */
+  --calendar-event-default-bg: #17C3B2;
+  --calendar-event-default-border: #2563eb;
+  --calendar-event-completed-bg: #059669;
+  --calendar-event-completed-border: #047857;
+  /* --calendar-event-habit-bg: #8b5cf6; */
+  /*--calendar-event-default-border: #2563eb;
+  --calendar-event-completed-bg: #059669;*/
+  /* --calendar-event-completed-border: #047857; */
+  --calendar-event-habit-bg: #FE6D73;
+  --calendar-event-habit-border: #7c3aed;
+
+  --logo-green: #34a853;
+  --logo-blue: #4285f4;
+  --logo-yellow: #fbbc05;
+  --logo-red: #ea4335;
+}
