@@ -35,6 +35,7 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
   // Map Backend Task model to FullCalendar Event model
   const events = tasks.map(task => {
     const isAtomicHabit = task.type === 'atomic_habit';
+    const isBreak = task.type === 'break';
     let displayTitle = task.title;
     
     if (isAtomicHabit) {
@@ -47,10 +48,14 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
       title: displayTitle,
       backgroundColor: isAtomicHabit
         ? 'var(--calendar-event-habit-bg)'
-        : (task.status === 'completed' ? 'var(--calendar-event-completed-bg)' : 'var(--calendar-event-default-bg)'),
+        : isBreak
+          ? 'var(--calendar-event-break-bg)'
+          : (task.status === 'completed' ? 'var(--calendar-event-completed-bg)' : 'var(--calendar-event-default-bg)'),
       borderColor: isAtomicHabit
         ? 'var(--calendar-event-habit-border)'
-        : (task.status === 'completed' ? 'var(--calendar-event-completed-border)' : 'var(--calendar-event-default-border)'),
+        : isBreak
+          ? 'var(--calendar-event-break-border)'
+          : (task.status === 'completed' ? 'var(--calendar-event-completed-border)' : 'var(--calendar-event-default-border)'),
       classNames: ['text-sm', 'font-medium', 'rounded-md', 'border-0', 'shadow-sm', 'p-1', 'cursor-pointer'],
       extendedProps: { type: task.type, status: task.status }
     };

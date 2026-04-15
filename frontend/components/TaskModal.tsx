@@ -42,7 +42,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   const [endTimeInput, setEndTimeInput] = useState('');
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [showRecDropdown, setShowRecDropdown] = useState(false);
-  const [taskType, setTaskType] = useState<'event' | 'task' | 'atomic_habit'>('event');
+  const [taskType, setTaskType] = useState<'event' | 'task' | 'atomic_habit' | 'break'>('event');
 
   useEffect(() => {
     if (isOpen) {
@@ -200,6 +200,12 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${taskType === 'task' ? 'bg-[var(--color-brand-primary-soft)] text-[var(--color-brand-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'}`}
             >
               Task
+            </button>
+            <button
+              onClick={() => setTaskType('break')}
+              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${taskType === 'break' ? 'bg-[var(--color-brand-break-soft)] text-[var(--color-brand-break-strong)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'}`}
+            >
+              Break
             </button>
             <div
               onClick={() => {

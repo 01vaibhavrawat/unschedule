@@ -18,8 +18,8 @@
   --color-border-subtle: #f3f4f6;
   --color-border-strong: #d1d5db;
 
-  --color-brand-primary: #1a73e8;
-  --color-brand-primary-hover: #2563eb;
+  --color-brand-primary: #5C415D;
+  --color-brand-primary-hover: #5C415D;
   --color-brand-primary-soft: #e8f0fe;
   --color-brand-primary-softer: #eff6ff;
   --color-brand-primary-strong: #1d4ed8;
@@ -33,6 +33,10 @@
   --color-brand-purple-hover: #7c3aed;
   --color-brand-purple-soft: #f3e8fe;
   --color-brand-purple-strong: #7e22ce;
+  --color-brand-break: #f59e0b;
+  --color-brand-break-hover: #d97706;
+  --color-brand-break-soft: #fef3c7;
+  --color-brand-break-strong: #b45309;
 
   --color-brand-cyan: #039be5;
   --color-brand-sky-soft: #8ab4f8;
@@ -53,16 +57,18 @@
 
   /* --calendar-event-default-bg: #3b82f6; */
   /* --calendar-event-default-bg: #8DBDB9; */
-  --calendar-event-default-bg: #17C3B2;
-  --calendar-event-default-border: #2563eb;
-  --calendar-event-completed-bg: #059669;
-  --calendar-event-completed-border: #047857;
+  --calendar-event-default-bg: #5C415D;
+  --calendar-event-default-border: #5C415D;
+  --calendar-event-completed-bg: #AEA4BF;
+  --calendar-event-completed-border: #AEA4BF;
   /* --calendar-event-habit-bg: #8b5cf6; */
   /*--calendar-event-default-border: #2563eb;
   --calendar-event-completed-bg: #059669;*/
   /* --calendar-event-completed-border: #047857; */
-  --calendar-event-habit-bg: #FE6D73;
-  --calendar-event-habit-border: #7c3aed;
+  --calendar-event-habit-bg: #E94F37;
+  --calendar-event-habit-border: #E94F37;
+  --calendar-event-break-bg: #393E41;
+  --calendar-event-break-border: #393E41;
 
   --logo-green: #34a853;
   --logo-blue: #4285f4;
