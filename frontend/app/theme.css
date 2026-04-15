@@ -55,20 +55,22 @@
   --shadow-event: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
   --shadow-modal: 0 8px 30px rgba(0, 0, 0, 0.12);
 
+  /* pallet used - ["065143","129490","70b77e","e0a890","ce1483"]*/
+
   /* --calendar-event-default-bg: #3b82f6; */
   /* --calendar-event-default-bg: #8DBDB9; */
-  --calendar-event-default-bg: #5C415D;
-  --calendar-event-default-border: #5C415D;
-  --calendar-event-completed-bg: #AEA4BF;
-  --calendar-event-completed-border: #AEA4BF;
+  --calendar-event-default-bg: #129490;
+  --calendar-event-default-border: #129490;
+  --calendar-event-completed-bg: #70B77E;
+  --calendar-event-completed-border: #70B77E;
   /* --calendar-event-habit-bg: #8b5cf6; */
   /*--calendar-event-default-border: #2563eb;
   --calendar-event-completed-bg: #059669;*/
   /* --calendar-event-completed-border: #047857; */
-  --calendar-event-habit-bg: #E94F37;
-  --calendar-event-habit-border: #E94F37;
-  --calendar-event-break-bg: #393E41;
-  --calendar-event-break-border: #393E41;
+  --calendar-event-habit-bg: #70B77E;
+  --calendar-event-habit-border: #70B77E;
+  --calendar-event-break-bg: #CE1483;
+  --calendar-event-break-border: #CE1483;
 
   --logo-green: #34a853;
   --logo-blue: #4285f4;
