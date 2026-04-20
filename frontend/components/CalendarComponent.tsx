@@ -37,7 +37,7 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
     const isAtomicHabit = task.type === 'atomic_habit';
     const isBreak = task.type === 'break';
     let displayTitle = task.title;
-    
+
     if (isAtomicHabit) {
       const streakCount = streaks[task._id] || 0;
       displayTitle = `🔥 ${streakCount} ${task.title}`;
@@ -153,6 +153,7 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
         allDaySlot={false}
         slotMinTime="06:00:00"
         slotMaxTime="24:00:00"
+        displayEventTime={false}
       />
     </div>
   );
