@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Users, ChevronDown, ChevronRight, Check } from 'lucide-react';
+import { Users, ChevronDown, Check, Zap, ChevronRight } from 'lucide-react';
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, format, isSameMonth, subMonths, addMonths } from 'date-fns';
 import { MiniHabit } from '@/store/useStore';
 
@@ -7,6 +7,7 @@ interface SidebarProps {
   onCreateClick: () => void;
   goals: any[];
   habits: any[];
+  tasks: any[];
   habitLogs: Record<string, any[]>;
   toggleHabitLog: (id: string, date: string) => void;
   todayStr: string;
@@ -14,19 +15,21 @@ interface SidebarProps {
   currentDate: Date;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ 
+export const Sidebar: React.FC<SidebarProps> = ({
   onCreateClick,
   goals,
   habits,
+  tasks,
   habitLogs,
   toggleHabitLog,
   todayStr,
   onMiniCalendarSelect,
   currentDate
 }) => {
+  const atomicHabitTasks = (tasks || []).filter((t: any) => t.type === 'atomic_habit');
   const [habitsExpanded, setHabitsExpanded] = useState(true);
   const [goalsExpanded, setGoalsExpanded] = useState(true);
-  
+
   const [miniCalendarMonth, setMiniCalendarMonth] = useState(currentDate);
 
   useEffect(() => {
@@ -52,7 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <div className="flex h-full w-64 flex-shrink-0 flex-col overflow-y-auto border-r border-[var(--color-border-muted)] bg-[var(--color-bg-surface)]">
       {/* Create Button Area */}
       <div className="p-4">
-        <button 
+        <button
           onClick={onCreateClick}
           className="flex items-center gap-2 rounded-full border border-[var(--color-border-muted)] bg-[var(--color-bg-surface)] py-2 pl-2 pr-4 text-sm font-medium text-[var(--color-text-secondary)] shadow-sm transition-shadow hover:shadow-md"
         >
@@ -74,14 +77,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
         <div className="grid grid-cols-7 gap-1 text-center text-xs mb-1">
-          {['S','M','T','W','T','F','S'].map((d, i) => <div key={i} className="font-medium text-[var(--color-text-muted)]">{d}</div>)}
+          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <div key={i} className="font-medium text-[var(--color-text-muted)]">{d}</div>)}
         </div>
         <div className="grid grid-cols-7 gap-y-1 text-center text-xs">
           {days.map((dayItem, i) => {
             const isSelected = format(dayItem, 'yyyy-MM-dd') === format(currentDate, 'yyyy-MM-dd');
             const isToday = format(dayItem, 'yyyy-MM-dd') === todayStr;
             const currentMonth = isSameMonth(dayItem, miniCalendarMonth);
-            
+
             let bgClass = 'cursor-pointer rounded-full text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]';
             if (isToday) {
               bgClass = 'cursor-pointer rounded-full bg-[var(--color-brand-primary-hover)] text-[var(--color-text-inverse)]';
@@ -92,13 +95,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             }
 
             return (
-               <div 
-                  key={i} 
-                  onClick={() => onMiniCalendarSelect(format(dayItem, 'yyyy-MM-dd'))}
-                  className={`w-6 h-6 flex items-center justify-center mx-auto transition-colors ${bgClass}`}
-               >
-                 {format(dayItem, 'd')}
-               </div>
+              <div
+                key={i}
+                onClick={() => onMiniCalendarSelect(format(dayItem, 'yyyy-MM-dd'))}
+                className={`w-6 h-6 flex items-center justify-center mx-auto transition-colors ${bgClass}`}
+              >
+                {format(dayItem, 'd')}
+              </div>
             );
           })}
         </div>
@@ -114,7 +117,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Habits Section (Replacing My Calendars) */}
       <div className="py-2">
-        <div 
+        <div
           className="group flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-[var(--color-bg-hover-subtle)]"
           onClick={() => setHabitsExpanded(!habitsExpanded)}
         >
@@ -123,12 +126,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="text-sm font-medium text-[var(--color-text-secondary)]">Mini Habits</span>
           </div>
         </div>
-        
+
         {habitsExpanded && (
-          <div className="pl-10 pr-4 py-1 space-y-1 text-sm">
+          <div className="px-3 py-1 space-y-1 text-sm">
+            {/* Standalone habits checklist */}
             {habits.map(habit => {
               const logs = habitLogs[habit._id] || [];
-              const isDone = logs.some(l => l.date === todayStr && l.completed);
+              const isDone = logs.some((l: any) => l.date === todayStr && l.completed);
               return (
                 <div key={habit._id} className="flex items-center gap-3 py-1 cursor-pointer group" onClick={() => toggleHabitLog(habit._id, todayStr)}>
                   <div className={`flex h-4 w-4 items-center justify-center rounded border ${isDone ? 'border-[var(--color-brand-success)] bg-[var(--color-brand-success)]' : 'border-[var(--color-text-subtle)] group-hover:border-[var(--color-text-secondary)]'}`}>
@@ -138,13 +142,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </div>
               );
             })}
+
+            {/* Atomic habit tasks from the calendar — plain styled list */}
+            {atomicHabitTasks.length > 0 && (
+              <div className={habits.length > 0 ? 'pt-2 space-y-1.5' : 'space-y-1.5'}>
+                {atomicHabitTasks.map((task: any) => (
+                  <div
+                    key={task._id}
+                    className="flex items-center gap-2.5 rounded-md border-l-2 border-[#0d9488] bg-[#0d9488]/5 px-2.5 py-1.5 transition-colors hover:bg-[#0d9488]/10"
+                  >
+                    <Zap className="w-3 h-3 text-[#0d9488] flex-shrink-0" />
+                    <span className="truncate text-xs font-medium text-[var(--color-text-secondary)]">{task.title}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {habits.length === 0 && atomicHabitTasks.length === 0 && (
+              <div className="py-2 text-xs text-[var(--color-text-muted)] italic">No habits yet</div>
+            )}
           </div>
         )}
       </div>
 
       {/* Goals Section (Replacing Other Calendars) */}
       <div className="border-t border-[var(--color-border-subtle)] py-2">
-        <div 
+        <div
           className="group flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-[var(--color-bg-hover-subtle)]"
           onClick={() => setGoalsExpanded(!goalsExpanded)}
         >
@@ -153,15 +176,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="text-sm font-medium text-[var(--color-text-secondary)]">Goals</span>
           </div>
         </div>
-        
+
         {goalsExpanded && (
           <div className="pl-10 pr-4 py-1 space-y-2 text-sm">
-             {goals.map((g, i) => (
-                <div key={i} className="flex items-center gap-3 py-1">
-                   <div className="h-3 w-3 rounded-sm bg-[var(--color-brand-purple)]"></div>
-                   <span className="truncate text-[var(--color-text-secondary)]">{g.title}</span>
-                </div>
-             ))}
+            {goals.map((g, i) => (
+              <div key={i} className="flex items-center gap-3 py-1">
+                <div className="h-3 w-3 rounded-sm bg-[var(--color-brand-purple)]"></div>
+                <span className="truncate text-[var(--color-text-secondary)]">{g.title}</span>
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -171,4 +194,4 @@ export const Sidebar: React.FC<SidebarProps> = ({
 };
 
 // Extracted from above to fix un-imported ChevronLeft
-const ChevronLeft = ({ className, ...props }: any) => <svg className={className} {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+const ChevronLeft = ({ className, ...props }: any) => <svg className={className} {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>

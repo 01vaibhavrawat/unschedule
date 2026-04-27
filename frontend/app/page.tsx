@@ -128,6 +128,7 @@ export default function Home() {
           onCreateClick={() => openCreateModal()}
           goals={goals}
           habits={habits}
+          tasks={tasks}
           habitLogs={habitLogs}
           toggleHabitLog={toggleHabitLog}
           todayStr={todayStr}

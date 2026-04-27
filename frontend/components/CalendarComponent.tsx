@@ -40,7 +40,9 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
 
     if (isAtomicHabit) {
       const streakCount = streaks[task._id] || 0;
+      // displayTitle = `🔥 ${streakCount} ${task.title}`; // hiding streak count from calendar title for now
       displayTitle = `🔥 ${streakCount} ${task.title}`;
+
     }
 
     const baseEvent: any = {
