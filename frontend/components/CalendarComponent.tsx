@@ -156,6 +156,10 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
         slotMinTime="06:00:00"
         slotMaxTime="24:00:00"
         displayEventTime={false}
+        slotDuration="00:20:00"
+        // slotLabelInterval="01:00"
+        eventMinHeight={20}
+
       />
     </div>
   );
