@@ -20,6 +20,16 @@ async def list_goals():
         goals.append(goal)
     return goals
 
+@router.put("/{id}", response_description="Update a goal")
+async def update_goal(id: str, goal: Goal):
+    goal_dict = {k: v for k, v in goal.dict(by_alias=True, exclude={"id"}).items() if v is not None}
+    update_result = await goals_collection.update_one({"_id": ObjectId(id)}, {"$set": goal_dict})
+    if update_result.matched_count == 1:
+        updated_goal = await goals_collection.find_one({"_id": ObjectId(id)})
+        updated_goal["_id"] = str(updated_goal["_id"])
+        return updated_goal
+    raise HTTPException(status_code=404, detail="Goal not found")
+
 @router.delete("/{id}", response_description="Delete a goal")
 async def delete_goal(id: str):
     delete_result = await goals_collection.delete_one({"_id": ObjectId(id)})

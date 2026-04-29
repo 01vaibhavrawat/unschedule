@@ -56,6 +56,7 @@ class Goal(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     title: str
     description: Optional[str] = None
+    color: Optional[str] = None
 
     class Config:
         populate_by_name = True

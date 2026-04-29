@@ -34,6 +34,8 @@ interface AppState {
   toggleHabitLog: (habitId: string, date: string) => Promise<void>;
   
   addGoal: (goal: any) => Promise<void>;
+  updateGoal: (id: string, goal: any) => Promise<void>;
+  deleteGoal: (id: string) => Promise<void>;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -104,5 +106,15 @@ export const useStore = create<AppState>((set, get) => ({
   addGoal: async (goal) => {
     const newGoal = await api.createGoal(goal);
     set((state) => ({ goals: [...state.goals, newGoal] }));
+  },
+
+  updateGoal: async (id, updatedGoal) => {
+    const newGoal = await api.updateGoal(id, updatedGoal);
+    set((state) => ({ goals: state.goals.map(g => g._id === id ? newGoal : g) }));
+  },
+
+  deleteGoal: async (id) => {
+    await api.deleteGoal(id);
+    set((state) => ({ goals: state.goals.filter(g => g._id !== id) }));
   }
 }));

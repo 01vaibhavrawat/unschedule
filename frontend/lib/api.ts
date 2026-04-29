@@ -29,5 +29,6 @@ export const api = {
   
   getGoals: () => fetchAPI("/goals/"),
   createGoal: (data: any) => fetchAPI("/goals/", { method: "POST", body: JSON.stringify(data) }),
+  updateGoal: (id: string, data: any) => fetchAPI(`/goals/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   deleteGoal: (id: string) => fetchAPI(`/goals/${id}`, { method: "DELETE" }),
 };
