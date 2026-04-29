@@ -376,97 +376,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        {/* Mini Calendar */}
-        <div className="px-6 pb-4 pt-2">
-          <div className="mb-2 flex items-center justify-between text-sm font-medium text-[var(--color-text-secondary)]">
-            <span>{format(miniCalendarMonth, 'MMMM yyyy')}</span>
-            <div className="flex gap-1">
-              <ChevronLeft className="h-4 w-4 cursor-pointer rounded text-[var(--color-text-muted)] hover:bg-[var(--color-bg-hover)]" onClick={handleMiniPrev} />
-              <ChevronRight className="h-4 w-4 cursor-pointer rounded text-[var(--color-text-muted)] hover:bg-[var(--color-bg-hover)]" onClick={handleMiniNext} />
-            </div>
-          </div>
-          <div className="grid grid-cols-7 gap-1 text-center text-xs mb-1">
-            {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
-              <div key={i} className="font-medium text-[var(--color-text-muted)]">{d}</div>
-            ))}
-          </div>
-          <div className="grid grid-cols-7 gap-y-1 text-center text-xs">
-            {days.map((dayItem, i) => {
-              const isSelected = format(dayItem, 'yyyy-MM-dd') === format(currentDate, 'yyyy-MM-dd');
-              const isToday = format(dayItem, 'yyyy-MM-dd') === todayStr;
-              const currentMonth = isSameMonth(dayItem, miniCalendarMonth);
-              let bgClass = 'cursor-pointer rounded-full text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]';
-              if (isToday) bgClass = 'cursor-pointer rounded-full bg-[var(--color-brand-primary-hover)] text-[var(--color-text-inverse)]';
-              else if (isSelected) bgClass = 'cursor-pointer rounded-full bg-[var(--color-brand-primary-soft)] text-[var(--color-brand-primary-strong)]';
-              else if (!currentMonth) bgClass = 'cursor-pointer rounded-full text-[var(--color-text-subtle)] hover:bg-[var(--color-bg-hover)]';
-              return (
-                <div
-                  key={i}
-                  onClick={() => onMiniCalendarSelect(format(dayItem, 'yyyy-MM-dd'))}
-                  className={`w-6 h-6 flex items-center justify-center mx-auto transition-colors ${bgClass}`}
-                >
-                  {format(dayItem, 'd')}
-                </div>
-              );
-            })}
-          </div>
-        </div>
 
         {/* Search People */}
-        <div className="border-b border-[var(--color-border-subtle)] px-4 py-2">
+        {/* <div className="border-b border-[var(--color-border-subtle)] px-4 py-2">
           <div className="flex items-center gap-3 rounded bg-[var(--color-bg-hover-subtle)] px-3 py-2 text-sm text-[var(--color-text-muted)]">
             <Users className="w-4 h-4" />
             <span>Search for people</span>
           </div>
-        </div>
+        </div> */}
 
-        {/* Mini Habits */}
-        <div className="py-2">
-          <div
-            className="group flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-[var(--color-bg-hover-subtle)]"
-            onClick={() => setHabitsExpanded(!habitsExpanded)}
-          >
-            <div className="flex items-center gap-2">
-              <ChevronDown className={`h-4 w-4 text-[var(--color-text-secondary)] transition-transform ${habitsExpanded ? '' : '-rotate-90'}`} />
-              <span className="text-sm font-medium text-[var(--color-text-secondary)]">Mini Habits</span>
-            </div>
-          </div>
-
-          {habitsExpanded && (
-            <div className="px-3 py-1 space-y-1 text-sm">
-              {habits.map(habit => {
-                const logs = habitLogs[habit._id] || [];
-                const isDone = logs.some((l: any) => l.date === todayStr && l.completed);
-                return (
-                  <div key={habit._id} className="flex items-center gap-3 py-1 cursor-pointer group" onClick={() => toggleHabitLog(habit._id, todayStr)}>
-                    <div className={`flex h-4 w-4 items-center justify-center rounded border ${isDone ? 'border-[var(--color-brand-success)] bg-[var(--color-brand-success)]' : 'border-[var(--color-text-subtle)] group-hover:border-[var(--color-text-secondary)]'}`}>
-                      {isDone && <Check className="w-3 h-3 text-white" />}
-                    </div>
-                    <span className={`truncate ${isDone ? 'text-[var(--color-text-muted)] line-through' : 'text-[var(--color-text-secondary)]'}`}>{habit.title}</span>
-                  </div>
-                );
-              })}
-
-              {atomicHabitTasks.length > 0 && (
-                <div className={habits.length > 0 ? 'pt-2 space-y-1.5' : 'space-y-1.5'}>
-                  {atomicHabitTasks.map((task: any) => (
-                    <div
-                      key={task._id}
-                      className="flex items-center gap-2.5 rounded-md border-l-2 border-[#0d9488] bg-[#0d9488]/5 px-2.5 py-1.5 transition-colors hover:bg-[#0d9488]/10"
-                    >
-                      <Zap className="w-3 h-3 text-[#0d9488] flex-shrink-0" />
-                      <span className="truncate text-xs font-medium text-[var(--color-text-secondary)]">{task.title}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {habits.length === 0 && atomicHabitTasks.length === 0 && (
-                <div className="py-2 text-xs text-[var(--color-text-muted)] italic">No habits yet</div>
-              )}
-            </div>
-          )}
-        </div>
 
         {/* ── Goals Section ── */}
         <div className="border-t border-[var(--color-border-subtle)] py-2">
@@ -545,6 +463,92 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
         </div>
+
+
+        {/* Mini Calendar */}
+        <div className="px-6 pb-4 pt-2">
+          <div className="mb-2 flex items-center justify-between text-sm font-medium text-[var(--color-text-secondary)]">
+            <span>{format(miniCalendarMonth, 'MMMM yyyy')}</span>
+            <div className="flex gap-1">
+              <ChevronLeft className="h-4 w-4 cursor-pointer rounded text-[var(--color-text-muted)] hover:bg-[var(--color-bg-hover)]" onClick={handleMiniPrev} />
+              <ChevronRight className="h-4 w-4 cursor-pointer rounded text-[var(--color-text-muted)] hover:bg-[var(--color-bg-hover)]" onClick={handleMiniNext} />
+            </div>
+          </div>
+          <div className="grid grid-cols-7 gap-1 text-center text-xs mb-1">
+            {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+              <div key={i} className="font-medium text-[var(--color-text-muted)]">{d}</div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7 gap-y-1 text-center text-xs">
+            {days.map((dayItem, i) => {
+              const isSelected = format(dayItem, 'yyyy-MM-dd') === format(currentDate, 'yyyy-MM-dd');
+              const isToday = format(dayItem, 'yyyy-MM-dd') === todayStr;
+              const currentMonth = isSameMonth(dayItem, miniCalendarMonth);
+              let bgClass = 'cursor-pointer rounded-full text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]';
+              if (isToday) bgClass = 'cursor-pointer rounded-full bg-[var(--color-brand-primary-hover)] text-[var(--color-text-inverse)]';
+              else if (isSelected) bgClass = 'cursor-pointer rounded-full bg-[var(--color-brand-primary-soft)] text-[var(--color-brand-primary-strong)]';
+              else if (!currentMonth) bgClass = 'cursor-pointer rounded-full text-[var(--color-text-subtle)] hover:bg-[var(--color-bg-hover)]';
+              return (
+                <div
+                  key={i}
+                  onClick={() => onMiniCalendarSelect(format(dayItem, 'yyyy-MM-dd'))}
+                  className={`w-6 h-6 flex items-center justify-center mx-auto transition-colors ${bgClass}`}
+                >
+                  {format(dayItem, 'd')}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Mini Habits */}
+        <div className="py-2">
+          <div
+            className="group flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-[var(--color-bg-hover-subtle)]"
+            onClick={() => setHabitsExpanded(!habitsExpanded)}
+          >
+            <div className="flex items-center gap-2">
+              <ChevronDown className={`h-4 w-4 text-[var(--color-text-secondary)] transition-transform ${habitsExpanded ? '' : '-rotate-90'}`} />
+              <span className="text-sm font-medium text-[var(--color-text-secondary)]">Mini Habits</span>
+            </div>
+          </div>
+
+          {habitsExpanded && (
+            <div className="px-3 py-1 space-y-1 text-sm">
+              {habits.map(habit => {
+                const logs = habitLogs[habit._id] || [];
+                const isDone = logs.some((l: any) => l.date === todayStr && l.completed);
+                return (
+                  <div key={habit._id} className="flex items-center gap-3 py-1 cursor-pointer group" onClick={() => toggleHabitLog(habit._id, todayStr)}>
+                    <div className={`flex h-4 w-4 items-center justify-center rounded border ${isDone ? 'border-[var(--color-brand-success)] bg-[var(--color-brand-success)]' : 'border-[var(--color-text-subtle)] group-hover:border-[var(--color-text-secondary)]'}`}>
+                      {isDone && <Check className="w-3 h-3 text-white" />}
+                    </div>
+                    <span className={`truncate ${isDone ? 'text-[var(--color-text-muted)] line-through' : 'text-[var(--color-text-secondary)]'}`}>{habit.title}</span>
+                  </div>
+                );
+              })}
+
+              {atomicHabitTasks.length > 0 && (
+                <div className={habits.length > 0 ? 'pt-2 space-y-1.5' : 'space-y-1.5'}>
+                  {atomicHabitTasks.map((task: any) => (
+                    <div
+                      key={task._id}
+                      className="flex items-center gap-2.5 rounded-md border-l-2 border-[#0d9488] bg-[#0d9488]/5 px-2.5 py-1.5 transition-colors hover:bg-[#0d9488]/10"
+                    >
+                      <Zap className="w-3 h-3 text-[#0d9488] flex-shrink-0" />
+                      <span className="truncate text-xs font-medium text-[var(--color-text-secondary)]">{task.title}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {habits.length === 0 && atomicHabitTasks.length === 0 && (
+                <div className="py-2 text-xs text-[var(--color-text-muted)] italic">No habits yet</div>
+              )}
+            </div>
+          )}
+        </div>
+
 
       </div>
 
