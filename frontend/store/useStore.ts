@@ -18,32 +18,51 @@ export interface MiniHabit {
   created_at: string;
 }
 
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+}
+
 interface AppState {
+  user: AuthUser | null;
   tasks: any[];
   habits: any[];
   goals: any[];
-  habitLogs: Record<string, any>; // habitId -> logs array
-  streaks: Record<string, number>; // habitId -> current streak
-  
+  habitLogs: Record<string, any>;
+  streaks: Record<string, number>;
+
+  setUser: (user: AuthUser | null) => void;
+  logout: () => Promise<void>;
+
   fetchInitialData: () => Promise<void>;
   addTask: (task: any) => Promise<void>;
   updateTask: (id: string, task: any) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
-  
+
   addHabit: (habit: any) => Promise<void>;
   toggleHabitLog: (habitId: string, date: string) => Promise<void>;
-  
+
   addGoal: (goal: any) => Promise<void>;
   updateGoal: (id: string, goal: any) => Promise<void>;
   deleteGoal: (id: string) => Promise<void>;
 }
 
 export const useStore = create<AppState>((set, get) => ({
+  user: null,
   tasks: [],
   habits: [],
   goals: [],
   habitLogs: {},
   streaks: {},
+
+  setUser: (user) => set({ user }),
+
+  logout: async () => {
+    await api.logout();
+    set({ user: null, tasks: [], habits: [], goals: [], habitLogs: {}, streaks: {} });
+    window.location.href = '/login';
+  },
 
   fetchInitialData: async () => {
     try {
@@ -53,8 +72,7 @@ export const useStore = create<AppState>((set, get) => ({
         api.getGoals()
       ]);
       set({ tasks, habits, goals });
-      
-      // Fetch logs for all habits and atomic habits
+
       const itemsToFetchLogs = [
         ...habits,
         ...tasks.filter((t: any) => t.type === 'atomic_habit')
@@ -93,9 +111,7 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   toggleHabitLog: async (habitId, date) => {
-    // optimistic UI update...
     await api.toggleHabitLog({ habit_id: habitId, date, completed: true });
-    // Refetch the streak and log for this habit
     const result = await api.getHabitLogs(habitId);
     set((state) => ({
       habitLogs: { ...state.habitLogs, [habitId]: result.logs },

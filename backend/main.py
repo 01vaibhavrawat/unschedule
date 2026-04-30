@@ -1,18 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import tasks, habits, habit_logs, goals
+from routers import tasks, habits, habit_logs, goals, auth
 
 app = FastAPI(title="Unschedule MVP API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000"],   # explicit origin required for cookie auth
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(tasks.router, prefix="/tasks", tags=["Tasks"])
 app.include_router(habits.router, prefix="/habits", tags=["Mini Habits"])
 app.include_router(habit_logs.router, prefix="/habit-log", tags=["Habit Logs"])

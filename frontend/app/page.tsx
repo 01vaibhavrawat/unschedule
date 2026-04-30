@@ -7,6 +7,7 @@ import FullCalendar from '@fullcalendar/react';
 import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
 import { TaskModal } from '@/components/TaskModal';
+import { api } from '@/lib/api';
 
 const DynamicCalendar = dynamic(() => import('@/components/CalendarComponent'), {
   ssr: false,
@@ -14,7 +15,7 @@ const DynamicCalendar = dynamic(() => import('@/components/CalendarComponent'), 
 });
 
 export default function Home() {
-  const { tasks, habits, goals, habitLogs, streaks, fetchInitialData, toggleHabitLog, updateTask, addTask, deleteTask, addGoal, updateGoal, deleteGoal } = useStore();
+  const { tasks, habits, goals, habitLogs, streaks, fetchInitialData, toggleHabitLog, updateTask, addTask, deleteTask, addGoal, updateGoal, deleteGoal, setUser } = useStore();
   const calendarRef = useRef<FullCalendar>(null);
   
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -26,8 +27,10 @@ export default function Home() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   useEffect(() => {
+    // Hydrate user from cookie/JWT on every page load
+    api.me().then(setUser).catch(() => {});
     fetchInitialData();
-  }, [fetchInitialData]);
+  }, [fetchInitialData, setUser]);
 
   const todayStr = format(new Date(), 'yyyy-MM-dd');
 
