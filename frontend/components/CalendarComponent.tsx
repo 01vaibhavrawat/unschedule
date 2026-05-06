@@ -172,7 +172,7 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
         displayEventTime={false}
         slotDuration="00:20:00"
         // slotLabelInterval="01:00"
-        eventMinHeight={30}
+        eventMinHeight={35}
 
       />
     </div>
