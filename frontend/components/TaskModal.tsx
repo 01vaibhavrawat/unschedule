@@ -92,8 +92,16 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   const handleSave = () => {
     if (!title.trim() || !dateInput || !startTimeInput || !endTimeInput) return;
 
-    const startIso = new Date(`${dateInput}T${startTimeInput}:00`).toISOString();
-    const endIso = new Date(`${dateInput}T${endTimeInput}:00`).toISOString();
+    const startDate = new Date(`${dateInput}T${startTimeInput}:00`);
+    const endDate = new Date(`${dateInput}T${endTimeInput}:00`);
+    
+    // If end time is before start time, assume it spans across midnight to the next day
+    if (endDate < startDate) {
+      endDate.setDate(endDate.getDate() + 1);
+    }
+
+    const startIso = startDate.toISOString();
+    const endIso = endDate.toISOString();
 
     let computedRecurrence = 'none';
     if (selectedDays.length > 7) computedRecurrence = 'daily';

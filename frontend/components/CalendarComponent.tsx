@@ -82,9 +82,16 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
 
       const formatTime = (d: Date) => d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
 
-      // FullCalendar expects 'HH:MM' string for startTime/endTime
+      const durationMs = et.getTime() - st.getTime();
+      const startTotalMinutes = st.getHours() * 60 + st.getMinutes();
+      const endTotalMinutes = startTotalMinutes + Math.floor(Math.max(0, durationMs) / 60000);
+      
+      const endH = Math.floor(endTotalMinutes / 60);
+      const endM = endTotalMinutes % 60;
+
+      // FullCalendar expects 'HH:MM' string for startTime/endTime. For cross-midnight, HH > 24 is used.
       baseEvent.startTime = formatTime(st);
-      baseEvent.endTime = formatTime(et);
+      baseEvent.endTime = endH.toString().padStart(2, '0') + ':' + endM.toString().padStart(2, '0');
 
       if (task.recurrence === 'weekdays') {
         baseEvent.daysOfWeek = [1, 2, 3, 4, 5];
@@ -166,8 +173,8 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
         eventResize={handleEventResize}
         nowIndicator={true}
         height="100%"
-        allDaySlot={false}
-        slotMinTime="06:00:00"
+        allDaySlot={true}
+        slotMinTime="00:00:00"
         slotMaxTime="24:00:00"
         displayEventTime={false}
         slotDuration="00:15:00"
