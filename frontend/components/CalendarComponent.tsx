@@ -30,8 +30,22 @@ interface CalendarComponentProps {
 }
 
 export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, calendarRef, onDateSelect, onEventClick, streaks = {}, habitLogs = {} }: CalendarComponentProps) {
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
-
+  React.useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver(() => {
+      if (calendarRef?.current) {
+        try {
+          calendarRef.current.getApi().updateSize();
+        } catch (e) {
+          // ignore if api is not ready
+        }
+      }
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [calendarRef]);
   // Map Backend Task model to FullCalendar Event model
   const events = tasks.map(task => {
     const isAtomicHabit = task.type === 'atomic_habit';
@@ -133,7 +147,7 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
 
 
   return (
-    <div className="calendar-container flex-1 w-full overflow-hidden bg-[var(--color-bg-surface)]">
+    <div ref={containerRef} className="calendar-container flex-1 w-full overflow-hidden bg-[var(--color-bg-surface)]">
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -158,7 +172,7 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
         displayEventTime={false}
         slotDuration="00:20:00"
         // slotLabelInterval="01:00"
-        eventMinHeight={20}
+        eventMinHeight={30}
 
       />
     </div>
