@@ -47,6 +47,14 @@ def _set_auth_cookie(response: Response, token: str) -> None:
         secure=False,   # set True when behind HTTPS in prod
     )
 
+def get_current_user_id(auth_token: Optional[str] = Cookie(default=None)) -> str:
+    if not auth_token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated.")
+    payload = decode_token(auth_token)
+    if not payload or "sub" not in payload:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token.")
+    return payload["sub"]
+
 
 # ── Routes ──────────────────────────────────────────────────────────────────
 

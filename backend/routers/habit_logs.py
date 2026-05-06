@@ -1,17 +1,19 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from models import HabitLog
 from database import habit_logs_collection
 from bson import ObjectId
 from datetime import datetime, timedelta
+from .auth import get_current_user_id
 
 router = APIRouter()
 
 @router.post("/", response_description="Toggle habit log")
-async def toggle_habit_log(log: HabitLog):
+async def toggle_habit_log(log: HabitLog, user_id: str = Depends(get_current_user_id)):
     log_dict = log.dict(by_alias=True, exclude={"id"})
+    log_dict["user_id"] = user_id
     
     # Check if already exists
-    existing_log = await habit_logs_collection.find_one({"habit_id": log_dict["habit_id"], "date": log_dict["date"]})
+    existing_log = await habit_logs_collection.find_one({"habit_id": log_dict["habit_id"], "date": log_dict["date"], "user_id": user_id})
     
     if existing_log:
         # Toggle completed status
@@ -27,9 +29,9 @@ async def toggle_habit_log(log: HabitLog):
         return created_log
 
 @router.get("/{habit_id}", response_description="Get habit logs and streak")
-async def get_habit_logs(habit_id: str):
+async def get_habit_logs(habit_id: str, user_id: str = Depends(get_current_user_id)):
     logs = []
-    async for log in habit_logs_collection.find({"habit_id": habit_id}):
+    async for log in habit_logs_collection.find({"habit_id": habit_id, "user_id": user_id}):
         log["_id"] = str(log["_id"])
         logs.append(log)
     

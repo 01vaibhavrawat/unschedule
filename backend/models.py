@@ -21,6 +21,7 @@ class PyObjectId(ObjectId):
 
 class Task(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    user_id: Optional[str] = None
     title: str
     start_time: str
     end_time: str
@@ -34,6 +35,7 @@ class Task(BaseModel):
 
 class MiniHabit(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    user_id: Optional[str] = None
     title: str
     frequency: List[str]
     created_at: str
@@ -44,6 +46,7 @@ class MiniHabit(BaseModel):
 
 class HabitLog(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    user_id: Optional[str] = None
     habit_id: str
     date: str
     completed: bool
@@ -54,6 +57,7 @@ class HabitLog(BaseModel):
 
 class Goal(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    user_id: Optional[str] = None
     title: str
     description: Optional[str] = None
     color: Optional[str] = None
