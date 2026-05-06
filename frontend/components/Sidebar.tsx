@@ -18,6 +18,7 @@ interface Goal {
 }
 
 interface SidebarProps {
+  isOpen: boolean;
   onCreateClick: () => void;
   goals: Goal[];
   habits: any[];
@@ -319,6 +320,7 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
 
 // ── Sidebar ────────────────────────────────────────────────────────────
 export const Sidebar: React.FC<SidebarProps> = ({
+  isOpen,
   onCreateClick,
   goals,
   habits,
@@ -354,7 +356,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      <div className="flex h-full w-64 flex-shrink-0 flex-col overflow-y-auto border-r border-[var(--color-border-muted)] bg-[var(--color-bg-surface)]">
+      <div className={`flex h-full flex-shrink-0 flex-col overflow-y-auto overflow-x-hidden bg-[var(--color-bg-surface)] transition-[width,opacity,border] duration-300 ${isOpen ? 'w-64 border-r border-[var(--color-border-muted)] opacity-100' : 'w-0 border-none opacity-0'}`}>
 
         {/* Create Button */}
         <div className="p-4">

@@ -20,6 +20,7 @@ export default function Home() {
   
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentView, setCurrentView] = useState('timeGridWeek');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalStart, setModalStart] = useState<Date | null>(null);
@@ -124,10 +125,12 @@ export default function Home() {
         onNextClick={handleNext}
         onTodayClick={handleToday}
         onViewChange={handleViewChange}
+        onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
       />
       
       <div className="flex flex-1 overflow-hidden">
         <Sidebar 
+          isOpen={isSidebarOpen}
           onCreateClick={() => openCreateModal()}
           goals={goals}
           habits={habits}
