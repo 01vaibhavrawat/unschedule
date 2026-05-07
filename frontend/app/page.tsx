@@ -31,6 +31,36 @@ export default function Home() {
 
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showTour, setShowTour] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setIsSidebarOpen(false);
+        setCurrentView('timeGridDay');
+        // Update calendar immediately if ref is available
+        calendarRef.current?.getApi()?.changeView('timeGridDay');
+      } else {
+        setIsSidebarOpen(true);
+        setCurrentView('timeGridWeek');
+        calendarRef.current?.getApi()?.changeView('timeGridWeek');
+      }
+    };
+
+    // Initial check
+    if (typeof window !== 'undefined') {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setIsSidebarOpen(false);
+        setCurrentView('timeGridDay');
+      }
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, []);
 
   useEffect(() => {
     // Hydrate user from cookie/JWT on every page load
@@ -160,6 +190,7 @@ export default function Home() {
             tasks={tasks}
             streaks={streaks}
             habitLogs={habitLogs}
+            initialView={currentView}
             onUpdateTask={(id, partialTask) => {
               const existing = tasks.find(t => t._id === id);
               if (existing) {
@@ -191,14 +222,23 @@ export default function Home() {
         onComplete={() => {
           setShowOnboarding(false);
           setShowTour(true);
+          setIsSidebarOpen(true);
         }}
       />
 
       <InteractiveTour 
         run={showTour}
+        onStepChange={(nextIndex) => {
+          if (nextIndex === 2 && isMobile) {
+            setIsSidebarOpen(false);
+          }
+        }}
         onComplete={() => {
           setShowTour(false);
           completeOnboarding();
+          if (isMobile) {
+            setIsSidebarOpen(false);
+          }
         }}
       />
     </div>

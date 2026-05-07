@@ -1,12 +1,13 @@
 import React from 'react';
-import { Joyride, CallBackProps, STATUS, Step } from 'react-joyride';
+import { Joyride, CallBackProps, STATUS, Step, EVENTS } from 'react-joyride';
 
 interface InteractiveTourProps {
   run: boolean;
   onComplete: () => void;
+  onStepChange?: (nextIndex: number) => void;
 }
 
-export function InteractiveTour({ run, onComplete }: InteractiveTourProps) {
+export function InteractiveTour({ run, onComplete, onStepChange }: InteractiveTourProps) {
   const steps: Step[] = [
     {
       target: '#sidebar-goals',
@@ -32,11 +33,15 @@ export function InteractiveTour({ run, onComplete }: InteractiveTourProps) {
   ];
 
   const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status } = data;
+    const { status, index, type } = data;
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
 
     if (finishedStatuses.includes(status)) {
       onComplete();
+    } else if (type === EVENTS.STEP_BEFORE) {
+      if (onStepChange) {
+        onStepChange(index);
+      }
     }
   };
 

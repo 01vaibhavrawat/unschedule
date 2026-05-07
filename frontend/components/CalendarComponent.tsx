@@ -27,9 +27,10 @@ interface CalendarComponentProps {
   onEventClick?: (task: Task, instanceStart: Date) => void;
   streaks?: Record<string, number>;
   habitLogs?: Record<string, any[]>;
+  initialView?: string;
 }
 
-export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, calendarRef, onDateSelect, onEventClick, streaks = {}, habitLogs = {} }: CalendarComponentProps) {
+export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, calendarRef, onDateSelect, onEventClick, streaks = {}, habitLogs = {}, initialView = "timeGridWeek" }: CalendarComponentProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -158,7 +159,7 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="timeGridWeek"
+        initialView={initialView}
         headerToolbar={false}
         events={events}
         editable={true} // enables dragging and resizing
