@@ -75,6 +75,7 @@ class User(BaseModel):
     email: str
     hashed_password: str
     created_at: Optional[str] = None
+    has_completed_onboarding: bool = False
 
     class Config:
         populate_by_name = True
@@ -85,6 +86,7 @@ class UserPublic(BaseModel):
     id: str
     name: str
     email: str
+    has_completed_onboarding: bool = False
 
 class SignupRequest(BaseModel):
     name: str

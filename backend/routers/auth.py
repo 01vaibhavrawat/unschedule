@@ -7,6 +7,7 @@ from jose import JWTError, jwt
 import bcrypt
 from models import SignupRequest, LoginRequest, UserPublic
 from database import users_collection
+from bson import ObjectId
 
 router = APIRouter()
 
@@ -85,7 +86,7 @@ async def signup(body: SignupRequest, response: Response):
     token = create_access_token({"sub": user_id, "email": email, "name": body.name.strip()})
     _set_auth_cookie(response, token)
 
-    return UserPublic(id=user_id, name=body.name.strip(), email=email)
+    return UserPublic(id=user_id, name=body.name.strip(), email=email, has_completed_onboarding=False)
 
 
 @router.post("/login")
@@ -105,7 +106,7 @@ async def login(body: LoginRequest, response: Response):
     token = create_access_token({"sub": user_id, "email": email, "name": name})
     _set_auth_cookie(response, token)
 
-    return UserPublic(id=user_id, name=name, email=email)
+    return UserPublic(id=user_id, name=name, email=email, has_completed_onboarding=user.get("has_completed_onboarding", False))
 
 
 @router.post("/logout")
@@ -125,8 +126,24 @@ async def me(auth_token: Optional[str] = Cookie(default=None)):
     if not payload:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token.")
 
+    user_id = payload.get("sub", "")
+    user = await users_collection.find_one({"_id": ObjectId(user_id)})
+    has_completed_onboarding = user.get("has_completed_onboarding", False) if user else False
+
     return UserPublic(
-        id=payload.get("sub", ""),
+        id=user_id,
         name=payload.get("name", ""),
         email=payload.get("email", ""),
+        has_completed_onboarding=has_completed_onboarding
     )
+
+@router.patch("/me/onboarding")
+async def complete_onboarding(auth_token: Optional[str] = Cookie(default=None)):
+    """Mark onboarding as completed for the current user."""
+    user_id = get_current_user_id(auth_token)
+    await users_collection.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"has_completed_onboarding": True}}
+    )
+    return {"message": "Onboarding completed successfully"}
+

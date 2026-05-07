@@ -45,4 +45,5 @@ export const api = {
     fetchAPI("/auth/login", { method: "POST", body: JSON.stringify(data) }),
   logout: () => fetchAPI("/auth/logout", { method: "POST" }),
   me: () => fetchAPI("/auth/me"),
+  completeOnboarding: () => fetchAPI("/auth/me/onboarding", { method: "PATCH" }),
 };

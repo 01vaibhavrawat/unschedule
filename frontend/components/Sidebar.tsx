@@ -361,6 +361,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Create Button */}
         <div className="p-4">
           <button
+            id="add-task-btn"
             onClick={onCreateClick}
             className="flex items-center gap-2 rounded-full border border-[var(--color-border-muted)] bg-[var(--color-bg-surface)] py-2 pl-2 pr-4 text-sm font-medium text-[var(--color-text-secondary)] shadow-sm transition-shadow hover:shadow-md"
           >
@@ -389,7 +390,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
 
         {/* ── Goals Section ── */}
-        <div className="border-t border-[var(--color-border-subtle)] py-2">
+        <div id="sidebar-goals" className="border-t border-[var(--color-border-subtle)] py-2">
           {/* section header */}
           <div className="flex items-center justify-between px-4 py-2">
             <div
@@ -504,7 +505,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Mini Habits */}
-        <div className="py-2">
+        <div id="sidebar-habits" className="py-2">
           <div
             className="group flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-[var(--color-bg-hover-subtle)]"
             onClick={() => setHabitsExpanded(!habitsExpanded)}

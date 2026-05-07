@@ -7,6 +7,8 @@ import FullCalendar from '@fullcalendar/react';
 import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
 import { TaskModal } from '@/components/TaskModal';
+import { OnboardingModal } from '@/components/OnboardingModal';
+import { InteractiveTour } from '@/components/InteractiveTour';
 import { api } from '@/lib/api';
 
 const DynamicCalendar = dynamic(() => import('@/components/CalendarComponent'), {
@@ -15,7 +17,7 @@ const DynamicCalendar = dynamic(() => import('@/components/CalendarComponent'), 
 });
 
 export default function Home() {
-  const { tasks, habits, goals, habitLogs, streaks, fetchInitialData, toggleHabitLog, updateTask, addTask, deleteTask, addGoal, updateGoal, deleteGoal, setUser } = useStore();
+  const { user, tasks, habits, goals, habitLogs, streaks, fetchInitialData, toggleHabitLog, updateTask, addTask, deleteTask, addGoal, updateGoal, deleteGoal, setUser, completeOnboarding } = useStore();
   const calendarRef = useRef<FullCalendar>(null);
   
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -27,9 +29,17 @@ export default function Home() {
   const [modalEnd, setModalEnd] = useState<Date | null>(null);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showTour, setShowTour] = useState(false);
+
   useEffect(() => {
     // Hydrate user from cookie/JWT on every page load
-    api.me().then(setUser).catch(() => {});
+    api.me().then((u) => {
+      setUser(u);
+      if (u && !u.has_completed_onboarding) {
+        setShowOnboarding(true);
+      }
+    }).catch(() => {});
     fetchInitialData();
   }, [fetchInitialData, setUser]);
 
@@ -145,7 +155,7 @@ export default function Home() {
           onDeleteGoal={deleteGoal}
         />
         
-        <main className="flex-1 overflow-hidden p-2 flex flex-col">
+        <main id="calendar-view" className="flex-1 overflow-hidden p-2 flex flex-col">
           <DynamicCalendar 
             tasks={tasks}
             streaks={streaks}
@@ -174,6 +184,22 @@ export default function Home() {
         editingTask={editingTask}
         onToggleHabit={toggleHabitLog}
         habitLogs={habitLogs}
+      />
+
+      <OnboardingModal 
+        isOpen={showOnboarding}
+        onComplete={() => {
+          setShowOnboarding(false);
+          setShowTour(true);
+        }}
+      />
+
+      <InteractiveTour 
+        run={showTour}
+        onComplete={() => {
+          setShowTour(false);
+          completeOnboarding();
+        }}
       />
     </div>
   );

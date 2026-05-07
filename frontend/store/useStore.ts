@@ -22,6 +22,7 @@ export interface AuthUser {
   id: string;
   name: string;
   email: string;
+  has_completed_onboarding: boolean;
 }
 
 interface AppState {
@@ -36,6 +37,7 @@ interface AppState {
   logout: () => Promise<void>;
 
   fetchInitialData: () => Promise<void>;
+  completeOnboarding: () => Promise<void>;
   addTask: (task: any) => Promise<void>;
   updateTask: (id: string, task: any) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
@@ -88,6 +90,13 @@ export const useStore = create<AppState>((set, get) => ({
     } catch (e) {
       console.error("Failed to load initial data", e);
     }
+  },
+
+  completeOnboarding: async () => {
+    await api.completeOnboarding();
+    set((state) => ({
+      user: state.user ? { ...state.user, has_completed_onboarding: true } : null
+    }));
   },
 
   addTask: async (task) => {
