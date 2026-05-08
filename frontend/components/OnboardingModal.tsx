@@ -50,22 +50,22 @@ export function OnboardingModal({ isOpen, onComplete }: OnboardingModalProps) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity">
       <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col relative transform transition-all animate-in fade-in zoom-in duration-300">
-        
+
         {/* Progress Bar */}
         <div className="flex h-2 w-full bg-gray-100">
           {steps.map((_, i) => (
-            <div 
-              key={i} 
+            <div
+              key={i}
               className={clsx(
                 "flex-1 transition-colors duration-500",
                 i <= step ? "bg-[var(--color-primary)]" : "bg-transparent"
-              )} 
+              )}
             />
           ))}
         </div>
 
         <div className="p-12 flex flex-col items-center text-center space-y-8">
-          
+
           <div className={clsx("p-6 rounded-full shadow-inner", currentStep.color)}>
             {currentStep.icon}
           </div>
@@ -85,11 +85,11 @@ export function OnboardingModal({ isOpen, onComplete }: OnboardingModalProps) {
           <div className="w-full pt-8 flex items-center justify-between">
             <div className="flex space-x-2">
               {steps.map((_, i) => (
-                <div 
+                <div
                   key={i}
                   className={clsx(
                     "w-2.5 h-2.5 rounded-full transition-all duration-300",
-                    i === step ? "w-8 bg-[var(--color-primary)]" : "bg-gray-200"
+                    i === step ? "w-8 bg-[var(--color-primary)]" : "bg-gray-500"
                   )}
                 />
               ))}
@@ -97,7 +97,7 @@ export function OnboardingModal({ isOpen, onComplete }: OnboardingModalProps) {
 
             <button
               onClick={handleNext}
-              className="flex items-center space-x-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-8 py-3 rounded-full font-semibold transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+              className="flex items-center space-x-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-black px-8 py-3 rounded-full font-semibold transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
               <span>{isLastStep ? "Get Started" : "Next"}</span>
               {isLastStep ? <Check className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
