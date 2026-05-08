@@ -33,10 +33,10 @@ export function InteractiveTour({ run, onComplete, onStepChange }: InteractiveTo
   ];
 
   const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status, index, type } = data;
+    const { status, index, type, action } = data;
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
 
-    if (finishedStatuses.includes(status)) {
+    if (finishedStatuses.includes(status) || action === 'close') {
       onComplete();
     } else if (type === EVENTS.STEP_BEFORE) {
       if (onStepChange) {

@@ -221,6 +221,7 @@ export default function Home() {
         isOpen={showOnboarding}
         onComplete={() => {
           setShowOnboarding(false);
+          completeOnboarding();
           setShowTour(true);
           setIsSidebarOpen(true);
         }}
@@ -235,7 +236,6 @@ export default function Home() {
         }}
         onComplete={() => {
           setShowTour(false);
-          completeOnboarding();
           if (isMobile) {
             setIsSidebarOpen(false);
           }

@@ -94,7 +94,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
     const startDate = new Date(`${dateInput}T${startTimeInput}:00`);
     const endDate = new Date(`${dateInput}T${endTimeInput}:00`);
-    
+
     // If end time is before start time, assume it spans across midnight to the next day
     if (endDate < startDate) {
       endDate.setDate(endDate.getDate() + 1);
@@ -280,41 +280,41 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             </div>
 
             {/* Guests Row */}
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
               <Users className="h-5 w-5 text-[var(--color-text-muted)]" />
               <div className="cursor-pointer text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">Add guests</div>
-            </div>
+            </div> */}
 
             {/* Meet Row */}
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
               <Video className="h-5 w-5 text-[var(--color-brand-primary-hover)]" />
               <button className="w-full rounded bg-[var(--color-bg-surface-soft)] px-4 py-2 text-left text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-surface-soft-hover)]">
                 Add Google Meet video conferencing
               </button>
-            </div>
+            </div> */}
 
             {/* Location Row */}
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
               <MapPin className="h-5 w-5 text-[var(--color-text-muted)]" />
               <div className="cursor-pointer text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">Add location</div>
-            </div>
+            </div> */}
 
             {/* Description Row */}
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
               <AlignLeft className="h-5 w-5 text-[var(--color-text-muted)]" />
               <div className="cursor-pointer text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">Add description or a Google Drive attachment</div>
-            </div>
+            </div> */}
 
             {/* Calendar Owner Row */}
-            <div className="flex items-start gap-4">
+            {/* <div className="flex items-start gap-4">
               <CalendarIcon className="mt-1 h-5 w-5 text-[var(--color-text-muted)]" />
               <div>
                 <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-                  Vaibhav Rawat <span className="inline-block h-3 w-3 rounded-full bg-[var(--color-brand-cyan)]"></span>
+                  Username <span className="inline-block h-3 w-3 rounded-full bg-[var(--color-brand-cyan)]"></span>
                 </div>
                 <div className="text-xs text-gray-500 mt-0.5">Busy · Default visibility · Notify 30 minutes before</div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
