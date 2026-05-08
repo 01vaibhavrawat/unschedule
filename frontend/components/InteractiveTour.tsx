@@ -17,12 +17,12 @@ export function InteractiveTour({ run, onComplete, onStepChange }: InteractiveTo
     },
     {
       target: '#sidebar-habits',
-      content: 'This section displays your atomic and mini habits. Tick them off daily to build your streak!',
+      content: 'This section displays the atomic habits scheduled on the calendar. Tick them off daily to build your streak!',
       placement: 'right',
     },
     {
       target: '#calendar-view',
-      content: 'This is your Unschedule. Remember to schedule your play, meals, and rest FIRST. Work fits into the gaps.',
+      content: 'This is your Unschedule. Remember to schedule your breaks, meals, and rest FIRST. Work fits into the gaps.',
       placement: 'center',
     },
     {
