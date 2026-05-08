@@ -56,14 +56,14 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
           <span className="text-xl font-medium tracking-tight text-[var(--color-text-secondary)]">Calendar</span>
         </div>
-        
-        <button 
+
+        <button
           onClick={onTodayClick}
           className="rounded border border-[var(--color-border-strong)] px-4 py-1.5 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover-subtle)]"
         >
           Today
         </button>
-        
+
         <div className="flex items-center gap-1">
           <button onClick={onPrevClick} className="rounded-full p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover)]">
             <ChevronLeft className="w-5 h-5" />
@@ -72,7 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
-        
+
         <h2 className="ml-2 text-xl font-normal text-[var(--color-text-secondary)]">
           {format(currentDate, 'MMMM yyyy')}
         </h2>
@@ -80,18 +80,18 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right section */}
       <div className="flex items-center gap-2">
-        <button className="rounded-full p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover)]">
+        {/* <button className="rounded-full p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover)]">
           <Search className="w-5 h-5" />
-        </button>
-        <button className="rounded-full p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover)]">
+        </button> */}
+        {/* <button className="rounded-full p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover)]">
           <HelpCircle className="w-5 h-5" />
-        </button>
-        <button className="rounded-full p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover)]">
+        </button> */}
+        {/* <button className="rounded-full p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover)]">
           <Settings className="w-5 h-5" />
-        </button>
-        
+        </button> */}
+
         <div className="mx-2">
-          <select 
+          <select
             value={currentView}
             onChange={(e) => onViewChange(e.target.value)}
             className="cursor-pointer rounded border border-[var(--color-border-strong)] px-3 py-1.5 text-sm font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary-hover)]"
@@ -101,11 +101,11 @@ export const Header: React.FC<HeaderProps> = ({
             <option value="dayGridMonth">Month</option>
           </select>
         </div>
-        
-        <button className="ml-1 rounded-full p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover)]">
+
+        {/* <button className="ml-1 rounded-full p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover)]">
           <Grid className="w-5 h-5" />
-        </button>
-        
+        </button> */}
+
         {/* ── User Menu ──────────────────────────────────────── */}
         <div className="relative ml-2" ref={menuRef}>
           <button
@@ -143,13 +143,13 @@ export const Header: React.FC<HeaderProps> = ({
 
               {/* Menu items */}
               <div className="py-1.5">
-                <button
+                {/* <button
                   className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
                   role="menuitem"
                 >
                   <User className="w-4 h-4 text-gray-400" />
                   Profile settings
-                </button>
+                </button> */}
                 <button
                   id="logout-button"
                   onClick={() => { setMenuOpen(false); logout(); }}
