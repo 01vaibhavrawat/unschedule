@@ -15,22 +15,22 @@ export function OnboardingModal({ isOpen, onComplete }: OnboardingModalProps) {
   const steps = [
     {
       title: "Welcome to Unschedule",
-      subtitle: "The Now Habit approach to time management",
-      description: "Instead of scheduling work first, Unschedule flips the script. You schedule your guilt-free play, meals, sleep, and breaks first. Work fits into the remaining slots. This prevents burnout and reduces procrastination by ensuring your human needs are met before anything else.",
+      subtitle: "A counter intuitive approach to time management",
+      description: "Instead of scheduling work first, Unschedule flips the script. You schedule your breaks, meals, sleep, hobbies and breaks first. Work fits into the remaining slots. This prevents burnout and reduces procrastination by ensuring you have a real sense of how much time you have.",
       icon: <Sparkles className="w-16 h-16 text-[var(--color-primary)]" />,
       color: "bg-[var(--color-primary-light)] text-[var(--color-primary)]"
     },
     {
       title: "Focus on Your Goals",
-      subtitle: "Keep your eyes on the prize",
+      subtitle: "Make a schedule that prioritizes your goals",
       description: "The Goals section helps you define what truly matters. By keeping your top priorities visible at all times, you can align your daily tasks and schedule with your long-term vision. Add your goals and watch your progress unfold.",
       icon: <Target className="w-16 h-16 text-rose-500" />,
       color: "bg-rose-100 text-rose-500"
     },
     {
-      title: "Atomic & Mini Habits",
+      title: "Atomic Habits",
       subtitle: "Small changes, remarkable results",
-      description: "Mini Habits are behaviors so easy you can't fail—like doing one pushup or reading one page. Atomic Habits emphasize that tiny, everyday improvements compound into massive changes. Build your streak and transform your life, one small step at a time.",
+      description: "Mini Habits are behaviors so easy you can't fail—like doing one pushup or reading one page. Mini Habits emphasize that tiny, everyday improvements compound into massive changes. Build your streak and see your life transform, one small step at a time.",
       icon: <Zap className="w-16 h-16 text-amber-500" />,
       color: "bg-amber-100 text-amber-500"
     }
