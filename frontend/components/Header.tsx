@@ -47,7 +47,7 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="flex items-center justify-between border-b border-[var(--color-border-muted)] bg-[var(--color-bg-surface)] px-4 py-2">
       {/* Left section */}
       <div className="flex items-center gap-4">
-        <button onClick={onMenuClick} className="rounded-full p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover)]">
+        <button id="sidebar-toggle-button" onClick={onMenuClick} className="rounded-full p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover)]">
           <Menu className="w-6 h-6" />
         </button>
         <div className="flex items-center gap-2 pr-8">

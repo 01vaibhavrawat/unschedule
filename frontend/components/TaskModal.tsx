@@ -170,7 +170,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
         {/* Top Handle / Close Bar */}
         <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-surface-muted)] px-4 py-3">
           <button className="rounded p-1.5 text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-border-strong)]">
-            <GripHorizontal className="w-5 h-5" />
+            {/* <GripHorizontal className="w-5 h-5" /> */}
           </button>
           <button onClick={onClose} className="rounded-full p-1.5 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-border-strong)]">
             <X className="w-5 h-5" />

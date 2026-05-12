@@ -400,7 +400,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <ChevronDown className={`h-4 w-4 text-[var(--color-text-secondary)] transition-transform ${goalsExpanded ? '' : '-rotate-90'}`} />
               <div className="flex items-center gap-1.5">
                 <Target className="h-3.5 w-3.5 text-indigo-500" />
-                <span className="text-sm font-medium text-[var(--color-text-secondary)]">Goals</span>
+                <span className="text-sm font-medium text-[var(--color-text-secondary)]">Goals / Priorities</span>
                 {goals.length > 0 && (
                   <span className="rounded-full bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-600">
                     {goals.length}

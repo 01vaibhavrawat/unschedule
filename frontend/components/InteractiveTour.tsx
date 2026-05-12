@@ -20,15 +20,21 @@ export function InteractiveTour({ run, onComplete, onStepChange }: InteractiveTo
       content: 'This section displays the atomic habits scheduled on the calendar. Tick them off daily to build your streak!',
       placement: 'right',
     },
-    {
-      target: '#calendar-view',
-      content: 'This is your Unschedule. Remember to schedule your breaks, meals, and rest FIRST. Work fits into the gaps.',
-      placement: 'center',
-    },
+    // {
+    //   target: '#calendar-view',
+    //   content: 'This is your Unschedule. Remember to schedule your breaks, meals, and rest FIRST. Work fits into the gaps.',
+    //   placement: 'left',
+    // },
     {
       target: '#add-task-btn',
       content: 'Click here to add new tasks, events, or habits. You can also click and drag directly on the calendar!',
       placement: 'left',
+    },
+    {
+      target: "#sidebar-toggle-button",
+      content: "Click here to collapse or expand the side bar.",
+      placement: "left"
+
     }
   ];
 
