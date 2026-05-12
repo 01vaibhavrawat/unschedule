@@ -56,8 +56,8 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
     if (isAtomicHabit) {
       const streakCount = streaks[task._id] || 0;
       // displayTitle = `🔥 ${streakCount} ${task.title}`; // hiding streak count from calendar title for now
-      displayTitle = `🔥 ${streakCount} ${task.title}`;
-
+      // displayTitle = `🔥 ${streakCount} ${task.title}`; // removing streak status and logo because it looks weird and the functionality is not very clear yet
+      displayTitle = `${task.title}`;
     }
 
     const baseEvent: any = {
@@ -86,7 +86,7 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
       const durationMs = et.getTime() - st.getTime();
       const startTotalMinutes = st.getHours() * 60 + st.getMinutes();
       const endTotalMinutes = startTotalMinutes + Math.floor(Math.max(0, durationMs) / 60000);
-      
+
       const endH = Math.floor(endTotalMinutes / 60);
       const endM = endTotalMinutes % 60;
 
