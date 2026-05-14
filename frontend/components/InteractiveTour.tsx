@@ -1,5 +1,5 @@
 import React from 'react';
-import { Joyride, CallBackProps, STATUS, Step, EVENTS } from 'react-joyride';
+import { Joyride, STATUS, Step, EVENTS } from 'react-joyride';
 
 interface InteractiveTourProps {
   run: boolean;
@@ -38,7 +38,7 @@ export function InteractiveTour({ run, onComplete, onStepChange }: InteractiveTo
     }
   ];
 
-  const handleJoyrideCallback = (data: CallBackProps) => {
+  const handleJoyrideCallback = (data: any) => {
     const { status, index, type, action } = data;
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
 
