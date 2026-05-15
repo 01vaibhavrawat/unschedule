@@ -1,4 +1,5 @@
-const API_URL = "http://localhost:8000";
+// const API_URL = "http://localhost:8000";
+const API_URL = "http://13.53.168.160:8000";
 
 export const fetchAPI = async (endpoint: string, options: RequestInit = {}) => {
   const res = await fetch(`${API_URL}${endpoint}`, {
