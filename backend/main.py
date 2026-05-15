@@ -7,7 +7,7 @@ app = FastAPI(title="Unschedule MVP API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://mvp1.d1304gy8kwnblp.amplifyapp.com"],   # explicit origin required for cookie auth
+    allow_origins=["http://localhost:3000", "https://mvp1.d1304gy8kwnblp.amplifyapp.com", "https://mvp1.d1304gy8kwnblp.amplifyapp.com/"],   # explicit origin required for cookie auth
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
