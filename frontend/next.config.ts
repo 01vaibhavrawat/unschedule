@@ -7,6 +7,15 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'https://unschedule-backend-latest.onrender.com/:path*',
+      },
+    ];
+  },
+
 };
 
 export default nextConfig;
