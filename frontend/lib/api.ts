@@ -1,7 +1,6 @@
 // const API_URL = "http://localhost:8000";
 // const API_URL = "http://13.53.168.160:8000";
-// const API_URL = "https://unschedule-backend-latest.onrender.com"
-const API_URL = "/api";
+const API_URL = "https://unschedule-backend-latest.onrender.com"
 
 export const fetchAPI = async (endpoint: string, options: RequestInit = {}) => {
   const res = await fetch(`${API_URL}${endpoint}`, {
@@ -42,11 +41,20 @@ export const api = {
   deleteGoal: (id: string) => fetchAPI(`/goals/${id}`, { method: "DELETE" }),
 
   // ── Auth ─────────────────────────────────────────────────────
-  signup: (data: { name: string; email: string; password: string }) =>
-    fetchAPI("/auth/signup", { method: "POST", body: JSON.stringify(data) }),
-  login: (data: { email: string; password: string }) =>
-    fetchAPI("/auth/login", { method: "POST", body: JSON.stringify(data) }),
-  logout: () => fetchAPI("/auth/logout", { method: "POST" }),
+  signup: async (data: { name: string; email: string; password: string }) => {
+    const res = await fetchAPI("/auth/signup", { method: "POST", body: JSON.stringify(data) });
+    document.cookie = "auth_token=authenticated; path=/; max-age=604800; samesite=lax";
+    return res;
+  },
+  login: async (data: { email: string; password: string }) => {
+    const res = await fetchAPI("/auth/login", { method: "POST", body: JSON.stringify(data) });
+    document.cookie = "auth_token=authenticated; path=/; max-age=604800; samesite=lax";
+    return res;
+  },
+  logout: async () => {
+    await fetchAPI("/auth/logout", { method: "POST" });
+    document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  },
   me: () => fetchAPI("/auth/me"),
   completeOnboarding: () => fetchAPI("/auth/me/onboarding", { method: "PATCH" }),
 };
