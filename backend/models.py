@@ -87,6 +87,7 @@ class UserPublic(BaseModel):
     name: str
     email: str
     has_completed_onboarding: bool = False
+    access_token: Optional[str] = None
 
 class SignupRequest(BaseModel):
     name: str

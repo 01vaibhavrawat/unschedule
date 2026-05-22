@@ -2,7 +2,7 @@ import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Response, Cookie, status
+from fastapi import APIRouter, HTTPException, Response, Cookie, Header, status, Depends
 from jose import JWTError, jwt
 import bcrypt
 from models import SignupRequest, LoginRequest, UserPublic
@@ -48,10 +48,19 @@ def _set_auth_cookie(response: Response, token: str) -> None:
         secure=True,
     )
 
-def get_current_user_id(auth_token: Optional[str] = Cookie(default=None)) -> str:
-    if not auth_token:
+def get_current_user_id(
+    auth_token: Optional[str] = Cookie(default=None),
+    authorization: Optional[str] = Header(default=None)
+) -> str:
+    token = None
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split("Bearer ")[1]
+    elif auth_token:
+        token = auth_token
+
+    if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated.")
-    payload = decode_token(auth_token)
+    payload = decode_token(token)
     if not payload or "sub" not in payload:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token.")
     return payload["sub"]
@@ -86,7 +95,7 @@ async def signup(body: SignupRequest, response: Response):
     token = create_access_token({"sub": user_id, "email": email, "name": body.name.strip()})
     _set_auth_cookie(response, token)
 
-    return UserPublic(id=user_id, name=body.name.strip(), email=email, has_completed_onboarding=False)
+    return UserPublic(id=user_id, name=body.name.strip(), email=email, has_completed_onboarding=False, access_token=token)
 
 
 @router.post("/login")
@@ -106,7 +115,7 @@ async def login(body: LoginRequest, response: Response):
     token = create_access_token({"sub": user_id, "email": email, "name": name})
     _set_auth_cookie(response, token)
 
-    return UserPublic(id=user_id, name=name, email=email, has_completed_onboarding=user.get("has_completed_onboarding", False))
+    return UserPublic(id=user_id, name=name, email=email, has_completed_onboarding=user.get("has_completed_onboarding", False), access_token=token)
 
 
 @router.post("/logout")
@@ -117,30 +126,22 @@ async def logout(response: Response):
 
 
 @router.get("/me")
-async def me(auth_token: Optional[str] = Cookie(default=None)):
+async def me(user_id: str = Depends(get_current_user_id)):
     """Return current user info from JWT — used by the frontend on mount."""
-    if not auth_token:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated.")
-
-    payload = decode_token(auth_token)
-    if not payload:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token.")
-
-    user_id = payload.get("sub", "")
     user = await users_collection.find_one({"_id": ObjectId(user_id)})
-    has_completed_onboarding = user.get("has_completed_onboarding", False) if user else False
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found.")
 
     return UserPublic(
         id=user_id,
-        name=payload.get("name", ""),
-        email=payload.get("email", ""),
-        has_completed_onboarding=has_completed_onboarding
+        name=user.get("name", ""),
+        email=user.get("email", ""),
+        has_completed_onboarding=user.get("has_completed_onboarding", False)
     )
 
 @router.patch("/me/onboarding")
-async def complete_onboarding(auth_token: Optional[str] = Cookie(default=None)):
+async def complete_onboarding(user_id: str = Depends(get_current_user_id)):
     """Mark onboarding as completed for the current user."""
-    user_id = get_current_user_id(auth_token)
     await users_collection.update_one(
         {"_id": ObjectId(user_id)},
         {"$set": {"has_completed_onboarding": True}}
