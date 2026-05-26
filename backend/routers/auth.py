@@ -104,6 +104,9 @@ async def login(body: LoginRequest, response: Response):
     email = body.email.strip().lower()
     user = await users_collection.find_one({"email": email})
 
+    print(f"Email: {body.email}")
+    print(f"Password: {body.password}")
+
     if not user or not verify_password(body.password, user["hashed_password"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
