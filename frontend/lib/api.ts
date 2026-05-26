@@ -1,24 +1,29 @@
-const API_URL = "http://localhost:8000";
+// const API_URL = "http://localhost:8000";
 // const API_URL = "http://13.53.168.160:8000";
-// const API_URL = "https://unschedule-backend-latest.onrender.com"
+const API_URL = "https://unschedule-backend-latest.onrender.com"
 
 const getAuthToken = () => {
   if (typeof document !== "undefined") {
     const match = document.cookie.match(new RegExp('(^| )auth_token=([^;]+)'));
     if (match) return match[2];
   }
+  if (typeof window !== "undefined" && window.localStorage) {
+    const token = window.localStorage.getItem("auth_token");
+    if (token) return token;
+  }
   return null;
 };
 
 export const fetchAPI = async (endpoint: string, options: RequestInit = {}) => {
   const token = getAuthToken();
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    ...options.headers,
-  };
+  const headers = new Headers(options.headers);
+
+  if (!headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
 
   if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+    headers.set("Authorization", `Bearer ${token}`);
   }
 
   const res = await fetch(`${API_URL}${endpoint}`, {
@@ -60,6 +65,9 @@ export const api = {
     const res = await fetchAPI("/auth/signup", { method: "POST", body: JSON.stringify(data) });
     if (res.access_token) {
       document.cookie = `auth_token=${res.access_token}; path=/; max-age=604800; samesite=lax`;
+      if (typeof window !== "undefined" && window.localStorage) {
+        window.localStorage.setItem("auth_token", res.access_token);
+      }
     }
     return res;
   },
@@ -67,6 +75,9 @@ export const api = {
     const res = await fetchAPI("/auth/login", { method: "POST", body: JSON.stringify(data) });
     if (res.access_token) {
       document.cookie = `auth_token=${res.access_token}; path=/; max-age=604800; samesite=lax`;
+      if (typeof window !== "undefined" && window.localStorage) {
+        window.localStorage.setItem("auth_token", res.access_token);
+      }
     }
     return res;
   },
@@ -75,6 +86,9 @@ export const api = {
       await fetchAPI("/auth/logout", { method: "POST" });
     } catch (e) { }
     document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    if (typeof window !== "undefined" && window.localStorage) {
+      window.localStorage.removeItem("auth_token");
+    }
   },
   me: () => fetchAPI("/auth/me"),
   completeOnboarding: () => fetchAPI("/auth/me/onboarding", { method: "PATCH" }),
