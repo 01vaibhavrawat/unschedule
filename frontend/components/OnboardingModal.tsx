@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Sparkles, Target, Zap, ChevronRight, Check } from 'lucide-react';
+import { Sparkles, Target, Zap, ChevronRight, Check, Calendar } from 'lucide-react';
 import clsx from 'clsx';
+import Image from 'next/image';
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -33,7 +34,15 @@ export function OnboardingModal({ isOpen, onComplete }: OnboardingModalProps) {
       description: "Mini Habits are behaviors so easy you can't fail—like doing one pushup or reading one page. Mini Habits emphasize that tiny, everyday improvements compound into massive changes. Build your streak and see your life transform, one small step at a time.",
       icon: <Zap className="w-16 h-16 text-amber-500" />,
       color: "bg-amber-100 text-amber-500"
-    }
+    },
+    {
+      title: "Example Calendar",
+      subtitle: "",
+      description: "",
+      // icon: <Calendar className="w-10 h-10 text-amber-500" />,
+      color: "bg-amber-100 text-amber-500",
+      image: "/unschedule_example_ss.png"
+    },
   ];
 
   const currentStep = steps[step];
@@ -49,7 +58,7 @@ export function OnboardingModal({ isOpen, onComplete }: OnboardingModalProps) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity">
-      <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col relative transform transition-all animate-in fade-in zoom-in duration-300">
+      <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-y-auto max-h-[90vh] flex flex-col relative transform transition-all animate-in fade-in zoom-in duration-300">
 
         {/* Progress Bar */}
         <div className="flex h-2 w-full bg-gray-100">
@@ -65,10 +74,11 @@ export function OnboardingModal({ isOpen, onComplete }: OnboardingModalProps) {
         </div>
 
         <div className="p-12 flex flex-col items-center text-center space-y-8">
-
-          <div className={clsx("p-6 rounded-full shadow-inner", currentStep.color)}>
-            {currentStep.icon}
-          </div>
+          {currentStep.icon && (
+            <div className={clsx("p-6 rounded-full shadow-inner", currentStep.color)}>
+              {currentStep.icon}
+            </div>
+          )}
 
           <div className="space-y-4">
             <h2 className="text-4xl font-extrabold tracking-tight text-gray-900">
@@ -81,6 +91,19 @@ export function OnboardingModal({ isOpen, onComplete }: OnboardingModalProps) {
               {currentStep.description}
             </p>
           </div>
+
+          {currentStep.image && (
+            <div className="onboarding-image-container w-full max-w-lg mx-auto overflow-hidden rounded-2xl border border-gray-200 shadow-lg bg-gray-50">
+              <Image
+                src={currentStep.image}
+                alt={currentStep.title}
+                width={600}
+                height={400}
+                className="w-full h-auto object-contain max-h-[300px]"
+                unoptimized
+              />
+            </div>
+          )}
 
           <div className="w-full pt-8 flex items-center justify-between">
             <div className="flex space-x-2">
