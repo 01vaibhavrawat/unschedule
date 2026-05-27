@@ -32,6 +32,13 @@ export const fetchAPI = async (endpoint: string, options: RequestInit = {}) => {
     headers,
   });
   if (!res.ok) {
+    if (res.status === 401 && endpoint !== "/auth/login" && endpoint !== "/auth/signup") {
+      if (typeof window !== "undefined") {
+        document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        window.localStorage.removeItem("auth_token");
+        window.location.href = "/login";
+      }
+    }
     const body = await res.json().catch(() => ({}));
     throw new Error(body?.detail || `API error: ${res.statusText}`);
   }
