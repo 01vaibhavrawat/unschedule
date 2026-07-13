@@ -1,6 +1,6 @@
-// const API_URL = "http://localhost:8000";
+const API_URL = "http://localhost:8000";
 // const API_URL = "http://13.53.168.160:8000";
-const API_URL = "https://unschedule-backend-latest.onrender.com"
+// const API_URL = "https://unschedule-backend-latest.onrender.com"
 
 const getAuthToken = () => {
   if (typeof document !== "undefined") {
@@ -99,4 +99,18 @@ export const api = {
   },
   me: () => fetchAPI("/auth/me"),
   completeOnboarding: () => fetchAPI("/auth/me/onboarding", { method: "PATCH" }),
+
+  // ── Social ───────────────────────────────────────────────────
+  getProfile: (userId: string) => fetchAPI(`/social/profile/${userId}`),
+  followUser: (userId: string) => fetchAPI(`/social/follow/${userId}`, { method: "POST" }),
+  unfollowUser: (userId: string) => fetchAPI(`/social/follow/${userId}`, { method: "DELETE" }),
+  getFeed: () => fetchAPI("/social/feed"),
+  createPost: (content: string) => fetchAPI("/social/posts", { method: "POST", body: JSON.stringify({ content }) }),
+  deletePost: (postId: string) => fetchAPI(`/social/posts/${postId}`, { method: "DELETE" }),
+  getConversations: () => fetchAPI("/social/conversations"),
+  startConversation: (targetUserId: string) => fetchAPI("/social/conversations", { method: "POST", body: JSON.stringify({ target_user_id: targetUserId }) }),
+  getMessages: (conversationId: string) => fetchAPI(`/social/conversations/${conversationId}/messages`),
+  sendMessage: (conversationId: string, content: string) => fetchAPI(`/social/conversations/${conversationId}/messages`, { method: "POST", body: JSON.stringify({ content }) }),
+  getVisibility: () => fetchAPI("/social/visibility"),
+  updateVisibility: (data: any) => fetchAPI("/social/visibility", { method: "PUT", body: JSON.stringify(data) }),
 };

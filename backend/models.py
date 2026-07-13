@@ -97,3 +97,69 @@ class SignupRequest(BaseModel):
 class LoginRequest(BaseModel):
     email: str
     password: str
+
+# ── Social Models ──────────────────────────────────────────────────────────
+
+class VisibilitySettings(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    user_id: str
+    calendar: str = "private"  # public, followers, private
+    goals: str = "private"
+    habits: str = "private"
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class Follow(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    follower_id: str
+    followed_id: str
+    created_at: str
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class Post(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    user_id: str
+    content: str
+    created_at: str
+    deleted_at: Optional[str] = None
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class Conversation(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    user_one_id: str
+    user_two_id: str
+    created_at: str
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class Message(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    conversation_id: str
+    sender_id: str
+    content: str
+    created_at: str
+    read_at: Optional[str] = None
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class UserProfile(BaseModel):
+    id: str
+    name: str
+    follower_count: int = 0
+    following_count: int = 0
+    is_following: bool = False
+    calendar: Optional[List[dict]] = None
+    goals: Optional[List[dict]] = None
+    habits: Optional[List[dict]] = None
