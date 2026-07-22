@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, Search, HelpCircle, Settings, Grid, Calendar as CalendarIcon, ChevronLeft, ChevronRight, LogOut, User } from 'lucide-react';
+import { Menu, Search, HelpCircle, Settings, Grid, Calendar as CalendarIcon, ChevronLeft, ChevronRight, LogOut, User, Bell, Users as UsersIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { useStore } from '@/store/useStore';
 
@@ -80,15 +80,14 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right section */}
       <div className="flex items-center gap-2">
-        {/* <button className="rounded-full p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover)]">
-          <Search className="w-5 h-5" />
-        </button> */}
-        {/* <button className="rounded-full p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover)]">
-          <HelpCircle className="w-5 h-5" />
-        </button> */}
-        {/* <button className="rounded-full p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover)]">
-          <Settings className="w-5 h-5" />
-        </button> */}
+        <button 
+          onClick={() => window.location.href = '/notifications'}
+          className="rounded-full p-2 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-hover)] relative"
+          title="Notifications"
+        >
+          <Bell className="w-5 h-5" />
+          {/* We can fetch unread count here if we wanted, but for now just the bell */}
+        </button>
 
         <div className="mx-2">
           <select
@@ -158,6 +157,14 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   <Grid className="w-4 h-4 text-gray-400" />
                   Social Feed
+                </button>
+                <button
+                  onClick={() => { setMenuOpen(false); window.location.href = '/communities'; }}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                  role="menuitem"
+                >
+                  <UsersIcon className="w-4 h-4 text-gray-400" />
+                  Communities
                 </button>
                 <button
                   onClick={() => { setMenuOpen(false); window.location.href = '/messages'; }}

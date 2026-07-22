@@ -105,7 +105,8 @@ export const api = {
   followUser: (userId: string) => fetchAPI(`/social/follow/${userId}`, { method: "POST" }),
   unfollowUser: (userId: string) => fetchAPI(`/social/follow/${userId}`, { method: "DELETE" }),
   getFeed: () => fetchAPI("/social/feed"),
-  createPost: (content: string) => fetchAPI("/social/posts", { method: "POST", body: JSON.stringify({ content }) }),
+  createPost: (data: { content: string; community_id?: string; activity_type?: string; activity_ref_id?: string; activity_snapshot?: any }) => 
+    fetchAPI("/social/posts", { method: "POST", body: JSON.stringify(data) }),
   deletePost: (postId: string) => fetchAPI(`/social/posts/${postId}`, { method: "DELETE" }),
   getConversations: () => fetchAPI("/social/conversations"),
   startConversation: (targetUserId: string) => fetchAPI("/social/conversations", { method: "POST", body: JSON.stringify({ target_user_id: targetUserId }) }),
@@ -113,4 +114,24 @@ export const api = {
   sendMessage: (conversationId: string, content: string) => fetchAPI(`/social/conversations/${conversationId}/messages`, { method: "POST", body: JSON.stringify({ content }) }),
   getVisibility: () => fetchAPI("/social/visibility"),
   updateVisibility: (data: any) => fetchAPI("/social/visibility", { method: "PUT", body: JSON.stringify(data) }),
+
+  // ── Phase 2 Social ───────────────────────────────────────────
+  toggleReaction: (postId: string) => fetchAPI(`/social/posts/${postId}/react`, { method: "POST" }),
+  getComments: (postId: string) => fetchAPI(`/social/posts/${postId}/comments`),
+  createComment: (postId: string, content: string) => fetchAPI(`/social/posts/${postId}/comments`, { method: "POST", body: JSON.stringify({ content }) }),
+  deleteComment: (commentId: string) => fetchAPI(`/social/comments/${commentId}`, { method: "DELETE" }),
+  getSuggestions: () => fetchAPI("/social/suggestions"),
+
+  // ── Communities ──────────────────────────────────────────────
+  getCommunities: (search?: string) => fetchAPI(`/communities/${search ? `?search=${search}` : ''}`),
+  createCommunity: (data: { name: string; description?: string; tag?: string }) => fetchAPI("/communities/", { method: "POST", body: JSON.stringify(data) }),
+  getCommunity: (id: string) => fetchAPI(`/communities/${id}`),
+  joinCommunity: (id: string) => fetchAPI(`/communities/${id}/join`, { method: "POST" }),
+  leaveCommunity: (id: string) => fetchAPI(`/communities/${id}/leave`, { method: "POST" }),
+  getCommunityFeed: (id: string) => fetchAPI(`/communities/${id}/feed`),
+
+  // ── Notifications ────────────────────────────────────────────
+  getNotifications: () => fetchAPI("/notifications/"),
+  markNotificationRead: (id: string) => fetchAPI(`/notifications/${id}/read`, { method: "PUT" }),
+  markAllNotificationsRead: () => fetchAPI("/notifications/read-all", { method: "PUT" }),
 };

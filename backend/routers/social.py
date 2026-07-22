@@ -3,12 +3,14 @@ from typing import List, Optional
 from datetime import datetime, timezone
 from bson import ObjectId
 from models import (
-    VisibilitySettings, Follow, Post, Conversation, Message, UserProfile, UserPublic, Task, Goal, MiniHabit
+    VisibilitySettings, Follow, Post, Conversation, Message, UserProfile, UserPublic, Task, Goal, MiniHabit,
+    Comment, Reaction, Notification, CommunityMembership
 )
 from database import (
     users_collection, visibility_collection, follows_collection,
     posts_collection, conversations_collection, messages_collection,
-    tasks_collection, goals_collection, habits_collection
+    tasks_collection, goals_collection, habits_collection,
+    comments_collection, reactions_collection, notifications_collection, community_memberships_collection
 )
 from routers.auth import get_current_user_id
 
@@ -92,6 +94,14 @@ async def follow_user(target_user_id: str, current_user_id: str = Depends(get_cu
             "followed_id": target_user_id,
             "created_at": datetime.now(timezone.utc).isoformat()
         })
+        # Create notification
+        await notifications_collection.insert_one({
+            "user_id": target_user_id,
+            "type": "follow",
+            "reference_id": current_user_id,
+            "is_read": False,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
     return {"status": "following"}
 
 @router.delete("/follow/{target_user_id}")
@@ -105,12 +115,16 @@ async def unfollow_user(target_user_id: str, current_user_id: str = Depends(get_
 @router.post("/posts", response_model=Post)
 async def create_post(post_data: dict, current_user_id: str = Depends(get_current_user_id)):
     content = post_data.get("content", "").strip()
-    if not content:
-        raise HTTPException(status_code=400, detail="Post content cannot be empty")
+    if not content and not post_data.get("activity_type"):
+        raise HTTPException(status_code=400, detail="Post content cannot be empty unless it's an activity update")
     
     doc = {
         "user_id": current_user_id,
         "content": content,
+        "community_id": post_data.get("community_id"),
+        "activity_type": post_data.get("activity_type"),
+        "activity_ref_id": post_data.get("activity_ref_id"),
+        "activity_snapshot": post_data.get("activity_snapshot"),
         "created_at": datetime.now(timezone.utc).isoformat(),
         "deleted_at": None
     }
@@ -137,6 +151,7 @@ async def get_feed(current_user_id: str = Depends(get_current_user_id), limit: i
 
     posts_cursor = posts_collection.find({
         "user_id": {"$in": followed_ids},
+        "community_id": None,  # only personal feed posts
         "deleted_at": None
     }).sort("created_at", -1).limit(limit)
     
@@ -145,6 +160,15 @@ async def get_feed(current_user_id: str = Depends(get_current_user_id), limit: i
         user = await users_collection.find_one({"_id": ObjectId(doc["user_id"])})
         doc["user_name"] = user.get("name", "Unknown") if user else "Unknown"
         doc["id"] = str(doc["_id"])
+        del doc["_id"]
+        
+        # Get reactions and comments count
+        doc["reaction_count"] = await reactions_collection.count_documents({"post_id": doc["id"]})
+        doc["comment_count"] = await comments_collection.count_documents({"post_id": doc["id"], "deleted_at": None})
+        
+        user_reacted = await reactions_collection.find_one({"post_id": doc["id"], "user_id": current_user_id})
+        doc["user_reacted"] = user_reacted is not None
+        
         posts.append(doc)
 
     return posts
@@ -259,3 +283,159 @@ async def update_visibility(data: dict, current_user_id: str = Depends(get_curre
         upsert=True
     )
     return {"status": "updated"}
+
+# ── Reactions and Comments ──────────────────────────────────────────────────
+
+@router.post("/posts/{post_id}/react")
+async def toggle_reaction(post_id: str, current_user_id: str = Depends(get_current_user_id)):
+    post = await posts_collection.find_one({"_id": ObjectId(post_id)})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+        
+    existing = await reactions_collection.find_one({
+        "post_id": post_id,
+        "user_id": current_user_id
+    })
+    
+    if existing:
+        await reactions_collection.delete_one({"_id": existing["_id"]})
+        return {"status": "removed"}
+    else:
+        await reactions_collection.insert_one({
+            "post_id": post_id,
+            "user_id": current_user_id,
+            "type": "cheer",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        # notify post author
+        if post["user_id"] != current_user_id:
+            await notifications_collection.insert_one({
+                "user_id": post["user_id"],
+                "type": "reaction",
+                "reference_id": post_id,
+                "is_read": False,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            })
+        return {"status": "added"}
+
+@router.get("/posts/{post_id}/comments")
+async def get_comments(post_id: str, current_user_id: str = Depends(get_current_user_id)):
+    cursor = comments_collection.find({"post_id": post_id, "deleted_at": None}).sort("created_at", 1)
+    comments = []
+    async for doc in cursor:
+        user = await users_collection.find_one({"_id": ObjectId(doc["user_id"])})
+        doc["user_name"] = user.get("name", "Unknown") if user else "Unknown"
+        doc["id"] = str(doc["_id"])
+        del doc["_id"]
+        comments.append(doc)
+    return comments
+
+@router.post("/posts/{post_id}/comments")
+async def add_comment(post_id: str, data: dict, current_user_id: str = Depends(get_current_user_id)):
+    content = data.get("content", "").strip()
+    if not content:
+        raise HTTPException(status_code=400, detail="Comment cannot be empty")
+        
+    post = await posts_collection.find_one({"_id": ObjectId(post_id)})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+        
+    doc = {
+        "post_id": post_id,
+        "user_id": current_user_id,
+        "content": content,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "deleted_at": None
+    }
+    result = await comments_collection.insert_one(doc)
+    doc["_id"] = result.inserted_id
+    doc["id"] = str(doc["_id"])
+    del doc["_id"]
+    
+    # User info
+    user = await users_collection.find_one({"_id": ObjectId(current_user_id)})
+    doc["user_name"] = user.get("name", "Unknown") if user else "Unknown"
+    
+    # Notification
+    if post["user_id"] != current_user_id:
+        await notifications_collection.insert_one({
+            "user_id": post["user_id"],
+            "type": "comment",
+            "reference_id": post_id,
+            "is_read": False,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        
+    return doc
+
+@router.delete("/comments/{comment_id}")
+async def delete_comment(comment_id: str, current_user_id: str = Depends(get_current_user_id)):
+    result = await comments_collection.update_one(
+        {"_id": ObjectId(comment_id), "user_id": current_user_id},
+        {"$set": {"deleted_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Comment not found or unauthorized")
+    return {"status": "deleted"}
+
+# ── Discovery ───────────────────────────────────────────────────────────────
+
+@router.get("/suggestions")
+async def get_suggestions(current_user_id: str = Depends(get_current_user_id)):
+    # Rule-based matching
+    # 1. Get my habits, goals, communities
+    my_habits = {h["title"].lower() async for h in habits_collection.find({"user_id": current_user_id})}
+    my_goals = {g["title"].lower() async for g in goals_collection.find({"user_id": current_user_id})}
+    my_communities = {c["community_id"] async for c in community_memberships_collection.find({"user_id": current_user_id})}
+    
+    # 2. Get who I already follow so we don't suggest them
+    follows = follows_collection.find({"follower_id": current_user_id})
+    followed_ids = {f["followed_id"] async for f in follows}
+    followed_ids.add(current_user_id)
+    
+    # 3. Find other users
+    cursor = users_collection.find({"_id": {"$nin": [ObjectId(uid) for uid in followed_ids if uid != current_user_id and ObjectId.is_valid(uid)]}}).limit(100)
+    
+    suggestions = []
+    async for other_user in cursor:
+        other_user_id = str(other_user["_id"])
+        if other_user_id in followed_ids:
+            continue
+            
+        score = 0
+        reasons = []
+        
+        # Only check if they have public habits/goals
+        vis = await visibility_collection.find_one({"user_id": other_user_id}) or {}
+        
+        if vis.get("habits") == "public":
+            other_habits = {h["title"].lower() async for h in habits_collection.find({"user_id": other_user_id})}
+            shared_habits = my_habits.intersection(other_habits)
+            if shared_habits:
+                score += len(shared_habits)
+                reasons.append(f"{len(shared_habits)} shared habits")
+                
+        if vis.get("goals") == "public":
+            other_goals = {g["title"].lower() async for g in goals_collection.find({"user_id": other_user_id})}
+            shared_goals = my_goals.intersection(other_goals)
+            if shared_goals:
+                score += len(shared_goals)
+                reasons.append(f"{len(shared_goals)} shared goals")
+                
+        other_communities = {c["community_id"] async for c in community_memberships_collection.find({"user_id": other_user_id})}
+        shared_communities = my_communities.intersection(other_communities)
+        if shared_communities:
+            score += len(shared_communities)
+            reasons.append(f"{len(shared_communities)} shared communities")
+            
+        if score > 0:
+            suggestions.append({
+                "id": other_user_id,
+                "name": other_user.get("name", "Unknown"),
+                "score": score,
+                "reason": ", ".join(reasons)
+            })
+            
+    # sort by score
+    suggestions.sort(key=lambda x: x["score"], reverse=True)
+    return suggestions[:5]

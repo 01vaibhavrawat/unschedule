@@ -127,6 +127,67 @@ class Post(BaseModel):
     content: str
     created_at: str
     deleted_at: Optional[str] = None
+    community_id: Optional[str] = None
+    activity_type: Optional[str] = None
+    activity_ref_id: Optional[str] = None
+    activity_snapshot: Optional[dict] = None
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class Community(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    name: str
+    description: Optional[str] = None
+    tag: Optional[str] = None
+    created_by: str
+    created_at: str
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class CommunityMembership(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    community_id: str
+    user_id: str
+    joined_at: str
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class Reaction(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    post_id: str
+    user_id: str
+    type: str = "cheer"
+    created_at: str
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class Comment(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    post_id: str
+    user_id: str
+    content: str
+    created_at: str
+    deleted_at: Optional[str] = None
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class Notification(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    user_id: str
+    type: str  # follow, comment, reaction, community
+    reference_id: Optional[str] = None
+    is_read: bool = False
+    created_at: str
 
     class Config:
         populate_by_name = True

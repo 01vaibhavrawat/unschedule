@@ -6,8 +6,8 @@ import { useStore } from '@/store/useStore';
 import Link from 'next/link';
 
 export default function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
-  const { user } = useStore();
-  
+  const { user, setUser } = useStore();
+
   const resolvedParams = use(params);
   const profileId = resolvedParams.id;
 
@@ -16,7 +16,11 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
   useEffect(() => {
     fetchProfile();
-  }, [profileId]);
+    // Hydrate user if missing (e.g. on direct page load)
+    if (!user) {
+      api.me().then(u => setUser(u)).catch(() => { });
+    }
+  }, [profileId, user, setUser]);
 
   const fetchProfile = async () => {
     try {
@@ -64,7 +68,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-3xl mx-auto space-y-6">
-        
+
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800 tracking-tight">Profile</h1>
           <Link href="/" className="text-[var(--color-brand-primary)] hover:underline">
@@ -77,7 +81,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             {profile.name.charAt(0).toUpperCase()}
           </div>
           <h2 className="text-2xl font-bold text-gray-900">{profile.name}</h2>
-          
+
           <div className="flex justify-center gap-6 mt-4 text-gray-600">
             <div><strong className="text-gray-900 text-lg">{profile.follower_count}</strong> Followers</div>
             <div><strong className="text-gray-900 text-lg">{profile.following_count}</strong> Following</div>
@@ -99,9 +103,18 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
               </button>
             </div>
           )}
-          
+
           {isOwnProfile && (
-            <div className="mt-6">
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  alert('Profile link copied to clipboard!');
+                }}
+                className="bg-white border-2 border-[var(--color-brand-primary)] text-[var(--color-brand-primary)] px-5 py-2 rounded-lg font-medium hover:bg-purple-50 transition-colors shadow-sm cursor-pointer"
+              >
+                Copy Profile Link
+              </button>
               <Link href="/settings/visibility" className="text-[var(--color-brand-primary)] hover:underline font-medium">
                 Edit Privacy Settings
               </Link>

@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Users, ChevronDown, Check, Zap, ChevronRight,
-  Target, Plus, Pencil, Trash2, X, Flag, ArrowRight, Sparkles
+  Target, Plus, Pencil, Trash2, X, Flag, ArrowRight, Sparkles, Share
 } from 'lucide-react';
 import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek,
@@ -522,11 +522,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 const logs = habitLogs[habit._id] || [];
                 const isDone = logs.some((l: any) => l.date === todayStr && l.completed);
                 return (
-                  <div key={habit._id} className="flex items-center gap-3 py-1 cursor-pointer group" onClick={() => toggleHabitLog(habit._id, todayStr)}>
-                    <div className={`flex h-4 w-4 items-center justify-center rounded border ${isDone ? 'border-[var(--color-brand-success)] bg-[var(--color-brand-success)]' : 'border-[var(--color-text-subtle)] group-hover:border-[var(--color-text-secondary)]'}`}>
-                      {isDone && <Check className="w-3 h-3 text-white" />}
+                  <div key={habit._id} className="flex items-center justify-between py-1 group">
+                    <div className="flex items-center gap-3 cursor-pointer flex-1 min-w-0" onClick={() => toggleHabitLog(habit._id, todayStr)}>
+                      <div className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border ${isDone ? 'border-[var(--color-brand-success)] bg-[var(--color-brand-success)]' : 'border-[var(--color-text-subtle)] group-hover:border-[var(--color-text-secondary)]'}`}>
+                        {isDone && <Check className="w-3 h-3 text-white" />}
+                      </div>
+                      <span className={`truncate ${isDone ? 'text-[var(--color-text-muted)] line-through' : 'text-[var(--color-text-secondary)]'}`}>{habit.title}</span>
                     </div>
-                    <span className={`truncate ${isDone ? 'text-[var(--color-text-muted)] line-through' : 'text-[var(--color-text-secondary)]'}`}>{habit.title}</span>
+                    {isDone && (
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.href = `/feed?shareHabit=${habit._id}&title=${encodeURIComponent(habit.title)}`;
+                        }}
+                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-200 transition-opacity text-gray-500 hover:text-[var(--color-brand-primary)] flex-shrink-0"
+                        title="Share milestone to feed"
+                      >
+                        <Share className="w-3 h-3" />
+                      </button>
+                    )}
                   </div>
                 );
               })}
