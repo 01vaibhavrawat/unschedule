@@ -45,8 +45,8 @@ export function PostCard({ post, currentUserId, onPostDeleted }: { post: any; cu
     if (!newComment.trim()) return;
     try {
       const created = await api.createComment(post.id, newComment);
-      setComments(prev => [...prev, created]);
-      setCommentCount(prev => prev + 1);
+      setComments((prev: any[]) => [...prev, created]);
+      setCommentCount((prev: number) => prev + 1);
       setNewComment('');
     } catch (e) {
       console.error(e);
@@ -56,8 +56,8 @@ export function PostCard({ post, currentUserId, onPostDeleted }: { post: any; cu
   const handleDeleteComment = async (commentId: string) => {
     try {
       await api.deleteComment(commentId);
-      setComments(prev => prev.filter(c => c.id !== commentId));
-      setCommentCount(prev => prev - 1);
+      setComments((prev: any[]) => prev.filter((c: any) => c.id !== commentId));
+      setCommentCount((prev: number) => prev - 1);
     } catch (e) {
       console.error(e);
     }

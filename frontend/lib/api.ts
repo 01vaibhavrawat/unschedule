@@ -135,4 +135,17 @@ export const api = {
   getNotifications: () => fetchAPI("/notifications/"),
   markNotificationRead: (id: string) => fetchAPI(`/notifications/${id}/read`, { method: "PUT" }),
   markAllNotificationsRead: () => fetchAPI("/notifications/read-all", { method: "PUT" }),
+
+  // ── Notes ────────────────────────────────────────────────────
+  getNotes: () => fetchAPI("/notes/"),
+  createNote: (data: any) => fetchAPI("/notes/", { method: "POST", body: JSON.stringify(data) }),
+  updateNote: (id: string, data: any) => fetchAPI(`/notes/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  deleteNote: (id: string) => fetchAPI(`/notes/${id}`, { method: "DELETE" }),
+
+  // ── Journals ─────────────────────────────────────────────────
+  getJournals: () => fetchAPI("/journals/"),
+  getJournalByDate: (date: string) => fetchAPI(`/journals/${date}`),
+  createJournal: (data: any) => fetchAPI("/journals/", { method: "POST", body: JSON.stringify(data) }),
+  updateJournal: (id: string, data: any) => fetchAPI(`/journals/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  deleteJournal: (id: string) => fetchAPI(`/journals/${id}`, { method: "DELETE" }),
 };

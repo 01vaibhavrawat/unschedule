@@ -32,6 +32,8 @@ interface AppState {
   goals: any[];
   habitLogs: Record<string, any>;
   streaks: Record<string, number>;
+  notes: any[];
+  journals: any[];
 
   setUser: (user: AuthUser | null) => void;
   logout: () => Promise<void>;
@@ -49,6 +51,14 @@ interface AppState {
   addGoal: (goal: any) => Promise<void>;
   updateGoal: (id: string, goal: any) => Promise<void>;
   deleteGoal: (id: string) => Promise<void>;
+
+  addNote: (note: any) => Promise<void>;
+  updateNote: (id: string, note: any) => Promise<void>;
+  deleteNote: (id: string) => Promise<void>;
+
+  addJournal: (journal: any) => Promise<void>;
+  updateJournal: (id: string, journal: any) => Promise<void>;
+  deleteJournal: (id: string) => Promise<void>;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -58,23 +68,27 @@ export const useStore = create<AppState>((set, get) => ({
   goals: [],
   habitLogs: {},
   streaks: {},
+  notes: [],
+  journals: [],
 
   setUser: (user) => set({ user }),
 
   logout: async () => {
     await api.logout();
-    set({ user: null, tasks: [], habits: [], goals: [], habitLogs: {}, streaks: {} });
+    set({ user: null, tasks: [], habits: [], goals: [], habitLogs: {}, streaks: {}, notes: [], journals: [] });
     window.location.href = '/login';
   },
 
   fetchInitialData: async () => {
     try {
-      const [tasks, habits, goals] = await Promise.all([
+      const [tasks, habits, goals, notes, journals] = await Promise.all([
         api.getTasks(),
         api.getHabits(),
-        api.getGoals()
+        api.getGoals(),
+        api.getNotes(),
+        api.getJournals()
       ]);
-      set({ tasks, habits, goals });
+      set({ tasks, habits, goals, notes, journals });
 
       const itemsToFetchLogs = [
         ...habits,
@@ -151,5 +165,35 @@ export const useStore = create<AppState>((set, get) => ({
   deleteGoal: async (id) => {
     await api.deleteGoal(id);
     set((state) => ({ goals: state.goals.filter(g => g._id !== id) }));
+  },
+
+  addNote: async (note) => {
+    const newNote = await api.createNote(note);
+    set((state) => ({ notes: [...state.notes, newNote] }));
+  },
+
+  updateNote: async (id, updatedNote) => {
+    const newNote = await api.updateNote(id, updatedNote);
+    set((state) => ({ notes: state.notes.map(n => n._id === id ? newNote : n) }));
+  },
+
+  deleteNote: async (id) => {
+    await api.deleteNote(id);
+    set((state) => ({ notes: state.notes.filter(n => n._id !== id) }));
+  },
+
+  addJournal: async (journal) => {
+    const newJournal = await api.createJournal(journal);
+    set((state) => ({ journals: [...state.journals, newJournal] }));
+  },
+
+  updateJournal: async (id, updatedJournal) => {
+    const newJournal = await api.updateJournal(id, updatedJournal);
+    set((state) => ({ journals: state.journals.map(j => j._id === id ? newJournal : j) }));
+  },
+
+  deleteJournal: async (id) => {
+    await api.deleteJournal(id);
+    set((state) => ({ journals: state.journals.filter(j => j._id !== id) }));
   }
 }));

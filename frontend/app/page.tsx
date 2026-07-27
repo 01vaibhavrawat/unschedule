@@ -63,15 +63,11 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    // Hydrate user from cookie/JWT on every page load
-    api.me().then((u) => {
-      setUser(u);
-      if (u && !u.has_completed_onboarding) {
-        setShowOnboarding(true);
-      }
-    }).catch(() => {});
-    fetchInitialData();
-  }, [fetchInitialData, setUser]);
+    // Auth and fetchInitialData are now handled in ClientLayout
+    if (user && !user.has_completed_onboarding) {
+      setShowOnboarding(true);
+    }
+  }, [user]);
 
   const todayStr = format(new Date(), 'yyyy-MM-dd');
 
@@ -138,7 +134,8 @@ export default function Home() {
 
   const handleModalSave = (taskData: { title: string; start_time: string; end_time: string; recurrence?: string; type?: string }) => {
     if (editingTask) {
-      updateTask(editingTask._id, taskData);
+      const { _id, user_id, ...rest } = editingTask as any;
+      updateTask(editingTask._id, { ...rest, ...taskData });
     } else {
       addTask({
         ...taskData,
@@ -157,7 +154,7 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-white overflow-hidden text-gray-800">
+    <div className="flex-1 flex flex-col overflow-hidden">
       <Header 
         currentDate={currentDate}
         currentView={currentView}
@@ -196,7 +193,8 @@ export default function Home() {
             onUpdateTask={(id, partialTask) => {
               const existing = tasks.find(t => t._id === id);
               if (existing) {
-                updateTask(id, { ...existing, ...partialTask });
+                const { _id: existingId, user_id, ...rest } = existing as any;
+                updateTask(id, { ...rest, ...partialTask });
               }
             }}
             onCreateTask={addTask}

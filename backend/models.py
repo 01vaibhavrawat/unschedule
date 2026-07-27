@@ -67,6 +67,32 @@ class Goal(BaseModel):
         populate_by_name = True
         json_encoders = {ObjectId: str}
 
+class JournalEntry(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    user_id: Optional[str] = None
+    date: str
+    content: str
+    created_at: str
+    updated_at: Optional[str] = None
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class Note(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    user_id: Optional[str] = None
+    title: str
+    content: str
+    folder: Optional[str] = "General"
+    tags: Optional[List[str]] = []
+    created_at: str
+    updated_at: Optional[str] = None
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
 
 # ── Auth Models ────────────────────────────────────────────────────────────
 

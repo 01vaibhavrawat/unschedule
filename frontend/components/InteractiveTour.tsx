@@ -13,7 +13,6 @@ export function InteractiveTour({ run, onComplete, onStepChange }: InteractiveTo
       target: '#sidebar-goals',
       content: 'Here you can add and track your top priorities. Keep them visible to stay focused on what matters most.',
       placement: 'right',
-      disableBeacon: true,
     },
     {
       target: '#sidebar-habits',
@@ -60,6 +59,7 @@ export function InteractiveTour({ run, onComplete, onStepChange }: InteractiveTo
       showProgress
       showSkipButton
       callback={handleJoyrideCallback}
+      // @ts-ignore
       styles={{
         options: {
           primaryColor: 'var(--color-primary)',

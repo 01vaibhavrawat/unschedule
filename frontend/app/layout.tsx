@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "Unschedule Weekly Planner",
 };
 
+import { ClientLayout } from "@/components/ClientLayout";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ClientLayout>{children}</ClientLayout>
+      </body>
     </html>
   );
 }

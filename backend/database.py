@@ -11,6 +11,9 @@ MONGO_DETAILS = os.getenv(
 client = AsyncIOMotorClient(MONGO_DETAILS)
 database = client.unschedule
 
+def get_db():
+    return database
+
 tasks_collection = database.get_collection("tasks")
 habits_collection = database.get_collection("mini_habits")
 habit_logs_collection = database.get_collection("habit_logs")
