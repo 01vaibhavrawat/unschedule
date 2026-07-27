@@ -44,6 +44,7 @@ interface AppState {
 
   addHabit: (habit: any) => Promise<void>;
   toggleHabitLog: (habitId: string, date: string) => Promise<void>;
+  setHabitStatus: (habitId: string, date: string, status: 'completed' | 'skipped' | 'none') => Promise<void>;
 
   addGoal: (goal: any) => Promise<void>;
   updateGoal: (id: string, goal: any) => Promise<void>;
@@ -121,6 +122,15 @@ export const useStore = create<AppState>((set, get) => ({
 
   toggleHabitLog: async (habitId, date) => {
     await api.toggleHabitLog({ habit_id: habitId, date, completed: true });
+    const result = await api.getHabitLogs(habitId);
+    set((state) => ({
+      habitLogs: { ...state.habitLogs, [habitId]: result.logs },
+      streaks: { ...state.streaks, [habitId]: result.streak }
+    }));
+  },
+
+  setHabitStatus: async (habitId, date, status) => {
+    await api.setHabitLogStatus({ habit_id: habitId, date, status });
     const result = await api.getHabitLogs(habitId);
     set((state) => ({
       habitLogs: { ...state.habitLogs, [habitId]: result.logs },

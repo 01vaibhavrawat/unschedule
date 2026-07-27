@@ -17,7 +17,7 @@ const DynamicCalendar = dynamic(() => import('@/components/CalendarComponent'), 
 });
 
 export default function Home() {
-  const { user, tasks, habits, goals, habitLogs, streaks, fetchInitialData, toggleHabitLog, updateTask, addTask, deleteTask, addGoal, updateGoal, deleteGoal, setUser, completeOnboarding } = useStore();
+  const { user, tasks, habits, goals, habitLogs, streaks, fetchInitialData, toggleHabitLog, setHabitStatus, updateTask, addTask, deleteTask, addGoal, updateGoal, deleteGoal, setUser, completeOnboarding } = useStore();
   const calendarRef = useRef<FullCalendar>(null);
   
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -177,6 +177,7 @@ export default function Home() {
           tasks={tasks}
           habitLogs={habitLogs}
           toggleHabitLog={toggleHabitLog}
+          setHabitStatus={setHabitStatus}
           todayStr={todayStr}
           onMiniCalendarSelect={handleMiniCalendarSelect}
           currentDate={currentDate}

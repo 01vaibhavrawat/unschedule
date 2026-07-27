@@ -60,6 +60,7 @@ export const api = {
   // ── Habit Logs ───────────────────────────────────────────────
   getHabitLogs: (habitId: string) => fetchAPI(`/habit-log/${habitId}`),
   toggleHabitLog: (data: any) => fetchAPI("/habit-log/", { method: "POST", body: JSON.stringify(data) }),
+  setHabitLogStatus: (data: any) => fetchAPI("/habit-log/status", { method: "PUT", body: JSON.stringify(data) }),
 
   // ── Goals ────────────────────────────────────────────────────
   getGoals: () => fetchAPI("/goals/"),

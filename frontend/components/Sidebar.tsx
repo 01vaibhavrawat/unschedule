@@ -2,7 +2,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Users, ChevronDown, Check, Zap, ChevronRight,
-  Target, Plus, Pencil, Trash2, X, Flag, ArrowRight, Sparkles, Share
+  Target, Plus, Pencil, Trash2, X, Flag, ArrowRight, Sparkles, Share,
+  MinusCircle, RotateCcw
 } from 'lucide-react';
 import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek,
@@ -32,6 +33,7 @@ interface SidebarProps {
   onUpdateGoal: (id: string, goal: { title: string; description?: string; color?: string }) => Promise<void>;
   onDeleteGoal: (id: string) => Promise<void>;
   streaks?: Record<string, number>;
+  setHabitStatus?: (habitId: string, date: string, status: 'completed' | 'skipped' | 'none') => Promise<void>;
 }
 
 // ── palette ────────────────────────────────────────────────────────────
@@ -335,6 +337,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onUpdateGoal,
   onDeleteGoal,
   streaks = {},
+  setHabitStatus,
 }) => {
   const atomicHabitTasks = (tasks || []).filter((t: any) => t.type === 'atomic_habit');
   const [habitsExpanded, setHabitsExpanded] = useState(true);
@@ -483,6 +486,118 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
+        {/* Mini Habits */}
+        <div id="sidebar-habits" className="py-2">
+          <div
+            className="group flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-[var(--color-bg-hover-subtle)]"
+            onClick={() => setHabitsExpanded(!habitsExpanded)}
+          >
+            <div className="flex items-center gap-2">
+              <ChevronDown className={`h-4 w-4 text-[var(--color-text-secondary)] transition-transform ${habitsExpanded ? '' : '-rotate-90'}`} />
+              <span className="text-sm font-medium text-[var(--color-text-secondary)]">Mini Habits</span>
+            </div>
+          </div>
+
+          {habitsExpanded && (
+            <div className="px-3 py-1 space-y-1 text-sm">
+              {habits.map(habit => {
+                const logs = habitLogs[habit._id] || [];
+                const todayLog = logs.find((l: any) => l.date === todayStr);
+                const isDone = todayLog?.status === 'completed' || todayLog?.completed === true;
+                const isSkipped = todayLog?.status === 'skipped';
+                return (
+                  <div key={habit._id} className={`flex items-center justify-between py-1 group ${isSkipped ? 'opacity-50 grayscale' : ''}`}>
+                    <div className="flex items-center gap-3 cursor-pointer flex-1 min-w-0" onClick={() => toggleHabitLog(habit._id, todayStr)}>
+                      <div className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border ${isDone ? 'border-[var(--color-brand-success)] bg-[var(--color-brand-success)]' : 'border-[var(--color-text-subtle)] group-hover:border-[var(--color-text-secondary)]'}`}>
+                        {isDone && <Check className="w-3 h-3 text-white" />}
+                      </div>
+                      <span className={`truncate ${isDone ? 'text-[var(--color-text-muted)] line-through' : 'text-[var(--color-text-secondary)]'}`}>{habit.title}</span>
+                    </div>
+                    
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity items-center">
+                      {!isSkipped && setHabitStatus && (
+                         <button onClick={(e) => { e.stopPropagation(); setHabitStatus(habit._id, todayStr, 'skipped'); }} className="p-1 rounded hover:bg-gray-200 text-gray-400 hover:text-gray-600 flex-shrink-0" title="Skip today">
+                           <MinusCircle className="w-3 h-3" />
+                         </button>
+                      )}
+                      {isSkipped && setHabitStatus && (
+                         <button onClick={(e) => { e.stopPropagation(); setHabitStatus(habit._id, todayStr, 'none'); }} className="p-1 rounded hover:bg-gray-200 text-gray-400 hover:text-gray-600 flex-shrink-0" title="Undo skip">
+                           <RotateCcw className="w-3 h-3" />
+                         </button>
+                      )}
+                      {isDone && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.href = `/feed?shareHabit=${habit._id}&title=${encodeURIComponent(habit.title)}`;
+                        }}
+                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-200 transition-opacity text-gray-500 hover:text-[var(--color-brand-primary)] flex-shrink-0"
+                        title="Share milestone to feed"
+                      >
+                        <Share className="w-3 h-3" />
+                      </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {atomicHabitTasks.length > 0 && (
+                <div className={habits.length > 0 ? 'pt-2 space-y-2' : 'space-y-2'}>
+                  {atomicHabitTasks.map((task: any) => {
+                    const streakCount = streaks[task._id] || 0;
+                    const logs = habitLogs[task._id] || [];
+                    const todayLog = logs.find((l: any) => l.date === todayStr);
+                    const isDone = todayLog?.status === 'completed' || todayLog?.completed === true;
+                    const isSkipped = todayLog?.status === 'skipped';
+                    return (
+                      <div
+                        key={task._id}
+                        className={`group relative overflow-hidden rounded-xl p-3 shadow-sm transition-all hover:shadow-md border border-indigo-100/50 ${isSkipped ? 'bg-gray-50 grayscale opacity-60' : 'bg-gradient-to-br from-indigo-50 to-purple-50'}`}
+                      >
+                        <div className="absolute -right-4 -top-4 opacity-10">
+                          <Zap className="h-16 w-16 text-indigo-600" />
+                        </div>
+                        <div className="relative z-10 flex items-center justify-between">
+                          <div className="flex flex-col gap-1 min-w-0 flex-1 pr-2 cursor-pointer" onClick={() => toggleHabitLog(task._id, todayStr)}>
+                            <span className={`truncate text-sm font-semibold ${isDone ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{task.title}</span>
+                            <div className="flex items-center gap-1.5">
+                              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 text-xs shadow-inner">
+                                🔥
+                              </div>
+                              <span className="text-xs font-bold text-orange-600 tracking-wide">
+                                {streakCount} {streakCount === 1 ? 'Day Streak' : 'Day Streak'}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex flex-col items-center gap-1 z-20">
+                             <button onClick={() => toggleHabitLog(task._id, todayStr)} className={`flex h-6 w-6 items-center justify-center rounded-full border transition-colors ${isDone ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 bg-white text-transparent hover:border-indigo-400'}`}>
+                               <Check className="h-4 w-4" />
+                             </button>
+                             <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+                               {!isSkipped && setHabitStatus && (
+                                 <button onClick={(e) => { e.stopPropagation(); setHabitStatus(task._id, todayStr, 'skipped'); }} className="text-[10px] text-gray-500 hover:text-indigo-600 font-medium bg-white rounded px-1.5 py-0.5 shadow-sm border border-gray-200">Skip</button>
+                               )}
+                               {isSkipped && setHabitStatus && (
+                                 <button onClick={(e) => { e.stopPropagation(); setHabitStatus(task._id, todayStr, 'none'); }} className="text-[10px] text-gray-500 hover:text-indigo-600 font-medium bg-white rounded px-1.5 py-0.5 shadow-sm border border-gray-200">Undo</button>
+                               )}
+                             </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {habits.length === 0 && atomicHabitTasks.length === 0 && (
+                <div className="py-2 text-xs text-[var(--color-text-muted)] italic">No habits yet</div>
+              )}
+            </div>
+          )}
+        </div>
+
 
         {/* Mini Calendar */}
         <div className="px-6 pb-4 pt-2">
@@ -520,84 +635,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* Mini Habits */}
-        <div id="sidebar-habits" className="py-2">
-          <div
-            className="group flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-[var(--color-bg-hover-subtle)]"
-            onClick={() => setHabitsExpanded(!habitsExpanded)}
-          >
-            <div className="flex items-center gap-2">
-              <ChevronDown className={`h-4 w-4 text-[var(--color-text-secondary)] transition-transform ${habitsExpanded ? '' : '-rotate-90'}`} />
-              <span className="text-sm font-medium text-[var(--color-text-secondary)]">Mini Habits</span>
-            </div>
-          </div>
-
-          {habitsExpanded && (
-            <div className="px-3 py-1 space-y-1 text-sm">
-              {habits.map(habit => {
-                const logs = habitLogs[habit._id] || [];
-                const isDone = logs.some((l: any) => l.date === todayStr && l.completed);
-                return (
-                  <div key={habit._id} className="flex items-center justify-between py-1 group">
-                    <div className="flex items-center gap-3 cursor-pointer flex-1 min-w-0" onClick={() => toggleHabitLog(habit._id, todayStr)}>
-                      <div className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border ${isDone ? 'border-[var(--color-brand-success)] bg-[var(--color-brand-success)]' : 'border-[var(--color-text-subtle)] group-hover:border-[var(--color-text-secondary)]'}`}>
-                        {isDone && <Check className="w-3 h-3 text-white" />}
-                      </div>
-                      <span className={`truncate ${isDone ? 'text-[var(--color-text-muted)] line-through' : 'text-[var(--color-text-secondary)]'}`}>{habit.title}</span>
-                    </div>
-                    {isDone && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.location.href = `/feed?shareHabit=${habit._id}&title=${encodeURIComponent(habit.title)}`;
-                        }}
-                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-200 transition-opacity text-gray-500 hover:text-[var(--color-brand-primary)] flex-shrink-0"
-                        title="Share milestone to feed"
-                      >
-                        <Share className="w-3 h-3" />
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-
-              {atomicHabitTasks.length > 0 && (
-                <div className={habits.length > 0 ? 'pt-2 space-y-2' : 'space-y-2'}>
-                  {atomicHabitTasks.map((task: any) => {
-                    const streakCount = streaks[task._id] || 0;
-                    return (
-                      <div
-                        key={task._id}
-                        className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 p-3 shadow-sm transition-all hover:shadow-md border border-indigo-100/50"
-                      >
-                        <div className="absolute -right-4 -top-4 opacity-10">
-                          <Zap className="h-16 w-16 text-indigo-600" />
-                        </div>
-                        <div className="relative z-10 flex items-center justify-between">
-                          <div className="flex flex-col gap-1 min-w-0 flex-1 pr-2">
-                            <span className="truncate text-sm font-semibold text-gray-800">{task.title}</span>
-                            <div className="flex items-center gap-1.5">
-                              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 text-xs shadow-inner">
-                                🔥
-                              </div>
-                              <span className="text-xs font-bold text-orange-600 tracking-wide">
-                                {streakCount} {streakCount === 1 ? 'Day Streak' : 'Day Streak'}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {habits.length === 0 && atomicHabitTasks.length === 0 && (
-                <div className="py-2 text-xs text-[var(--color-text-muted)] italic">No habits yet</div>
-              )}
-            </div>
-          )}
-        </div>
 
 
       </div>

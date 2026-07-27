@@ -50,6 +50,7 @@ class HabitLog(BaseModel):
     habit_id: str
     date: str
     completed: bool
+    status: str = "completed"
 
     class Config:
         populate_by_name = True
