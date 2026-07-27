@@ -54,7 +54,7 @@ const initialState: UserState = {
   error: null,
 };
 
-export const fetchUser = createAsyncThunk(
+export const fetchUser = AsyncThunk(
   "user/fetchUser",
   async (userId: string, { rejectWithValue }) => {
     try {

@@ -55,9 +55,7 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
 
     if (isAtomicHabit) {
       const streakCount = streaks[task._id] || 0;
-      // displayTitle = `🔥 ${streakCount} ${task.title}`; // hiding streak count from calendar title for now
-      // displayTitle = `🔥 ${streakCount} ${task.title}`; // removing streak status and logo because it looks weird and the functionality is not very clear yet
-      displayTitle = `${task.title}`;
+      displayTitle = `🔥 ${streakCount} ${task.title}`;
     }
 
     const baseEvent: any = {
@@ -73,7 +71,11 @@ export default function CalendarComponent({ tasks, onUpdateTask, onCreateTask, c
         : isBreak
           ? 'var(--calendar-event-break-border)'
           : (task.status === 'completed' ? 'var(--calendar-event-completed-border)' : 'var(--calendar-event-default-border)'),
-      classNames: ['text-sm', 'font-medium', 'rounded-md', 'border-0', 'shadow-sm', 'p-1', 'cursor-pointer'],
+      classNames: [
+        'text-sm', 'font-medium', 'rounded-md', 'shadow-sm', 'cursor-pointer',
+        isAtomicHabit ? 'p-1.5' : 'p-1',
+        isAtomicHabit ? 'border border-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.4)]' : 'border-0'
+      ],
       extendedProps: { type: task.type, status: task.status }
     };
 

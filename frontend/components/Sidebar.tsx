@@ -31,6 +31,7 @@ interface SidebarProps {
   onAddGoal: (goal: { title: string; description?: string; color?: string }) => Promise<void>;
   onUpdateGoal: (id: string, goal: { title: string; description?: string; color?: string }) => Promise<void>;
   onDeleteGoal: (id: string) => Promise<void>;
+  streaks?: Record<string, number>;
 }
 
 // ── palette ────────────────────────────────────────────────────────────
@@ -333,6 +334,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onAddGoal,
   onUpdateGoal,
   onDeleteGoal,
+  streaks = {},
 }) => {
   const atomicHabitTasks = (tasks || []).filter((t: any) => t.type === 'atomic_habit');
   const [habitsExpanded, setHabitsExpanded] = useState(true);
@@ -365,12 +367,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={onCreateClick}
             className="flex items-center gap-2 rounded-full border border-[var(--color-border-muted)] bg-[var(--color-bg-surface)] py-2 pl-2 pr-4 text-sm font-medium text-[var(--color-text-secondary)] shadow-sm transition-shadow hover:shadow-md"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--color-text-secondary)]">
-              <svg width="36" height="36" viewBox="0 0 36 36">
+            <div className="flex h-6 w-6 items-center justify-center rounded-full text-[var(--color-text-secondary)]">
+              {/* <svg width="36" height="36" viewBox="0 0 36 36">
+                <path fill="#5f6368" d="M16 16v14h4V20z" />
+                <path fill="#5f6368" d="M30 16H20l-4 4h14z" />
+                <path fill="#5f6368" d="M6 16v4h10l4-4z" />
+                <path fill="#5f6368" d="M20 16V6h-4v14z" />
+                <path fill="none" d="M0 0h36v36H0z" />
+              </svg> */}
+              {/* <svg width="36" height="36" viewBox="0 0 36 36">
                 <path fill="var(--logo-green)" d="M16 16v14h4V20z" />
                 <path fill="var(--logo-blue)" d="M30 16H20l-4 4h14z" />
                 <path fill="var(--logo-yellow)" d="M6 16v4h10l4-4z" />
                 <path fill="var(--logo-red)" d="M20 16V6h-4v14z" />
+                <path fill="none" d="M0 0h36v36H0z" />
+              </svg> */}
+              <svg width="36" height="36" viewBox="0 0 36 36">
+                <path fill="#5F8D4E" d="M16 16v14h4V20z" />
+                <path fill="#5B8DEF" d="M30 16H20l-4 4h14z" />
+                <path fill="#D4A93A" d="M6 16v4h10l4-4z" />
+                <path fill="#D66A5E" d="M20 16V6h-4v14z" />
                 <path fill="none" d="M0 0h36v36H0z" />
               </svg>
             </div>
@@ -530,7 +546,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       <span className={`truncate ${isDone ? 'text-[var(--color-text-muted)] line-through' : 'text-[var(--color-text-secondary)]'}`}>{habit.title}</span>
                     </div>
                     {isDone && (
-                      <button 
+                      <button
                         onClick={(e) => {
                           e.stopPropagation();
                           window.location.href = `/feed?shareHabit=${habit._id}&title=${encodeURIComponent(habit.title)}`;
@@ -546,16 +562,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
               })}
 
               {atomicHabitTasks.length > 0 && (
-                <div className={habits.length > 0 ? 'pt-2 space-y-1.5' : 'space-y-1.5'}>
-                  {atomicHabitTasks.map((task: any) => (
-                    <div
-                      key={task._id}
-                      className="flex items-center gap-2.5 rounded-md border-l-2 border-[#0d9488] bg-[#0d9488]/5 px-2.5 py-1.5 transition-colors hover:bg-[#0d9488]/10"
-                    >
-                      <Zap className="w-3 h-3 text-[#0d9488] flex-shrink-0" />
-                      <span className="truncate text-xs font-medium text-[var(--color-text-secondary)]">{task.title}</span>
-                    </div>
-                  ))}
+                <div className={habits.length > 0 ? 'pt-2 space-y-2' : 'space-y-2'}>
+                  {atomicHabitTasks.map((task: any) => {
+                    const streakCount = streaks[task._id] || 0;
+                    return (
+                      <div
+                        key={task._id}
+                        className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 p-3 shadow-sm transition-all hover:shadow-md border border-indigo-100/50"
+                      >
+                        <div className="absolute -right-4 -top-4 opacity-10">
+                          <Zap className="h-16 w-16 text-indigo-600" />
+                        </div>
+                        <div className="relative z-10 flex items-center justify-between">
+                          <div className="flex flex-col gap-1 min-w-0 flex-1 pr-2">
+                            <span className="truncate text-sm font-semibold text-gray-800">{task.title}</span>
+                            <div className="flex items-center gap-1.5">
+                              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 text-xs shadow-inner">
+                                🔥
+                              </div>
+                              <span className="text-xs font-bold text-orange-600 tracking-wide">
+                                {streakCount} {streakCount === 1 ? 'Day Streak' : 'Day Streak'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 

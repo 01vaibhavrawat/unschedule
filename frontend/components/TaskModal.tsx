@@ -24,6 +24,7 @@ interface TaskModalProps {
   } | null;
   onToggleHabit?: (habitId: string, date: string) => Promise<void>;
   habitLogs?: Record<string, any[]>;
+  streaks?: Record<string, number>;
 }
 
 export const TaskModal: React.FC<TaskModalProps> = ({
@@ -35,7 +36,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   initialEnd,
   editingTask,
   onToggleHabit,
-  habitLogs
+  habitLogs,
+  streaks = {}
 }) => {
   const DAYS_OF_WEEK = [
     { label: 'Sunday', value: 0 },
@@ -244,11 +246,18 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       <div className="relative z-10 flex w-full max-w-[480px] flex-col overflow-visible rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] shadow-[var(--shadow-modal)] pointer-events-auto">
 
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-surface-muted)] px-4 py-3">
-          <div />
+        <div className={`flex items-center justify-between border-b border-[var(--color-border-subtle)] px-4 py-3 ${taskType === 'atomic_habit' ? 'bg-gradient-to-r from-indigo-500 to-purple-600' : 'bg-[var(--color-bg-surface-muted)]'}`}>
+          {taskType === 'atomic_habit' ? (
+             <div className="flex items-center gap-2">
+               <span className="text-xl">🔥</span>
+               <span className="font-bold text-sm tracking-wide text-white">
+                  {editingTask?._id ? streaks[editingTask._id] || 0 : 0} DAY STREAK
+               </span>
+             </div>
+          ) : <div />}
           <button
             onClick={onClose}
-            className="rounded-full p-1.5 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-border-strong)]"
+            className={`rounded-full p-1.5 transition-colors ${taskType === 'atomic_habit' ? 'text-white hover:bg-white/20' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-border-strong)]'}`}
           >
             <X className="h-5 w-5" />
           </button>
@@ -292,8 +301,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                 setTaskType('atomic_habit');
                 setSelectedDays(allDays);
               }}
-              className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${taskType === 'atomic_habit'
-                  ? 'bg-[var(--color-brand-purple-soft)] text-[var(--color-brand-purple-strong)]'
+              className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-300 ${taskType === 'atomic_habit'
+                  ? 'bg-purple-100 text-purple-700 shadow-[0_0_12px_rgba(168,85,247,0.5)] scale-105'
                   : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'
                 }`}
             >

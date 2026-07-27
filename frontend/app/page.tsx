@@ -183,6 +183,7 @@ export default function Home() {
           onAddGoal={addGoal}
           onUpdateGoal={updateGoal}
           onDeleteGoal={deleteGoal}
+          streaks={streaks}
         />
         
         <main id="calendar-view" className="flex-1 overflow-hidden p-2 flex flex-col">
@@ -215,6 +216,7 @@ export default function Home() {
         editingTask={editingTask}
         onToggleHabit={toggleHabitLog}
         habitLogs={habitLogs}
+        streaks={streaks}
       />
 
       <OnboardingModal 
