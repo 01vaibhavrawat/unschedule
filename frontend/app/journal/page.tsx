@@ -23,17 +23,17 @@ export default function JournalPage() {
     setSaveMessage('');
   }, [existingEntry, dateStr]);
 
-  const handleSave = async () => {
-    if (!content.trim()) return;
+  const handleSave = async (currentContent: string, currentExistingEntry: any, currentDateStr: string) => {
+    if (!currentContent.trim()) return;
     setIsSaving(true);
     setSaveMessage('');
     try {
-      if (existingEntry) {
-        await updateJournal(existingEntry._id, { content });
+      if (currentExistingEntry) {
+        await updateJournal(currentExistingEntry._id, { content: currentContent });
       } else {
-        await addJournal({ date: dateStr, content });
+        await addJournal({ date: currentDateStr, content: currentContent });
       }
-      setSaveMessage('Saved successfully');
+      setSaveMessage('Saved');
       setTimeout(() => setSaveMessage(''), 3000);
     } catch (err) {
       setSaveMessage('Error saving entry');
@@ -41,6 +41,20 @@ export default function JournalPage() {
       setIsSaving(false);
     }
   };
+
+  const onManualSave = () => handleSave(content, existingEntry, dateStr);
+
+  useEffect(() => {
+    if (!content.trim()) return;
+    if (existingEntry && existingEntry.content === content) return;
+
+    const timeoutId = setTimeout(() => {
+      handleSave(content, existingEntry, dateStr);
+    }, 1500);
+
+    return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [content]);
 
   const handlePrevDay = () => setSelectedDate(prev => subDays(prev, 1));
   const handleNextDay = () => setSelectedDate(prev => addDays(prev, 1));
@@ -88,7 +102,7 @@ export default function JournalPage() {
                 {saveMessage}
               </span>
               <button
-                onClick={handleSave}
+                onClick={onManualSave}
                 disabled={isSaving || !content.trim()}
                 className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 text-sm font-medium"
               >

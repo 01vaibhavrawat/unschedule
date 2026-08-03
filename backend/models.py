@@ -38,7 +38,7 @@ class MiniHabit(BaseModel):
     user_id: Optional[str] = None
     title: str
     frequency: List[str]
-    created_at: str
+    created_at: Optional[str] = None
 
     class Config:
         populate_by_name = True
@@ -72,7 +72,7 @@ class JournalEntry(BaseModel):
     user_id: Optional[str] = None
     date: str
     content: str
-    created_at: str
+    created_at: Optional[str] = None
     updated_at: Optional[str] = None
 
     class Config:
@@ -86,7 +86,7 @@ class Note(BaseModel):
     content: str
     folder: Optional[str] = "General"
     tags: Optional[List[str]] = []
-    created_at: str
+    created_at: Optional[str] = None
     updated_at: Optional[str] = None
 
     class Config:
