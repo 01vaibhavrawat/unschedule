@@ -6,6 +6,8 @@ import { api } from '@/lib/api';
 import { useStore } from '@/store/useStore';
 import Link from 'next/link';
 import { PostCard } from '@/components/PostCard';
+import { PeopleSuggestions } from '@/components/PeopleSuggestions';
+import { RichTextEditor } from '@/components/RichTextEditor';
 
 export default function CommunityDetailPage() {
   const params = useParams();
@@ -107,7 +109,10 @@ export default function CommunityDetailPage() {
               {community.is_member ? 'Leave' : 'Join'}
             </button>
           </div>
-          <p className="text-gray-600 mt-3">{community.description}</p>
+          <div 
+            className="text-gray-600 mt-3 prose prose-sm max-w-none"
+            dangerouslySetInnerHTML={{ __html: community.description || 'No description provided.' }}
+          />
           <div className="mt-4 text-xs text-gray-400">
             {community.member_count} {community.member_count === 1 ? 'member' : 'members'}
           </div>
@@ -115,13 +120,14 @@ export default function CommunityDetailPage() {
 
         {community.is_member && (
           <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-            <textarea
-              value={newPost}
-              onChange={(e) => setNewPost(e.target.value)}
-              placeholder={`Post to ${community.name}...`}
-              className="w-full border border-gray-200 rounded-lg p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)] resize-none"
-              rows={3}
-            />
+            <div className="mb-2 w-full">
+              <RichTextEditor
+                value={newPost}
+                onChange={setNewPost}
+                placeholder={`Post to ${community.name}...`}
+                minHeight="80px"
+              />
+            </div>
             <div className="mt-3 flex justify-end">
               <button
                 onClick={handlePost}

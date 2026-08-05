@@ -7,8 +7,9 @@ import {
 } from 'lucide-react';
 import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek,
-  addDays, format, isSameMonth, subMonths, addMonths
+  addDays, format, isSameMonth, subMonths, addMonths, differenceInDays
 } from 'date-fns';
+import { RichTextEditor } from './RichTextEditor';
 
 // ── types ──────────────────────────────────────────────────────────────
 interface Goal {
@@ -207,14 +208,14 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
               onKeyDown={handleKey}
               className="w-full rounded-xl border border-indigo-100 bg-white px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 mb-2"
             />
-            <textarea
-              placeholder="Why does this matter? (optional)"
-              value={form.description}
-              onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-              onKeyDown={handleKey}
-              rows={2}
-              className="w-full resize-none rounded-xl border border-indigo-100 bg-white px-4 py-2.5 text-sm text-gray-600 placeholder-gray-400 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
-            />
+            <div className="mb-2 w-full">
+              <RichTextEditor
+                placeholder="Why does this matter? (optional)"
+                value={form.description}
+                onChange={(value) => setForm(f => ({ ...f, description: value }))}
+                minHeight="80px"
+              />
+            </div>
             <div className="mt-3 flex justify-end gap-2">
               <button
                 onClick={cancelEdit}

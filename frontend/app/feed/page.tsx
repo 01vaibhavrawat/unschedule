@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { PostCard } from '@/components/PostCard';
 import { PeopleSuggestions } from '@/components/PeopleSuggestions';
+import { RichTextEditor } from '@/components/RichTextEditor';
 
 function FeedPageContent() {
   const { user } = useStore();
@@ -89,12 +90,11 @@ function FeedPageContent() {
             )}
 
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-              <textarea
+              <RichTextEditor
                 value={newPost}
-                onChange={(e) => setNewPost(e.target.value)}
+                onChange={setNewPost}
                 placeholder={shareHabit ? "Add a comment about your milestone..." : "What's on your mind?"}
-                className="w-full border border-gray-200 rounded-lg p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)] resize-none"
-                rows={3}
+                minHeight="80px"
               />
               <div className="mt-3 flex justify-end">
                 <button

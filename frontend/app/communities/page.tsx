@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import Link from 'next/link';
+import { RichTextEditor } from '@/components/RichTextEditor';
 
 export default function CommunitiesPage() {
   const [communities, setCommunities] = useState<any[]>([]);
@@ -74,13 +75,14 @@ export default function CommunitiesPage() {
                 placeholder="Community Name" 
                 className="w-full border border-gray-200 rounded-lg p-2 focus:ring-1 focus:ring-[var(--color-brand-primary)] focus:outline-none"
               />
-              <textarea 
-                value={newDesc} 
-                onChange={e => setNewDesc(e.target.value)} 
-                placeholder="Description" 
-                className="w-full border border-gray-200 rounded-lg p-2 focus:ring-1 focus:ring-[var(--color-brand-primary)] focus:outline-none resize-none"
-                rows={2}
-              />
+              <div className="mb-2">
+                <RichTextEditor 
+                  value={newDesc} 
+                  onChange={setNewDesc} 
+                  placeholder="Description" 
+                  minHeight="80px"
+                />
+              </div>
               <input 
                 type="text" 
                 value={newTag} 
@@ -121,7 +123,7 @@ export default function CommunitiesPage() {
                       {c.tag}
                     </span>
                   )}
-                  <p className="text-gray-600 text-sm mt-2 line-clamp-2">{c.description || 'No description provided.'}</p>
+                  <p className="text-gray-600 text-sm mt-2 line-clamp-2">{c.description?.replace(/<[^>]+>/g, '') || 'No description provided.'}</p>
                 </div>
                 <div className="mt-4 text-xs text-gray-400">
                   {c.member_count} {c.member_count === 1 ? 'member' : 'members'}

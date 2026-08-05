@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useStore } from '@/store/useStore';
 import { Plus, Search, FileText, Trash2, Save, FolderOpen } from 'lucide-react';
 import { format } from 'date-fns';
+import { RichTextEditor } from '@/components/RichTextEditor';
 
 export default function NotesPage() {
   const { notes, addNote, updateNote, deleteNote } = useStore();
@@ -107,7 +108,7 @@ export default function NotesPage() {
                   {note.title || 'Untitled Note'}
                 </h4>
                 <p className="text-xs text-gray-400 mt-1 truncate">
-                  {note.content || 'No content...'}
+                  {note.content?.replace(/<[^>]+>/g, '') || 'No content...'}
                 </p>
                 
                 <button
@@ -147,11 +148,11 @@ export default function NotesPage() {
             </div>
             
             <div className="flex-1 overflow-y-auto p-8">
-              <textarea
+              <RichTextEditor
                 value={localContent}
-                onChange={(e) => setLocalContent(e.target.value)}
+                onChange={setLocalContent}
                 placeholder="Start typing..."
-                className="w-full h-full min-h-[500px] resize-none outline-none text-gray-700 leading-relaxed text-base placeholder-gray-300 bg-transparent"
+                minHeight="500px"
               />
             </div>
           </>

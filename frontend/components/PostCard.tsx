@@ -95,7 +95,10 @@ export function PostCard({ post, currentUserId, onPostDeleted }: { post: any; cu
       )}
 
       {post.content && (
-        <p className="text-gray-700 whitespace-pre-wrap mb-3">{post.content}</p>
+        <div 
+          className="text-gray-700 prose prose-sm max-w-none mb-3" 
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
       )}
 
       <div className="mt-2 flex items-center justify-between text-xs text-gray-400 border-t border-gray-50 pt-3">

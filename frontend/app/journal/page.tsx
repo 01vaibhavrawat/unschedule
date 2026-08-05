@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useStore } from '@/store/useStore';
 import { format, subDays, addDays } from 'date-fns';
 import { ChevronLeft, ChevronRight, Save, BookOpen } from 'lucide-react';
+import { RichTextEditor } from '@/components/RichTextEditor';
 
 export default function JournalPage() {
   const { journals, addJournal, updateJournal } = useStore();
@@ -111,12 +112,15 @@ export default function JournalPage() {
               </button>
             </div>
           </div>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Write your thoughts here..."
-            className="flex-1 w-full p-6 resize-none outline-none text-gray-800 text-lg leading-relaxed placeholder-gray-300"
-          />
+          <div className="flex-1 overflow-y-auto p-2">
+            <RichTextEditor
+              value={content}
+              onChange={setContent}
+              placeholder="Write your thoughts here..."
+              minHeight="100%"
+              className="border-none"
+            />
+          </div>
         </div>
       </div>
     </div>
