@@ -29,7 +29,7 @@ export default function JournalPage() {
     setSaveMessage('');
     try {
       if (currentExistingEntry) {
-        await updateJournal(currentExistingEntry._id, { content: currentContent });
+        await updateJournal(currentExistingEntry._id, { date: currentDateStr, content: currentContent });
       } else {
         await addJournal({ date: currentDateStr, content: currentContent });
       }
