@@ -4,28 +4,60 @@ import { useStore } from '@/store/useStore';
 import { Plus, Search, FileText, Trash2, Save, FolderOpen } from 'lucide-react';
 import { format } from 'date-fns';
 import { RichTextEditor } from '@/components/RichTextEditor';
+import { useAutoSave } from '@/hooks/useAutoSave';
+
+function NoteEditor({ note, updateNote }: { note: any; updateNote: (id: string, updates: any) => Promise<void> }) {
+  const [localTitle, setLocalTitle] = useState(note.title || '');
+  const [localContent, setLocalContent] = useState(note.content || '');
+
+  const saveToStore = async (data: { title: string; content: string }) => {
+    await updateNote(note._id, data);
+  };
+
+  const { isSaving, forceSave } = useAutoSave({ title: localTitle, content: localContent }, saveToStore, 1500);
+
+  return (
+    <>
+      <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10">
+        <input
+          value={localTitle}
+          onChange={(e) => setLocalTitle(e.target.value)}
+          placeholder="Note Title"
+          className="text-2xl font-bold text-gray-800 outline-none w-full max-w-xl placeholder-gray-300 bg-transparent"
+        />
+        <div className="flex items-center gap-3">
+          <span className={`text-sm transition-opacity ${isSaving ? 'opacity-100 text-gray-500' : 'opacity-0'}`}>
+            Saving...
+          </span>
+          <button
+            onClick={forceSave}
+            disabled={isSaving || (localTitle === note.title && localContent === note.content)}
+            className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 text-sm font-medium flex-shrink-0 ml-4"
+          >
+            <Save className="w-4 h-4" />
+            {isSaving ? 'Saving...' : 'Save'}
+          </button>
+        </div>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto p-8">
+        <RichTextEditor
+          value={localContent}
+          onChange={setLocalContent}
+          placeholder="Start typing..."
+          minHeight="500px"
+        />
+      </div>
+    </>
+  );
+}
 
 export default function NotesPage() {
   const { notes, addNote, updateNote, deleteNote } = useStore();
   const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Local state for the active note to allow editing without immediate dispatch
-  const [localTitle, setLocalTitle] = useState('');
-  const [localContent, setLocalContent] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
 
   const activeNote = notes.find(n => n._id === activeNoteId);
-
-  useEffect(() => {
-    if (activeNote) {
-      setLocalTitle(activeNote.title);
-      setLocalContent(activeNote.content);
-    } else {
-      setLocalTitle('');
-      setLocalContent('');
-    }
-  }, [activeNoteId, activeNote]);
 
   const filteredNotes = notes.filter(n => 
     n.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -33,25 +65,8 @@ export default function NotesPage() {
   );
 
   const handleCreateNote = async () => {
-    // Add a new blank note and select it
-    // Wait, useStore addNote doesn't return the note currently because Zustand actions don't return by default in our setup unless we await and fetch it, but `addNote` modifies state.
-    // Actually, `addNote` creates it and updates state. We can select the new note if we know its ID, but it might be easier to just create a dummy one or wait for it.
-    // Let's modify `useStore` to return the new note? It's fine, we can just trigger creation, and select it manually.
-    // For simplicity, let's just trigger a create action with a default title.
     const tempTitle = "Untitled Note";
     await addNote({ title: tempTitle, content: "" });
-    // This will append to `notes`. We can just let the user click it from the list.
-    // In a full implementation, `addNote` should return the created note to set `activeNoteId`.
-  };
-
-  const handleSave = async () => {
-    if (!activeNoteId) return;
-    setIsSaving(true);
-    try {
-      await updateNote(activeNoteId, { title: localTitle, content: localContent });
-    } finally {
-      setIsSaving(false);
-    }
   };
 
   const handleDelete = async (id: string) => {
@@ -128,34 +143,8 @@ export default function NotesPage() {
 
       {/* Main Editor */}
       <div className="flex-1 flex flex-col relative bg-white">
-        {activeNoteId ? (
-          <>
-            <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10">
-              <input
-                value={localTitle}
-                onChange={(e) => setLocalTitle(e.target.value)}
-                placeholder="Note Title"
-                className="text-2xl font-bold text-gray-800 outline-none w-full max-w-xl placeholder-gray-300 bg-transparent"
-              />
-              <button
-                onClick={handleSave}
-                disabled={isSaving || (localTitle === activeNote?.title && localContent === activeNote?.content)}
-                className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 text-sm font-medium flex-shrink-0 ml-4"
-              >
-                <Save className="w-4 h-4" />
-                {isSaving ? 'Saving...' : 'Save'}
-              </button>
-            </div>
-            
-            <div className="flex-1 overflow-y-auto p-8">
-              <RichTextEditor
-                value={localContent}
-                onChange={setLocalContent}
-                placeholder="Start typing..."
-                minHeight="500px"
-              />
-            </div>
-          </>
+        {activeNote ? (
+          <NoteEditor key={activeNote._id} note={activeNote} updateNote={updateNote} />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-gray-400 bg-gray-50/30">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">

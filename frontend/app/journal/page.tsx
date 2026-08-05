@@ -1,61 +1,81 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useStore } from '@/store/useStore';
 import { format, subDays, addDays } from 'date-fns';
 import { ChevronLeft, ChevronRight, Save, BookOpen } from 'lucide-react';
 import { RichTextEditor } from '@/components/RichTextEditor';
+import { useAutoSave } from '@/hooks/useAutoSave';
+
+function JournalEditor({ 
+  dateStr, 
+  selectedDate,
+  existingEntry, 
+  addJournal, 
+  updateJournal 
+}: { 
+  dateStr: string; 
+  selectedDate: Date;
+  existingEntry: any; 
+  addJournal: (data: any) => Promise<any>; 
+  updateJournal: (id: string, data: any) => Promise<void>; 
+}) {
+  const [content, setContent] = useState(existingEntry?.content || '');
+  const createdIdRef = useRef<string | null>(null);
+
+  const saveToStore = async (newContent: string) => {
+    if (!newContent.trim() && !existingEntry && !createdIdRef.current) return;
+    
+    const targetId = existingEntry?._id || createdIdRef.current;
+
+    if (targetId) {
+      await updateJournal(targetId, { date: dateStr, content: newContent });
+    } else {
+      const newJournal = await addJournal({ date: dateStr, content: newContent });
+      createdIdRef.current = newJournal._id;
+    }
+  };
+
+  const { isSaving, forceSave } = useAutoSave(content, saveToStore, 1500);
+
+  return (
+    <div className="w-full max-w-4xl flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+        <div className="text-sm text-gray-500 font-medium">
+          Entry for {format(selectedDate, 'EEEE, MMMM do')}
+        </div>
+        <div className="flex items-center gap-3">
+          <span className={`text-sm transition-opacity ${isSaving ? 'opacity-100 text-gray-500' : 'opacity-0'}`}>
+            Saving...
+          </span>
+          <button
+            onClick={forceSave}
+            disabled={isSaving || content === (existingEntry?.content || '')}
+            className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 text-sm font-medium"
+          >
+            <Save className="w-4 h-4" />
+            {isSaving ? 'Saving...' : 'Save Entry'}
+          </button>
+        </div>
+      </div>
+      <div className="flex-1 overflow-y-auto p-2">
+        <RichTextEditor
+          value={content}
+          onChange={setContent}
+          placeholder="Write your thoughts here..."
+          minHeight="100%"
+          className="border-none"
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function JournalPage() {
   const { journals, addJournal, updateJournal } = useStore();
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [content, setContent] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState('');
 
   const dateStr = format(selectedDate, 'yyyy-MM-dd');
   const existingEntry = journals.find(j => j.date === dateStr);
-
-  useEffect(() => {
-    if (existingEntry) {
-      setContent(existingEntry.content);
-    } else {
-      setContent('');
-    }
-    setSaveMessage('');
-  }, [existingEntry, dateStr]);
-
-  const handleSave = async (currentContent: string, currentExistingEntry: any, currentDateStr: string) => {
-    if (!currentContent.trim()) return;
-    setIsSaving(true);
-    setSaveMessage('');
-    try {
-      if (currentExistingEntry) {
-        await updateJournal(currentExistingEntry._id, { date: currentDateStr, content: currentContent });
-      } else {
-        await addJournal({ date: currentDateStr, content: currentContent });
-      }
-      setSaveMessage('Saved');
-      setTimeout(() => setSaveMessage(''), 3000);
-    } catch (err) {
-      setSaveMessage('Error saving entry');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const onManualSave = () => handleSave(content, existingEntry, dateStr);
-
-  useEffect(() => {
-    if (!content.trim()) return;
-    if (existingEntry && existingEntry.content === content) return;
-
-    const timeoutId = setTimeout(() => {
-      handleSave(content, existingEntry, dateStr);
-    }, 1500);
-
-    return () => clearTimeout(timeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [content]);
 
   const handlePrevDay = () => setSelectedDate(prev => subDays(prev, 1));
   const handleNextDay = () => setSelectedDate(prev => addDays(prev, 1));
@@ -93,35 +113,14 @@ export default function JournalPage() {
       </div>
 
       <div className="flex-1 overflow-hidden p-8 flex flex-col items-center">
-        <div className="w-full max-w-4xl flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-            <div className="text-sm text-gray-500 font-medium">
-              Entry for {format(selectedDate, 'EEEE, MMMM do')}
-            </div>
-            <div className="flex items-center gap-3">
-              <span className={`text-sm transition-opacity ${saveMessage ? 'opacity-100' : 'opacity-0'} ${saveMessage.includes('Error') ? 'text-red-500' : 'text-green-600'}`}>
-                {saveMessage}
-              </span>
-              <button
-                onClick={onManualSave}
-                disabled={isSaving || !content.trim()}
-                className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 text-sm font-medium"
-              >
-                <Save className="w-4 h-4" />
-                {isSaving ? 'Saving...' : 'Save Entry'}
-              </button>
-            </div>
-          </div>
-          <div className="flex-1 overflow-y-auto p-2">
-            <RichTextEditor
-              value={content}
-              onChange={setContent}
-              placeholder="Write your thoughts here..."
-              minHeight="100%"
-              className="border-none"
-            />
-          </div>
-        </div>
+        <JournalEditor 
+          key={dateStr}
+          dateStr={dateStr}
+          selectedDate={selectedDate}
+          existingEntry={existingEntry}
+          addJournal={addJournal}
+          updateJournal={updateJournal}
+        />
       </div>
     </div>
   );

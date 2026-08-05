@@ -40,23 +40,23 @@ interface AppState {
 
   fetchInitialData: () => Promise<void>;
   completeOnboarding: () => Promise<void>;
-  addTask: (task: any) => Promise<void>;
+  addTask: (task: any) => Promise<any>;
   updateTask: (id: string, task: any) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
 
-  addHabit: (habit: any) => Promise<void>;
+  addHabit: (habit: any) => Promise<any>;
   toggleHabitLog: (habitId: string, date: string) => Promise<void>;
   setHabitStatus: (habitId: string, date: string, status: 'completed' | 'skipped' | 'none') => Promise<void>;
 
-  addGoal: (goal: any) => Promise<void>;
+  addGoal: (goal: any) => Promise<any>;
   updateGoal: (id: string, goal: any) => Promise<void>;
   deleteGoal: (id: string) => Promise<void>;
 
-  addNote: (note: any) => Promise<void>;
+  addNote: (note: any) => Promise<any>;
   updateNote: (id: string, note: any) => Promise<void>;
   deleteNote: (id: string) => Promise<void>;
 
-  addJournal: (journal: any) => Promise<void>;
+  addJournal: (journal: any) => Promise<any>;
   updateJournal: (id: string, journal: any) => Promise<void>;
   deleteJournal: (id: string) => Promise<void>;
 }
@@ -117,6 +117,7 @@ export const useStore = create<AppState>((set, get) => ({
   addTask: async (task) => {
     const newTask = await api.createTask(task);
     set((state) => ({ tasks: [...state.tasks, newTask] }));
+    return newTask;
   },
 
   updateTask: async (id, updatedTask) => {
@@ -132,6 +133,7 @@ export const useStore = create<AppState>((set, get) => ({
   addHabit: async (habit) => {
     const newHabit = await api.createHabit(habit);
     set((state) => ({ habits: [...state.habits, newHabit] }));
+    return newHabit;
   },
 
   toggleHabitLog: async (habitId, date) => {
@@ -155,6 +157,7 @@ export const useStore = create<AppState>((set, get) => ({
   addGoal: async (goal) => {
     const newGoal = await api.createGoal(goal);
     set((state) => ({ goals: [...state.goals, newGoal] }));
+    return newGoal;
   },
 
   updateGoal: async (id, updatedGoal) => {
@@ -170,6 +173,7 @@ export const useStore = create<AppState>((set, get) => ({
   addNote: async (note) => {
     const newNote = await api.createNote(note);
     set((state) => ({ notes: [...state.notes, newNote] }));
+    return newNote;
   },
 
   updateNote: async (id, updatedNote) => {
@@ -185,6 +189,7 @@ export const useStore = create<AppState>((set, get) => ({
   addJournal: async (journal) => {
     const newJournal = await api.createJournal(journal);
     set((state) => ({ journals: [...state.journals, newJournal] }));
+    return newJournal;
   },
 
   updateJournal: async (id, updatedJournal) => {
