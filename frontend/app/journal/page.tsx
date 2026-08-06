@@ -6,25 +6,25 @@ import { ChevronLeft, ChevronRight, Save, BookOpen } from 'lucide-react';
 import { RichTextEditor } from '@/components/RichTextEditor';
 import { useAutoSave } from '@/hooks/useAutoSave';
 
-function JournalEditor({ 
-  dateStr, 
+function JournalEditor({
+  dateStr,
   selectedDate,
-  existingEntry, 
-  addJournal, 
-  updateJournal 
-}: { 
-  dateStr: string; 
+  existingEntry,
+  addJournal,
+  updateJournal
+}: {
+  dateStr: string;
   selectedDate: Date;
-  existingEntry: any; 
-  addJournal: (data: any) => Promise<any>; 
-  updateJournal: (id: string, data: any) => Promise<void>; 
+  existingEntry: any;
+  addJournal: (data: any) => Promise<any>;
+  updateJournal: (id: string, data: any) => Promise<void>;
 }) {
   const [content, setContent] = useState(existingEntry?.content || '');
   const createdIdRef = useRef<string | null>(null);
 
   const saveToStore = async (newContent: string) => {
     if (!newContent.trim() && !existingEntry && !createdIdRef.current) return;
-    
+
     const targetId = existingEntry?._id || createdIdRef.current;
 
     if (targetId) {
@@ -38,7 +38,7 @@ function JournalEditor({
   const { isSaving, forceSave } = useAutoSave(content, saveToStore, 1500);
 
   return (
-    <div className="w-full max-w-4xl flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="w-full flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
         <div className="text-sm text-gray-500 font-medium">
           Entry for {format(selectedDate, 'EEEE, MMMM do')}
@@ -113,7 +113,7 @@ export default function JournalPage() {
       </div>
 
       <div className="flex-1 overflow-hidden p-8 flex flex-col items-center">
-        <JournalEditor 
+        <JournalEditor
           key={dateStr}
           dateStr={dateStr}
           selectedDate={selectedDate}

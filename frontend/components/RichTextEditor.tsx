@@ -5,7 +5,7 @@ import { Table } from '@tiptap/extension-table';
 import { TableRow } from '@tiptap/extension-table-row';
 import { TableHeader } from '@tiptap/extension-table-header';
 import { TableCell } from '@tiptap/extension-table-cell';
-import { Bold, Italic, List, ListOrdered, Table as TableIcon } from 'lucide-react';
+import { Bold, Italic, List, ListOrdered, Table as TableIcon, Trash, Plus, Minus, Type } from 'lucide-react';
 
 interface RichTextEditorProps {
   value: string;
@@ -108,6 +108,59 @@ export function RichTextEditor({
         >
           <TableIcon className="w-4 h-4" />
         </button>
+
+        {editor.isActive('table') && (
+          <>
+            <div className="w-px h-4 bg-gray-300 mx-1"></div>
+            <button
+              onClick={(e) => { e.preventDefault(); editor.chain().focus().addRowAfter().run(); }}
+              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-gray-500 hover:bg-gray-200 hover:text-gray-700`}
+              title="Add Row After"
+            >
+              <div className="flex flex-col gap-0.5 items-center justify-center">
+                <Plus className="w-3 h-3" />
+                <span className="text-[8px] font-bold leading-none">ROW</span>
+              </div>
+            </button>
+            <button
+              onClick={(e) => { e.preventDefault(); editor.chain().focus().deleteRow().run(); }}
+              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-gray-500 hover:bg-red-100 hover:text-red-700`}
+              title="Delete Row"
+            >
+              <div className="flex flex-col gap-0.5 items-center justify-center">
+                <Minus className="w-3 h-3" />
+                <span className="text-[8px] font-bold leading-none">ROW</span>
+              </div>
+            </button>
+            <button
+              onClick={(e) => { e.preventDefault(); editor.chain().focus().addColumnAfter().run(); }}
+              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-gray-500 hover:bg-gray-200 hover:text-gray-700`}
+              title="Add Column After"
+            >
+              <div className="flex flex-col gap-0.5 items-center justify-center">
+                <Plus className="w-3 h-3" />
+                <span className="text-[8px] font-bold leading-none">COL</span>
+              </div>
+            </button>
+            <button
+              onClick={(e) => { e.preventDefault(); editor.chain().focus().deleteColumn().run(); }}
+              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-gray-500 hover:bg-red-100 hover:text-red-700`}
+              title="Delete Column"
+            >
+              <div className="flex flex-col gap-0.5 items-center justify-center">
+                <Minus className="w-3 h-3" />
+                <span className="text-[8px] font-bold leading-none">COL</span>
+              </div>
+            </button>
+            <button
+              onClick={(e) => { e.preventDefault(); editor.chain().focus().deleteTable().run(); }}
+              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-gray-500 hover:bg-red-100 hover:text-red-700`}
+              title="Delete Table"
+            >
+              <Trash className="w-4 h-4" />
+            </button>
+          </>
+        )}
       </div>
       
       {/* Editor Content area */}
