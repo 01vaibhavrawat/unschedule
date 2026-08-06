@@ -1,7 +1,11 @@
 import React, { useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Bold, Italic, List, ListOrdered } from 'lucide-react';
+import { Table } from '@tiptap/extension-table';
+import { TableRow } from '@tiptap/extension-table-row';
+import { TableHeader } from '@tiptap/extension-table-header';
+import { TableCell } from '@tiptap/extension-table-cell';
+import { Bold, Italic, List, ListOrdered, Table as TableIcon } from 'lucide-react';
 
 interface RichTextEditorProps {
   value: string;
@@ -21,6 +25,12 @@ export function RichTextEditor({
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
     ],
     content: value,
     onUpdate: ({ editor }) => {
@@ -87,6 +97,16 @@ export function RichTextEditor({
           title="Numbered List"
         >
           <ListOrdered className="w-4 h-4" />
+        </button>
+
+        <div className="w-px h-4 bg-gray-300 mx-1"></div>
+
+        <button
+          onClick={(e) => { e.preventDefault(); editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(); }}
+          className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-gray-500 hover:bg-gray-200 hover:text-gray-700`}
+          title="Insert Table"
+        >
+          <TableIcon className="w-4 h-4" />
         </button>
       </div>
       

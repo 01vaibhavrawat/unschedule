@@ -112,3 +112,46 @@ body {
 .fc-timegrid-event {
   box-shadow: inset 0 0 0 1px var(--color-overlay-inset);
 }
+
+/* Tiptap Table Styles */
+.prose table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.prose table td,
+.prose table th {
+  min-width: 1em;
+  border: 1px solid var(--color-border-default, #e5e7eb);
+  padding: 8px 12px;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.prose table th {
+  font-weight: 600;
+  text-align: left;
+  background-color: var(--color-bg-surface-muted, #f9fafb);
+}
+
+.prose table .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: -2px;
+  width: 4px;
+  background-color: var(--color-brand-primary, #6366f1);
+  pointer-events: none;
+}
+
+.prose .tableWrapper {
+  overflow-x: auto;
+}
+
+.resize-cursor {
+  cursor: col-resize;
+}
