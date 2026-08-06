@@ -164,7 +164,7 @@ export function RichTextEditor({
       </div>
       
       {/* Editor Content area */}
-      <div className="flex-1 overflow-y-auto p-4 cursor-text relative" onClick={() => editor.commands.focus()}>
+      <div className="flex-1 overflow-auto p-4 cursor-text relative" onClick={() => editor.commands.focus()}>
         {editor.isEmpty && placeholder && (
           <div className="pointer-events-none absolute text-gray-400">
             {placeholder}
