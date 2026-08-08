@@ -148,4 +148,8 @@ export const api = {
   createJournal: (data: any) => fetchAPI("/journals/", { method: "POST", body: JSON.stringify(data) }),
   updateJournal: (id: string, data: any) => fetchAPI(`/journals/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   deleteJournal: (id: string) => fetchAPI(`/journals/${id}`, { method: "DELETE" }),
+
+  // ── Assistant ────────────────────────────────────────────────
+  getAssistantHistory: () => fetchAPI("/assistant/history"),
+  sendAssistantMessage: (data: { message: string }) => fetchAPI("/assistant/chat", { method: "POST", body: JSON.stringify(data) }),
 };

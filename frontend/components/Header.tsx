@@ -142,38 +142,6 @@ export const Header: React.FC<HeaderProps> = ({
 
               {/* Menu items */}
               <div className="py-1.5">
-                <button
-                  onClick={() => { setMenuOpen(false); if(user) window.location.href = `/profile/${user.id}`; }}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
-                  role="menuitem"
-                >
-                  <User className="w-4 h-4 text-gray-400" />
-                  My Profile
-                </button>
-                <button
-                  onClick={() => { setMenuOpen(false); window.location.href = '/feed'; }}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
-                  role="menuitem"
-                >
-                  <Grid className="w-4 h-4 text-gray-400" />
-                  Social Feed
-                </button>
-                <button
-                  onClick={() => { setMenuOpen(false); window.location.href = '/communities'; }}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
-                  role="menuitem"
-                >
-                  <UsersIcon className="w-4 h-4 text-gray-400" />
-                  Communities
-                </button>
-                <button
-                  onClick={() => { setMenuOpen(false); window.location.href = '/messages'; }}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
-                  role="menuitem"
-                >
-                  <Search className="w-4 h-4 text-gray-400" />
-                  Messages
-                </button>
                 <hr className="my-1 border-gray-100" />
                 <button
                   id="logout-button"

@@ -16,7 +16,7 @@ export function useAutoSave<T>(
   
   // Track the last successfully saved value to avoid redundant saves.
   const lastSavedValueRef = useRef(value);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const save = useCallback(async (valToSave: T) => {
     if (JSON.stringify(valToSave) === JSON.stringify(lastSavedValueRef.current)) return;

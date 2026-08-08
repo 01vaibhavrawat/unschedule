@@ -5,7 +5,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Response, Cookie, Header, status, Depends
 from jose import JWTError, jwt
 import bcrypt
-from models import SignupRequest, LoginRequest, UserPublic
+from models import SignupRequest, LoginRequest, UserPublic, User
 from database import users_collection
 from bson import ObjectId
 
@@ -64,6 +64,12 @@ def get_current_user_id(
     if not payload or "sub" not in payload:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token.")
     return payload["sub"]
+
+async def get_current_user(user_id: str = Depends(get_current_user_id)) -> User:
+    user = await users_collection.find_one({"_id": ObjectId(user_id)})
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found.")
+    return User(**user)
 
 
 # ── Routes ──────────────────────────────────────────────────────────────────

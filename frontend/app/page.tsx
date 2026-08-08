@@ -7,8 +7,6 @@ import FullCalendar from '@fullcalendar/react';
 import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
 import { TaskModal } from '@/components/TaskModal';
-import { OnboardingModal } from '@/components/OnboardingModal';
-import { InteractiveTour } from '@/components/InteractiveTour';
 import { api } from '@/lib/api';
 
 const DynamicCalendar = dynamic(() => import('@/components/CalendarComponent'), {
@@ -65,9 +63,10 @@ export default function Home() {
   useEffect(() => {
     // Auth and fetchInitialData are now handled in ClientLayout
     if (user && !user.has_completed_onboarding) {
-      setShowOnboarding(true);
+      useStore.getState().setAssistantOpen(true);
+      completeOnboarding();
     }
-  }, [user]);
+  }, [user, completeOnboarding]);
 
   const todayStr = format(new Date(), 'yyyy-MM-dd');
 
@@ -218,30 +217,6 @@ export default function Home() {
         streaks={streaks}
       />
 
-      <OnboardingModal 
-        isOpen={showOnboarding}
-        onComplete={() => {
-          setShowOnboarding(false);
-          completeOnboarding();
-          setShowTour(true);
-          setIsSidebarOpen(true);
-        }}
-      />
-
-      <InteractiveTour 
-        run={showTour}
-        onStepChange={(nextIndex) => {
-          if (nextIndex === 2 && isMobile) {
-            setIsSidebarOpen(false);
-          }
-        }}
-        onComplete={() => {
-          setShowTour(false);
-          if (isMobile) {
-            setIsSidebarOpen(false);
-          }
-        }}
-      />
     </div>
   );
 }

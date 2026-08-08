@@ -34,7 +34,9 @@ interface AppState {
   streaks: Record<string, number>;
   notes: any[];
   journals: any[];
+  assistantOpen: boolean;
 
+  setAssistantOpen: (open: boolean) => void;
   setUser: (user: AuthUser | null) => void;
   logout: () => Promise<void>;
 
@@ -70,7 +72,9 @@ export const useStore = create<AppState>((set, get) => ({
   streaks: {},
   notes: [],
   journals: [],
+  assistantOpen: false,
 
+  setAssistantOpen: (open) => set({ assistantOpen: open }),
   setUser: (user) => set({ user }),
 
   logout: async () => {

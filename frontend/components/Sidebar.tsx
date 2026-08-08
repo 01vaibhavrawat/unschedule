@@ -526,18 +526,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                            <RotateCcw className="w-3 h-3" />
                          </button>
                       )}
-                      {isDone && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.location.href = `/feed?shareHabit=${habit._id}&title=${encodeURIComponent(habit.title)}`;
-                        }}
-                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-200 transition-opacity text-gray-500 hover:text-[var(--color-brand-primary)] flex-shrink-0"
-                        title="Share milestone to feed"
-                      >
-                        <Share className="w-3 h-3" />
-                      </button>
-                      )}
+
                     </div>
                   </div>
                 );
