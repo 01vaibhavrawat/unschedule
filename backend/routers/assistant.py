@@ -5,18 +5,11 @@ from datetime import datetime
 from database import get_db
 from models import AssistantMessage, Task, MiniHabit, JournalEntry, Note, User
 from routers.auth import get_current_user
-from google import genai
-from google.genai import types
+
+from langchain_core.messages import HumanMessage, AIMessage
+from assistant.graph import assistant_graph
 
 router = APIRouter()
-
-# Initialize Gemini Client
-# Assumes GEMINI_API_KEY is in the environment
-try:
-    client = genai.Client()
-except Exception as e:
-    client = None
-    print(f"Failed to initialize Gemini Client: {e}")
 
 @router.get("/history", response_model=List[AssistantMessage])
 async def get_chat_history(user: User = Depends(get_current_user)):
@@ -42,108 +35,77 @@ async def chat_with_assistant(
     )
     await db.assistant_messages.insert_one(user_msg.model_dump(by_alias=True, exclude={"id"}))
     
-    if not client:
-        # Fallback if AI is not configured
-        fallback_msg = AssistantMessage(
-            user_id=str(user.id),
-            role="assistant",
-            content="I am currently offline as the AI provider is not configured.",
-            created_at=datetime.utcnow().isoformat()
-        )
-        result = await db.assistant_messages.insert_one(fallback_msg.model_dump(by_alias=True, exclude={"id"}))
-        fallback_msg.id = result.inserted_id
-        return fallback_msg
-
     # Build history for context
     cursor = db.assistant_messages.find({"user_id": str(user.id)}).sort("created_at", -1).limit(20)
     recent_messages = await cursor.to_list(length=20)
     recent_messages.reverse()
     
-    contents = []
+    lc_messages = []
     for m in recent_messages[:-1]: # exclude the one we just added
-        role = "user" if m["role"] == "user" else "model"
-        contents.append(types.Content(role=role, parts=[types.Part.from_text(text=m["content"])]))
-        
-    contents.append(types.Content(role="user", parts=[types.Part.from_text(text=message)]))
-    
-    system_instruction = f"""
-    You are Unschedule, a highly capable productivity assistant. 
-    You help users manage their calendar, tasks, habits, notes, and journal.
-    Current time: {now_str}
-    User name: {user.name}
-    
-    You have tools to perform actions like creating tasks. If you use a tool, explain what you did briefly.
-    """
-    
-    # Define simple tool schemas for MVP
-    prompt = f"""
-    {system_instruction}
-    
-    If the user asks you to create a task, event, habit, or note, output a JSON block with the structure:
-    ```json
-    {{
-      "action": "create_task",
-      "data": {{ "title": "...", "start_time": "...", "end_time": "..." }}
-    }}
-    ```
-    Along with your natural language response.
-    
-    Otherwise, just respond normally.
-    """
+        if m["role"] == "user":
+            lc_messages.append(HumanMessage(content=m["content"]))
+        else:
+            lc_messages.append(AIMessage(content=m["content"]))
+            
+    lc_messages.append(HumanMessage(content=message))
     
     try:
-        response = client.models.generate_content(
-            model='gemini-3.5-flash-lite',
-            contents=contents,
-            config=types.GenerateContentConfig(
-                system_instruction=prompt,
-                temperature=0.7,
-            )
+        # Run the LangGraph orchestration
+        # We pass user_id in the configurable so that the tools can access it
+        result = await assistant_graph.ainvoke(
+            {"messages": lc_messages, "user_id": str(user.id)},
+            config={"configurable": {"user_id": str(user.id)}}
         )
-        response_text = response.text
         
-        # Super simple JSON parsing for MVP actions
+        final_messages = result.get("messages", [])
+        if not final_messages:
+            raise ValueError("No messages returned from the graph")
+            
+        final_msg = final_messages[-1]
+        
+        # Super simple check for tool actions executed (for frontend display)
         action_data = None
-        import json
-        import re
+        # LangChain AIMessage tool calls are in final_msg.tool_calls?
+        # Wait, if the tool was executed, the final message might be from the tool,
+        # or the LLM's final response after the tool. 
+        # In our graph, `tools` routes back to `agent`, so the final message is an AIMessage.
+        # But we can check if there was a tool executed recently in the result messages.
         
-        json_match = re.search(r'```json\s*(.*?)\s*```', response_text, re.DOTALL)
-        if json_match:
-            try:
-                parsed = json.loads(json_match.group(1))
-                action = parsed.get("action")
-                data = parsed.get("data", {})
-                
-                if action == "create_task":
-                    new_task = Task(
-                        user_id=str(user.id),
-                        title=data.get("title", "New Task"),
-                        start_time=data.get("start_time", now_str),
-                        end_time=data.get("end_time", now_str),
-                        type="task"
-                    )
-                    await db.tasks.insert_one(new_task.model_dump(by_alias=True, exclude={"id"}))
-                    action_data = parsed
-                    
-                # Strip JSON from response text for UI
-                response_text = response_text.replace(json_match.group(0), "").strip()
-                
-            except Exception as e:
-                print("Failed to parse tool action:", e)
+        # Let's see if any tool was called in the output sequence (only looking at new messages)
+        new_msgs = final_messages[len(lc_messages):]
+        for msg in new_msgs:
+            if hasattr(msg, "tool_calls") and msg.tool_calls:
+                # We capture the first tool call action for the UI
+                tc = msg.tool_calls[0]
+                action_data = {
+                    "action": tc["name"],
+                    "data": tc["args"]
+                }
+                break
+
+        content_str = ""
+        if isinstance(final_msg.content, list):
+            for part in final_msg.content:
+                if isinstance(part, dict) and part.get("type") == "text":
+                    content_str += part.get("text", "")
+                elif isinstance(part, str):
+                    content_str += part
+        else:
+            content_str = str(final_msg.content)
 
         asst_msg = AssistantMessage(
             user_id=str(user.id),
             role="assistant",
-            content=response_text,
+            content=content_str,
             action_data=action_data,
             created_at=datetime.utcnow().isoformat()
         )
         
-        result = await db.assistant_messages.insert_one(asst_msg.model_dump(by_alias=True, exclude={"id"}))
-        asst_msg.id = result.inserted_id
+        res = await db.assistant_messages.insert_one(asst_msg.model_dump(by_alias=True, exclude={"id"}))
+        asst_msg.id = res.inserted_id
         
         return asst_msg
         
     except Exception as e:
-        print(f"Gemini generation failed: {e}")
+        print(f"Assistant graph execution failed: {e}")
         raise HTTPException(status_code=500, detail="Assistant failed to respond")
