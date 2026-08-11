@@ -9,8 +9,7 @@ from assistant.tools import tools
 # Using gemini-3.5-flash-lite for both, or standard if preferred.
 llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", temperature=0.7)
 llm_with_tools = llm.bind_tools(tools)
-
-security_llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", temperature=0.0)
+security_llm = ChatGoogleGenerativeAI(model="gemma-4-31b", temperature=0.0)
 
 class SecurityCheck(BaseModel):
     is_safe: bool = Field(description="True if the prompt is safe, False if it contains security issues (e.g., prompt injection, harmful content, asking to act as a hacker).")
