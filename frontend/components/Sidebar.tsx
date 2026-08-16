@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek,
-  addDays, format, isSameMonth, subMonths, addMonths, differenceInDays
+  addDays, format, isSameMonth, subMonths, addMonths, differenceInDays, subDays
 } from 'date-fns';
 import { RichTextEditor } from './RichTextEditor';
 
@@ -344,6 +344,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [habitsExpanded, setHabitsExpanded] = useState(true);
   const [goalsExpanded, setGoalsExpanded] = useState(true);
   const [goalsModalOpen, setGoalsModalOpen] = useState(false);
+  const [expandedHabitId, setExpandedHabitId] = useState<string | null>(null);
+  const [habitCalendarMonth, setHabitCalendarMonth] = useState(currentDate);
+
+  useEffect(() => { setHabitCalendarMonth(currentDate); }, [currentDate]);
+
+  const habitMonthStart = startOfMonth(habitCalendarMonth);
+  const habitMonthEnd = endOfMonth(habitMonthStart);
+  const habitStartDate = startOfWeek(habitMonthStart);
+  const habitEndDate = endOfWeek(habitMonthEnd);
+
+  const habitDays: Date[] = [];
+  let habitDay = habitStartDate;
+  while (habitDay <= habitEndDate) { habitDays.push(habitDay); habitDay = addDays(habitDay, 1); }
 
   const [miniCalendarMonth, setMiniCalendarMonth] = useState(currentDate);
   useEffect(() => { setMiniCalendarMonth(currentDate); }, [currentDate]);
@@ -507,27 +520,66 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 const isDone = todayLog?.status === 'completed' || todayLog?.completed === true;
                 const isSkipped = todayLog?.status === 'skipped';
                 return (
-                  <div key={habit._id} className={`flex items-center justify-between py-1 group ${isSkipped ? 'opacity-50 grayscale' : ''}`}>
-                    <div className="flex items-center gap-3 cursor-pointer flex-1 min-w-0" onClick={() => toggleHabitLog(habit._id, todayStr)}>
-                      <div className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border ${isDone ? 'border-[var(--color-brand-success)] bg-[var(--color-brand-success)]' : 'border-[var(--color-text-subtle)] group-hover:border-[var(--color-text-secondary)]'}`}>
-                        {isDone && <Check className="w-3 h-3 text-white" />}
+                  <div key={habit._id} className={`flex flex-col py-1 group ${isSkipped ? 'opacity-50 grayscale' : ''}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 cursor-pointer flex-1 min-w-0" onClick={() => { toggleHabitLog(habit._id, todayStr); setExpandedHabitId(prev => prev === habit._id ? null : habit._id); }}>
+                        <ChevronRight className={`h-3.5 w-3.5 flex-shrink-0 transition-transform ${expandedHabitId === habit._id ? 'rotate-90 text-[var(--color-text-secondary)]' : 'text-gray-300 group-hover:text-gray-400'}`} />
+                        <div className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border ${isDone ? 'border-[var(--color-brand-success)] bg-[var(--color-brand-success)]' : 'border-[var(--color-text-subtle)] group-hover:border-[var(--color-text-secondary)]'}`}>
+                          {isDone && <Check className="w-3 h-3 text-white" />}
+                        </div>
+                        <span className={`truncate ${isDone ? 'text-[var(--color-text-muted)] line-through' : 'text-[var(--color-text-secondary)]'}`}>{habit.title}</span>
                       </div>
-                      <span className={`truncate ${isDone ? 'text-[var(--color-text-muted)] line-through' : 'text-[var(--color-text-secondary)]'}`}>{habit.title}</span>
+                      
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity items-center">
+                        {!isSkipped && setHabitStatus && (
+                           <button onClick={(e) => { e.stopPropagation(); setHabitStatus(habit._id, todayStr, 'skipped'); }} className="p-1 rounded hover:bg-gray-200 text-gray-400 hover:text-gray-600 flex-shrink-0" title="Skip today">
+                             <MinusCircle className="w-3 h-3" />
+                           </button>
+                        )}
+                        {isSkipped && setHabitStatus && (
+                           <button onClick={(e) => { e.stopPropagation(); setHabitStatus(habit._id, todayStr, 'none'); }} className="p-1 rounded hover:bg-gray-200 text-gray-400 hover:text-gray-600 flex-shrink-0" title="Undo skip">
+                             <RotateCcw className="w-3 h-3" />
+                           </button>
+                        )}
+                      </div>
                     </div>
-                    
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity items-center">
-                      {!isSkipped && setHabitStatus && (
-                         <button onClick={(e) => { e.stopPropagation(); setHabitStatus(habit._id, todayStr, 'skipped'); }} className="p-1 rounded hover:bg-gray-200 text-gray-400 hover:text-gray-600 flex-shrink-0" title="Skip today">
-                           <MinusCircle className="w-3 h-3" />
-                         </button>
-                      )}
-                      {isSkipped && setHabitStatus && (
-                         <button onClick={(e) => { e.stopPropagation(); setHabitStatus(habit._id, todayStr, 'none'); }} className="p-1 rounded hover:bg-gray-200 text-gray-400 hover:text-gray-600 flex-shrink-0" title="Undo skip">
-                           <RotateCcw className="w-3 h-3" />
-                         </button>
-                      )}
-
-                    </div>
+                    {expandedHabitId === habit._id && (
+                      <div className="mt-3 px-2 pb-2 pl-7">
+                        <div className="mb-2 flex items-center justify-between text-[11px] font-medium text-[var(--color-text-secondary)]">
+                          <span>{format(habitCalendarMonth, 'MMM yyyy')}</span>
+                          <div className="flex gap-1">
+                            <ChevronLeft className="h-4 w-4 cursor-pointer rounded hover:bg-[var(--color-bg-hover)]" onClick={(e: React.MouseEvent) => { e.stopPropagation(); setHabitCalendarMonth(subMonths(habitCalendarMonth, 1)); }} />
+                            <ChevronRight className="h-4 w-4 cursor-pointer rounded hover:bg-[var(--color-bg-hover)]" onClick={(e: React.MouseEvent) => { e.stopPropagation(); setHabitCalendarMonth(addMonths(habitCalendarMonth, 1)); }} />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-7 gap-1 text-center text-[10px] mb-1">
+                          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                            <div key={i} className="font-medium text-[var(--color-text-muted)]">{d}</div>
+                          ))}
+                        </div>
+                        <div className="grid grid-cols-7 gap-y-1 gap-x-1 text-center text-[10px]">
+                          {habitDays.map((dayItem, i) => {
+                            const dateStr = format(dayItem, 'yyyy-MM-dd');
+                            const isCurrentMonth = isSameMonth(dayItem, habitCalendarMonth);
+                            const log = logs.find((l: any) => l.date === dateStr);
+                            const dayIsDone = log?.status === 'completed' || log?.completed === true;
+                            const dayIsSkipped = log?.status === 'skipped';
+                            
+                            let bgClass = 'text-[var(--color-text-muted)]';
+                            if (!isCurrentMonth) bgClass = 'opacity-30';
+                            else if (dayIsDone) bgClass = 'bg-[var(--color-brand-success)] text-white font-bold rounded-full';
+                            else if (dayIsSkipped) bgClass = 'bg-gray-200 text-gray-500 rounded-full';
+                            else bgClass = 'hover:bg-[var(--color-bg-hover)] rounded-full';
+                            
+                            return (
+                              <div key={i} className={`w-4 h-4 flex items-center justify-center mx-auto transition-colors ${bgClass}`} title={`${dateStr}${dayIsDone ? ' (Completed)' : dayIsSkipped ? ' (Skipped)' : ''}`}>
+                                {format(dayItem, 'd')}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -548,32 +600,74 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         <div className="absolute -right-4 -top-4 opacity-10">
                           <Zap className="h-16 w-16 text-indigo-600" />
                         </div>
-                        <div className="relative z-10 flex items-center justify-between">
-                          <div className="flex flex-col gap-1 min-w-0 flex-1 pr-2 cursor-pointer" onClick={() => toggleHabitLog(task._id, todayStr)}>
-                            <span className={`truncate text-sm font-semibold ${isDone ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{task.title}</span>
-                            <div className="flex items-center gap-1.5">
-                              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 text-xs shadow-inner">
-                                🔥
+                        <div className="relative z-10 flex flex-col">
+                          <div className="flex items-center justify-between">
+                            <div className="flex flex-col gap-1 min-w-0 flex-1 pr-2 cursor-pointer" onClick={() => { toggleHabitLog(task._id, todayStr); setExpandedHabitId(prev => prev === task._id ? null : task._id); }}>
+                              <div className="flex items-center gap-1.5">
+                                <ChevronRight className={`h-3.5 w-3.5 flex-shrink-0 transition-transform ${expandedHabitId === task._id ? 'rotate-90 text-gray-600' : 'text-gray-400'}`} />
+                                <span className={`truncate text-sm font-semibold ${isDone ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{task.title}</span>
                               </div>
-                              <span className="text-xs font-bold text-orange-600 tracking-wide">
-                                {streakCount} {streakCount === 1 ? 'Day Streak' : 'Day Streak'}
-                              </span>
+                              <div className="flex items-center gap-1.5 pl-5">
+                                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 text-xs shadow-inner">
+                                  🔥
+                                </div>
+                                <span className="text-xs font-bold text-orange-600 tracking-wide">
+                                  {streakCount} {streakCount === 1 ? 'Day Streak' : 'Day Streak'}
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <div className="flex flex-col items-center gap-1 z-20">
+                               <button onClick={() => toggleHabitLog(task._id, todayStr)} className={`flex h-6 w-6 items-center justify-center rounded-full border transition-colors ${isDone ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 bg-white text-transparent hover:border-indigo-400'}`}>
+                                 <Check className="h-4 w-4" />
+                               </button>
+                               <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+                                 {!isSkipped && setHabitStatus && (
+                                   <button onClick={(e) => { e.stopPropagation(); setHabitStatus(task._id, todayStr, 'skipped'); }} className="text-[10px] text-gray-500 hover:text-indigo-600 font-medium bg-white rounded px-1.5 py-0.5 shadow-sm border border-gray-200">Skip</button>
+                                 )}
+                                 {isSkipped && setHabitStatus && (
+                                   <button onClick={(e) => { e.stopPropagation(); setHabitStatus(task._id, todayStr, 'none'); }} className="text-[10px] text-gray-500 hover:text-indigo-600 font-medium bg-white rounded px-1.5 py-0.5 shadow-sm border border-gray-200">Undo</button>
+                                 )}
+                               </div>
                             </div>
                           </div>
-                          
-                          <div className="flex flex-col items-center gap-1 z-20">
-                             <button onClick={() => toggleHabitLog(task._id, todayStr)} className={`flex h-6 w-6 items-center justify-center rounded-full border transition-colors ${isDone ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 bg-white text-transparent hover:border-indigo-400'}`}>
-                               <Check className="h-4 w-4" />
-                             </button>
-                             <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-1">
-                               {!isSkipped && setHabitStatus && (
-                                 <button onClick={(e) => { e.stopPropagation(); setHabitStatus(task._id, todayStr, 'skipped'); }} className="text-[10px] text-gray-500 hover:text-indigo-600 font-medium bg-white rounded px-1.5 py-0.5 shadow-sm border border-gray-200">Skip</button>
-                               )}
-                               {isSkipped && setHabitStatus && (
-                                 <button onClick={(e) => { e.stopPropagation(); setHabitStatus(task._id, todayStr, 'none'); }} className="text-[10px] text-gray-500 hover:text-indigo-600 font-medium bg-white rounded px-1.5 py-0.5 shadow-sm border border-gray-200">Undo</button>
-                               )}
-                             </div>
-                          </div>
+                          {expandedHabitId === task._id && (
+                            <div className="mt-3 border-t border-indigo-100/50 pt-3">
+                              <div className="mb-2 flex items-center justify-between text-[11px] font-medium text-gray-600">
+                                <span>{format(habitCalendarMonth, 'MMM yyyy')}</span>
+                                <div className="flex gap-1">
+                                  <ChevronLeft className="h-4 w-4 cursor-pointer rounded hover:bg-white/50" onClick={(e: React.MouseEvent) => { e.stopPropagation(); setHabitCalendarMonth(subMonths(habitCalendarMonth, 1)); }} />
+                                  <ChevronRight className="h-4 w-4 cursor-pointer rounded hover:bg-white/50" onClick={(e: React.MouseEvent) => { e.stopPropagation(); setHabitCalendarMonth(addMonths(habitCalendarMonth, 1)); }} />
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-7 gap-1 text-center text-[10px] mb-1">
+                                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                                  <div key={i} className="font-medium text-gray-400">{d}</div>
+                                ))}
+                              </div>
+                              <div className="grid grid-cols-7 gap-y-1 gap-x-1 text-center text-[10px]">
+                                {habitDays.map((dayItem, i) => {
+                                  const dateStr = format(dayItem, 'yyyy-MM-dd');
+                                  const isCurrentMonth = isSameMonth(dayItem, habitCalendarMonth);
+                                  const log = logs.find((l: any) => l.date === dateStr);
+                                  const dayIsDone = log?.status === 'completed' || log?.completed === true;
+                                  const dayIsSkipped = log?.status === 'skipped';
+                                  
+                                  let bgClass = 'text-gray-500';
+                                  if (!isCurrentMonth) bgClass = 'opacity-30';
+                                  else if (dayIsDone) bgClass = 'bg-green-500 text-white font-bold rounded-full';
+                                  else if (dayIsSkipped) bgClass = 'bg-gray-300 text-gray-600 rounded-full';
+                                  else bgClass = 'hover:bg-white/60 rounded-full';
+                                  
+                                  return (
+                                    <div key={i} className={`w-5 h-5 flex items-center justify-center mx-auto transition-colors ${bgClass}`} title={`${dateStr}${dayIsDone ? ' (Completed)' : dayIsSkipped ? ' (Skipped)' : ''}`}>
+                                      {format(dayItem, 'd')}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     );
