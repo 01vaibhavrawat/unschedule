@@ -51,14 +51,18 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
       <div className="flex-1 overflow-hidden flex flex-col relative">
         {children}
       </div>
-      <AssistantChat isOpen={assistantOpen} onClose={() => setAssistantOpen(false)} />
-      {!assistantOpen && (
-        <button 
-          onClick={() => setAssistantOpen(true)}
-          className="fixed bottom-6 right-6 h-14 w-14 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-indigo-700 transition-all hover:scale-105 z-40"
-        >
-          <Bot className="h-6 w-6" />
-        </button>
+      {pathname !== '/' && (
+        <>
+          <AssistantChat isOpen={assistantOpen} onClose={() => setAssistantOpen(false)} />
+          {!assistantOpen && (
+            <button 
+              onClick={() => setAssistantOpen(true)}
+              className="fixed bottom-6 right-6 h-14 w-14 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-indigo-700 transition-all hover:scale-105 z-40"
+            >
+              <Bot className="h-6 w-6" />
+            </button>
+          )}
+        </>
       )}
     </div>
   );

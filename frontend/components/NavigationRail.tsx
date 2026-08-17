@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, CheckSquare, BookOpen, FileText } from 'lucide-react';
+import { CalendarDays, CheckSquare, BookOpen, FileText, Home } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 
 export const NavigationRail = () => {
@@ -13,7 +13,8 @@ export const NavigationRail = () => {
   if (!user) return null;
 
   const navItems = [
-    { label: 'Calendar', href: '/', icon: CalendarDays },
+    { label: 'Home', href: '/', icon: Home },
+    { label: 'Calendar', href: '/calendar', icon: CalendarDays },
     { label: 'To-Do', href: '/todo', icon: CheckSquare },
     { label: 'Journal', href: '/journal', icon: BookOpen },
     { label: 'Notes', href: '/notes', icon: FileText },

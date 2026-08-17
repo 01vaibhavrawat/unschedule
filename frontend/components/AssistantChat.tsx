@@ -5,7 +5,7 @@ import { Send, Sparkles, X, Bot, User, CheckCircle2 } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { api } from '@/lib/api';
 
-export const AssistantChat = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?: boolean; onClose?: () => void; isEmbedded?: boolean }) => {
   const { user } = useStore();
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState('');
@@ -13,10 +13,10 @@ export const AssistantChat = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isOpen && user) {
+    if ((isOpen || isEmbedded) && user) {
       loadHistory();
     }
-  }, [isOpen, user]);
+  }, [isOpen, isEmbedded, user]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -72,10 +72,14 @@ export const AssistantChat = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !isEmbedded) return null;
+
+  const containerClasses = isEmbedded 
+    ? "h-full w-full bg-white border-l border-gray-200 flex flex-col"
+    : "fixed inset-y-0 right-0 w-80 md:w-96 bg-white border-l border-gray-200 shadow-2xl z-50 flex flex-col transform transition-transform duration-300";
 
   return (
-    <div className="fixed inset-y-0 right-0 w-80 md:w-96 bg-white border-l border-gray-200 shadow-2xl z-50 flex flex-col transform transition-transform duration-300">
+    <div className={containerClasses}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-purple-50">
         <div className="flex items-center gap-2">
@@ -87,9 +91,11 @@ export const AssistantChat = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
             <p className="text-xs text-indigo-500 font-medium">Always here to help</p>
           </div>
         </div>
-        <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-white rounded-lg transition-colors">
-          <X className="h-5 w-5" />
-        </button>
+        {!isEmbedded && onClose && (
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-white rounded-lg transition-colors">
+            <X className="h-5 w-5" />
+          </button>
+        )}
       </div>
 
       {/* Messages Area */}
