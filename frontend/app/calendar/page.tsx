@@ -168,19 +168,9 @@ export default function Home() {
         <Sidebar 
           isOpen={isSidebarOpen}
           onCreateClick={() => openCreateModal()}
-          goals={goals}
-          habits={habits}
-          tasks={tasks}
-          habitLogs={habitLogs}
-          toggleHabitLog={toggleHabitLog}
-          setHabitStatus={setHabitStatus}
           todayStr={todayStr}
           onMiniCalendarSelect={handleMiniCalendarSelect}
           currentDate={currentDate}
-          onAddGoal={addGoal}
-          onUpdateGoal={updateGoal}
-          onDeleteGoal={deleteGoal}
-          streaks={streaks}
         />
         
         <main id="calendar-view" className="flex-1 overflow-hidden p-2 flex flex-col">

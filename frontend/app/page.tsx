@@ -4,9 +4,11 @@ import { useStore, Task } from '@/store/useStore';
 import { format, isBefore, parseISO, startOfDay } from 'date-fns';
 import { AssistantChat } from '@/components/AssistantChat';
 import { Calendar, CheckCircle2, Zap, Circle, Clock } from 'lucide-react';
+import { GoalsSection } from '@/components/GoalsSection';
+import { MiniHabitsSection } from '@/components/MiniHabitsSection';
 
 export default function Home() {
-  const { user, tasks, habits, habitLogs, streaks, toggleHabitLog, updateTask } = useStore();
+  const { user, tasks, habits, habitLogs, streaks, toggleHabitLog, updateTask, goals, addGoal, updateGoal, deleteGoal, setHabitStatus } = useStore();
   const [greeting, setGreeting] = useState('');
 
   const todayStr = format(new Date(), 'yyyy-MM-dd');
@@ -112,71 +114,23 @@ export default function Home() {
             )}
           </div>
 
-          {/* Daily Habits */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex flex-col">
-            <div className="flex items-center gap-2 mb-4 text-gray-900 font-bold">
-              <Zap className="w-5 h-5 text-amber-500" />
-              <h2>Daily Habits</h2>
-            </div>
-            {habits.length === 0 && atomicHabitTasks.length === 0 ? (
-              <p className="text-sm text-gray-400 italic">No habits tracking yet.</p>
-            ) : (
-              <div className="space-y-3 flex-1">
-                {habits.map(habit => {
-                  const logs = habitLogs[habit._id] || [];
-                  const todayLog = logs.find((l: any) => l.date === todayStr);
-                  const isDone = todayLog?.status === 'completed' || todayLog?.completed === true;
+          <GoalsSection
+            goals={goals}
+            onAddGoal={addGoal}
+            onUpdateGoal={updateGoal}
+            onDeleteGoal={deleteGoal}
+          />
 
-                  return (
-                    <div key={habit._id} className="flex items-center justify-between p-2.5 bg-gray-50 rounded-xl">
-                      <span className={`text-sm font-medium ${isDone ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
-                        {habit.title}
-                      </span>
-                      <button 
-                        onClick={() => toggleHabitLog(habit._id, todayStr)}
-                        className={`flex h-6 w-6 items-center justify-center rounded-full border transition-colors ${
-                          isDone 
-                            ? 'bg-amber-500 border-amber-500 text-white' 
-                            : 'border-gray-300 bg-white text-transparent hover:border-amber-400'
-                        }`}
-                      >
-                        <CheckCircle2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  );
-                })}
-                {atomicHabitTasks.map(task => {
-                  const logs = habitLogs[task._id] || [];
-                  const todayLog = logs.find((l: any) => l.date === todayStr);
-                  const isDone = todayLog?.status === 'completed' || todayLog?.completed === true;
-                  const streakCount = streaks[task._id] || 0;
-
-                  return (
-                    <div key={task._id} className="flex items-center justify-between p-2.5 bg-gray-50 rounded-xl">
-                      <div className="flex flex-col">
-                        <span className={`text-sm font-medium ${isDone ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
-                          {task.title}
-                        </span>
-                        <span className="text-[10px] font-bold text-orange-500">
-                          🔥 {streakCount} Day Streak
-                        </span>
-                      </div>
-                      <button 
-                        onClick={() => toggleHabitLog(task._id, todayStr)}
-                        className={`flex h-6 w-6 items-center justify-center rounded-full border transition-colors ${
-                          isDone 
-                            ? 'bg-amber-500 border-amber-500 text-white' 
-                            : 'border-gray-300 bg-white text-transparent hover:border-amber-400'
-                        }`}
-                      >
-                        <CheckCircle2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+          <MiniHabitsSection
+            habits={habits}
+            atomicHabitTasks={atomicHabitTasks}
+            habitLogs={habitLogs}
+            toggleHabitLog={toggleHabitLog}
+            todayStr={todayStr}
+            currentDate={now}
+            streaks={streaks}
+            setHabitStatus={setHabitStatus}
+          />
         </div>
       </div>
 
