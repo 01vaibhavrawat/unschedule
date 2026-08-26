@@ -29,10 +29,10 @@ export default function Home() {
   return (
     <div className="flex-1 flex overflow-hidden bg-white">
       {/* Dashboard (60%) */}
-      <div className="w-[60%] flex flex-col p-8 h-full">
-        <div className="flex flex-col h-full gap-6">
+      <div className="w-[60%] flex flex-col p-3 overflow-y-auto">
+        <div className="flex flex-col gap-3">
           {/* First Row: Mini Habits and Goals */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 flex-1 min-h-0">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 min-h-[45vh]">
             <div className="min-h-0 h-full flex flex-col">
               <MiniHabitsSection
                 habits={habits}
@@ -57,15 +57,15 @@ export default function Home() {
           </div>
 
           {/* Second Row: Focus Tasks */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex flex-col flex-1 min-h-0">
-            <div className="flex items-center gap-2 mb-4 text-gray-900 font-bold flex-shrink-0">
+          <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col min-h-[30vh]">
+            <div className="flex items-center gap-2 mb-3 text-gray-900 font-bold flex-shrink-0">
               <CheckCircle2 className="w-5 h-5 text-emerald-500" />
               <h2>Focus Tasks</h2>
             </div>
             {priorityTasks.length === 0 ? (
               <p className="text-sm text-gray-400 italic">No pending tasks for today.</p>
             ) : (
-              <div className="space-y-2 flex-1 overflow-y-auto pr-1 -mr-1">
+              <div className="space-y-2">
                 {priorityTasks.map(task => (
                   <div key={task._id} className="flex items-start gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors group">
                     <button

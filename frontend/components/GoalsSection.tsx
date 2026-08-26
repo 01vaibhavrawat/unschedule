@@ -300,8 +300,8 @@ export const GoalsSection: React.FC<GoalsSectionProps> = ({ goals, onAddGoal, on
   const [goalsModalOpen, setGoalsModalOpen] = useState(false);
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex flex-col h-full">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col h-full">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2 text-indigo-900 font-bold">
           <Target className="w-5 h-5 text-indigo-500" />
           <h2>Goals & Priorities</h2>

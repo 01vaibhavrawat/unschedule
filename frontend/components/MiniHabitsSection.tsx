@@ -42,8 +42,8 @@ export const MiniHabitsSection: React.FC<MiniHabitsSectionProps> = ({
   while (habitDay <= habitEndDate) { habitDays.push(habitDay); habitDay = addDays(habitDay, 1); }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex flex-col h-full">
-      <div className="flex items-center gap-2 mb-4 text-gray-900 font-bold">
+    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col h-full">
+      <div className="flex items-center gap-2 mb-3 text-gray-900 font-bold">
         <Zap className="w-5 h-5 text-amber-500" />
         <h2>Mini Habits</h2>
       </div>
