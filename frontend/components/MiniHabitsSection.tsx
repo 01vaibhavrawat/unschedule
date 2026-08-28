@@ -85,7 +85,7 @@ export const MiniHabitsSection: React.FC<MiniHabitsSectionProps> = ({
               </div>
               <div className="relative z-10 flex flex-col">
                 <div className="flex items-center justify-between">
-                  <div className="flex flex-col gap-1 min-w-0 flex-1 pr-2 cursor-pointer" onClick={() => { toggleHabitLog(habit._id, todayStr); setExpandedHabitId(prev => prev === habit._id ? null : habit._id); }}>
+                  <div className="flex flex-col gap-1 min-w-0 flex-1 pr-2 cursor-pointer" onClick={() => setExpandedHabitId(prev => prev === habit._id ? null : habit._id)}>
                     <div className="flex items-center gap-1.5">
                       <ChevronRight className={`h-3.5 w-3.5 flex-shrink-0 transition-transform ${expandedHabitId === habit._id ? 'rotate-90 text-gray-600' : 'text-gray-400'}`} />
                       <span className={`truncate text-sm font-semibold ${isDone ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{habit.title}</span>
@@ -101,7 +101,7 @@ export const MiniHabitsSection: React.FC<MiniHabitsSectionProps> = ({
                   </div>
                   
                   <div className="flex flex-col items-center gap-1 z-20">
-                     <button onClick={() => toggleHabitLog(habit._id, todayStr)} className={`flex h-6 w-6 items-center justify-center rounded-full border transition-colors ${isDone ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 bg-white text-transparent hover:border-amber-400'}`}>
+                     <button onClick={(e) => { e.stopPropagation(); toggleHabitLog(habit._id, todayStr); }} className={`flex h-6 w-6 items-center justify-center rounded-full border transition-colors ${isDone ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 bg-white text-transparent hover:border-amber-400'}`}>
                        <Check className="h-4 w-4" />
                      </button>
                      <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-1">
@@ -174,7 +174,7 @@ export const MiniHabitsSection: React.FC<MiniHabitsSectionProps> = ({
                   </div>
                   <div className="relative z-10 flex flex-col">
                     <div className="flex items-center justify-between">
-                      <div className="flex flex-col gap-1 min-w-0 flex-1 pr-2 cursor-pointer" onClick={() => { toggleHabitLog(task._id, todayStr); setExpandedHabitId(prev => prev === task._id ? null : task._id); }}>
+                  <div className="flex flex-col gap-1 min-w-0 flex-1 pr-2 cursor-pointer" onClick={() => setExpandedHabitId(prev => prev === task._id ? null : task._id)}>
                         <div className="flex items-center gap-1.5">
                           <ChevronRight className={`h-3.5 w-3.5 flex-shrink-0 transition-transform ${expandedHabitId === task._id ? 'rotate-90 text-gray-600' : 'text-gray-400'}`} />
                           <span className={`truncate text-sm font-semibold ${isDone ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{task.title}</span>
@@ -190,7 +190,7 @@ export const MiniHabitsSection: React.FC<MiniHabitsSectionProps> = ({
                       </div>
                       
                       <div className="flex flex-col items-center gap-1 z-20">
-                         <button onClick={() => toggleHabitLog(task._id, todayStr)} className={`flex h-6 w-6 items-center justify-center rounded-full border transition-colors ${isDone ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 bg-white text-transparent hover:border-indigo-400'}`}>
+                         <button onClick={(e) => { e.stopPropagation(); toggleHabitLog(task._id, todayStr); }} className={`flex h-6 w-6 items-center justify-center rounded-full border transition-colors ${isDone ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 bg-white text-transparent hover:border-indigo-400'}`}>
                            <Check className="h-4 w-4" />
                          </button>
                          <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-1">
