@@ -25,6 +25,8 @@ interface TaskModalProps {
   onToggleHabit?: (habitId: string, date: string) => Promise<void>;
   habitLogs?: Record<string, any[]>;
   streaks?: Record<string, number>;
+  defaultType?: 'event' | 'task' | 'atomic_habit' | 'break';
+  hideTypeSelector?: boolean;
 }
 
 export const TaskModal: React.FC<TaskModalProps> = ({
@@ -37,7 +39,9 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   editingTask,
   onToggleHabit,
   habitLogs,
-  streaks = {}
+  streaks = {},
+  defaultType,
+  hideTypeSelector
 }) => {
   const DAYS_OF_WEEK = [
     { label: 'Sunday', value: 0 },
@@ -63,7 +67,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
   const [taskType, setTaskType] = useState<
     'event' | 'task' | 'atomic_habit' | 'break'
-  >('event');
+  >(defaultType || 'event');
 
   useEffect(() => {
     if (!isOpen) return;
@@ -103,8 +107,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       setEndTimeInput(formatTime(et));
     } else {
       setTitle('');
-      setTaskType('event');
-      setSelectedDays([]);
+      setTaskType(defaultType || 'event');
+      setSelectedDays(defaultType === 'atomic_habit' ? allDays : []);
 
       const st = initialStart || new Date();
       const et = initialEnd || new Date(st.getTime() + 60 * 60 * 1000);
@@ -282,33 +286,35 @@ export const TaskModal: React.FC<TaskModalProps> = ({
           </div>
 
           {/* Tabs */}
-          <div className="mb-6 ml-10 flex items-center gap-2 overflow-x-auto whitespace-nowrap">
-            {['event', 'task', 'break'].map(type => (
-              <button
-                key={type}
-                onClick={() => setTaskType(type as any)}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${taskType === type
-                    ? 'bg-[var(--color-brand-primary-soft)] text-[var(--color-brand-primary)]'
+          {!hideTypeSelector && (
+            <div className="mb-6 ml-10 flex items-center gap-2 overflow-x-auto whitespace-nowrap">
+              {['event', 'task', 'break'].map(type => (
+                <button
+                  key={type}
+                  onClick={() => setTaskType(type as any)}
+                  className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${taskType === type
+                      ? 'bg-[var(--color-brand-primary-soft)] text-[var(--color-brand-primary)]'
+                      : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'
+                    }`}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </button>
+              ))}
+
+              <div
+                onClick={() => {
+                  setTaskType('atomic_habit');
+                  setSelectedDays(allDays);
+                }}
+                className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-300 ${taskType === 'atomic_habit'
+                    ? 'bg-purple-100 text-purple-700 shadow-[0_0_12px_rgba(168,85,247,0.5)] scale-105'
                     : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'
                   }`}
               >
-                {type.charAt(0).toUpperCase() + type.slice(1)}
-              </button>
-            ))}
-
-            <div
-              onClick={() => {
-                setTaskType('atomic_habit');
-                setSelectedDays(allDays);
-              }}
-              className={`flex cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-300 ${taskType === 'atomic_habit'
-                  ? 'bg-purple-100 text-purple-700 shadow-[0_0_12px_rgba(168,85,247,0.5)] scale-105'
-                  : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'
-                }`}
-            >
-              Atomic Habit
+                Atomic Habit
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Time Section */}
           <div className="space-y-4">

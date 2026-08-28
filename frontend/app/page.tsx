@@ -3,14 +3,16 @@ import React, { useEffect, useState } from 'react';
 import { useStore, Task } from '@/store/useStore';
 import { format, isBefore, parseISO, startOfDay } from 'date-fns';
 import { AssistantChat } from '@/components/AssistantChat';
-import { Calendar, CheckCircle2, Zap, Circle, Clock } from 'lucide-react';
+import { Calendar, CheckCircle2, Zap, Circle, Clock, Plus } from 'lucide-react';
 import { GoalsSection } from '@/components/GoalsSection';
 import { MiniHabitsSection } from '@/components/MiniHabitsSection';
+import { TaskModal } from '@/components/TaskModal';
 
 export default function Home() {
-  const { user, tasks, habits, habitLogs, streaks, toggleHabitLog, updateTask, goals, addGoal, updateGoal, deleteGoal, setHabitStatus } = useStore();
+  const { user, tasks, habits, habitLogs, streaks, toggleHabitLog, updateTask, goals, addGoal, updateGoal, deleteGoal, setHabitStatus, addHabit, addTask } = useStore();
   const todayStr = format(new Date(), 'yyyy-MM-dd');
   const now = new Date();
+  const [taskModalOpen, setTaskModalOpen] = useState(false);
 
   // Filter High-Priority / Due Tasks
   const priorityTasks = tasks.filter(t => {
@@ -24,6 +26,11 @@ export default function Home() {
 
   const toggleTaskStatus = (task: Task) => {
     updateTask(task._id, { status: task.status === 'completed' ? 'pending' : 'completed' });
+  };
+
+  const handleSaveTask = async (taskData: any) => {
+    await addTask(taskData);
+    setTaskModalOpen(false);
   };
 
   return (
@@ -43,6 +50,7 @@ export default function Home() {
                 currentDate={now}
                 streaks={streaks}
                 setHabitStatus={setHabitStatus}
+                onAddTask={addTask}
               />
             </div>
 
@@ -58,9 +66,18 @@ export default function Home() {
 
           {/* Second Row: Focus Tasks */}
           <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col min-h-[30vh]">
-            <div className="flex items-center gap-2 mb-3 text-gray-900 font-bold flex-shrink-0">
-              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-              <h2>Focus Tasks</h2>
+            <div className="flex items-center justify-between mb-3 flex-shrink-0">
+              <div className="flex items-center gap-2 text-gray-900 font-bold">
+                <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                <h2>Focus Tasks</h2>
+              </div>
+              <button
+                onClick={() => setTaskModalOpen(true)}
+                title="Add task"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:bg-emerald-50 hover:text-emerald-500 transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+              </button>
             </div>
             {priorityTasks.length === 0 ? (
               <p className="text-sm text-gray-400 italic">No pending tasks for today.</p>
@@ -92,6 +109,14 @@ export default function Home() {
       <div className="w-[40%] flex flex-col relative z-10">
         <AssistantChat isEmbedded={true} />
       </div>
+
+      <TaskModal
+        isOpen={taskModalOpen}
+        onClose={() => setTaskModalOpen(false)}
+        onSave={handleSaveTask}
+        defaultType="task"
+        hideTypeSelector={true}
+      />
     </div>
   );
 }
