@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status, Depends
-from models import MiniHabit
+from models import MiniHabit, MiniHabitUpdate
 from database import habits_collection
 from bson import ObjectId
 from .auth import get_current_user_id
@@ -23,7 +23,7 @@ async def list_habits(user_id: str = Depends(get_current_user_id)):
     return habits
 
 @router.put("/{id}", response_description="Update a habit")
-async def update_habit(id: str, habit: MiniHabit, user_id: str = Depends(get_current_user_id)):
+async def update_habit(id: str, habit: MiniHabitUpdate, user_id: str = Depends(get_current_user_id)):
     update_data = habit.dict(by_alias=True, exclude={"id", "user_id"}, exclude_unset=True)
     update_result = await habits_collection.update_one({"_id": ObjectId(id), "user_id": user_id}, {"$set": update_data})
     if update_result.modified_count == 1:

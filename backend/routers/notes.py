@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
-from models import Note
+from models import Note, NoteUpdate
 from database import get_db
 from routers.auth import get_current_user_id
 from bson import ObjectId
@@ -25,7 +25,7 @@ async def create_note(note: Note, user_id: str = Depends(get_current_user_id), d
     return note_dict
 
 @router.put("/{id}", response_model=Note)
-async def update_note(id: str, note: Note, user_id: str = Depends(get_current_user_id), db=Depends(get_db)):
+async def update_note(id: str, note: NoteUpdate, user_id: str = Depends(get_current_user_id), db=Depends(get_db)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid ID")
         

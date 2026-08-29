@@ -33,6 +33,26 @@ class Task(BaseModel):
         populate_by_name = True
         json_encoders = {ObjectId: str}
 
+class TaskUpdate(BaseModel):
+    title: Optional[str] = None
+    start_time: Optional[str] = None
+    end_time: Optional[str] = None
+    status: Optional[str] = None
+    type: Optional[str] = None
+    recurrence: Optional[str] = None
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class MiniHabitUpdate(BaseModel):
+    title: Optional[str] = None
+    frequency: Optional[List[str]] = None
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
 class MiniHabit(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     user_id: Optional[str] = None
@@ -51,6 +71,23 @@ class HabitLog(BaseModel):
     date: str
     completed: bool
     status: str = "completed"
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class HabitLogUpdate(BaseModel):
+    completed: Optional[bool] = None
+    status: Optional[str] = None
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class GoalUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    color: Optional[str] = None
 
     class Config:
         populate_by_name = True
@@ -79,6 +116,14 @@ class JournalEntry(BaseModel):
         populate_by_name = True
         json_encoders = {ObjectId: str}
 
+class JournalEntryUpdate(BaseModel):
+    date: Optional[str] = None
+    content: Optional[str] = None
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
 class Note(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     user_id: Optional[str] = None
@@ -88,6 +133,16 @@ class Note(BaseModel):
     tags: Optional[List[str]] = []
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class NoteUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    folder: Optional[str] = None
+    tags: Optional[List[str]] = None
 
     class Config:
         populate_by_name = True

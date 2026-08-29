@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
-from models import JournalEntry
+from models import JournalEntry, JournalEntryUpdate
 from database import get_db
 from routers.auth import get_current_user_id
 from bson import ObjectId
@@ -38,7 +38,7 @@ async def create_journal(entry: JournalEntry, user_id: str = Depends(get_current
     return entry_dict
 
 @router.put("/{id}", response_model=JournalEntry)
-async def update_journal(id: str, entry: JournalEntry, user_id: str = Depends(get_current_user_id), db=Depends(get_db)):
+async def update_journal(id: str, entry: JournalEntryUpdate, user_id: str = Depends(get_current_user_id), db=Depends(get_db)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid ID")
         

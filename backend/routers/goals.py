@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status, Depends
-from models import Goal
+from models import Goal, GoalUpdate
 from database import goals_collection
 from bson import ObjectId
 from .auth import get_current_user_id
@@ -23,7 +23,7 @@ async def list_goals(user_id: str = Depends(get_current_user_id)):
     return goals
 
 @router.put("/{id}", response_description="Update a goal")
-async def update_goal(id: str, goal: Goal, user_id: str = Depends(get_current_user_id)):
+async def update_goal(id: str, goal: GoalUpdate, user_id: str = Depends(get_current_user_id)):
     goal_dict = {k: v for k, v in goal.dict(by_alias=True, exclude={"id", "user_id"}).items() if v is not None}
     update_result = await goals_collection.update_one({"_id": ObjectId(id), "user_id": user_id}, {"$set": goal_dict})
     if update_result.matched_count == 1:
