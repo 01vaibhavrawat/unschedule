@@ -9,17 +9,17 @@ import { MiniHabitsSection } from '@/components/MiniHabitsSection';
 import { TaskModal } from '@/components/TaskModal';
 
 export default function Home() {
-  const { user, tasks, habits, habitLogs, streaks, toggleHabitLog, updateTask, goals, addGoal, updateGoal, deleteGoal, setHabitStatus, addHabit, addTask } = useStore();
+  const { user, tasks, habits, habitLogs, streaks, toggleHabitLog, updateTask, deleteTask, goals, addGoal, updateGoal, deleteGoal, setHabitStatus, addHabit, addTask } = useStore();
   const todayStr = format(new Date(), 'yyyy-MM-dd');
   const now = new Date();
   const [taskModalOpen, setTaskModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-  // Filter High-Priority / Due Tasks
-  const priorityTasks = tasks.filter(t => {
-    if (t.type !== 'task' || t.status === 'completed') return false;
-    const taskDate = format(parseISO(t.start_time), 'yyyy-MM-dd');
-    const isOverdue = isBefore(parseISO(t.start_time), startOfDay(now));
-    return taskDate === todayStr || isOverdue;
+  // Filter and Sort Tasks
+  const sortedTasks = [...tasks].filter(t => t.type !== 'atomic_habit').sort((a, b) => {
+    if (a.status === 'completed' && b.status !== 'completed') return 1;
+    if (a.status !== 'completed' && b.status === 'completed') return -1;
+    return new Date(a.start_time).getTime() - new Date(b.start_time).getTime();
   });
 
   const atomicHabitTasks = tasks.filter(t => t.type === 'atomic_habit');
@@ -29,8 +29,30 @@ export default function Home() {
   };
 
   const handleSaveTask = async (taskData: any) => {
-    await addTask(taskData);
+    if (editingTask) {
+      const { _id, user_id, ...rest } = editingTask as any;
+      updateTask(editingTask._id, { ...rest, ...taskData });
+    } else {
+      await addTask(taskData);
+    }
     setTaskModalOpen(false);
+  };
+
+  const handleDeleteTask = () => {
+    if (editingTask) {
+      deleteTask(editingTask._id);
+    }
+    setTaskModalOpen(false);
+  };
+
+  const openCreateModal = () => {
+    setEditingTask(null);
+    setTaskModalOpen(true);
+  };
+
+  const handleEditClick = (task: Task) => {
+    setEditingTask(task);
+    setTaskModalOpen(true);
   };
 
   return (
@@ -72,33 +94,59 @@ export default function Home() {
                 <h2>Focus Tasks</h2>
               </div>
               <button
-                onClick={() => setTaskModalOpen(true)}
+                onClick={openCreateModal}
                 title="Add task"
                 className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:bg-emerald-50 hover:text-emerald-500 transition-colors"
               >
                 <Plus className="h-4 w-4" />
               </button>
             </div>
-            {priorityTasks.length === 0 ? (
-              <p className="text-sm text-gray-400 italic">No pending tasks for today.</p>
+            {sortedTasks.length === 0 ? (
+              <p className="text-sm text-gray-400 italic">No tasks found. Click "+" to create one.</p>
             ) : (
               <div className="space-y-2">
-                {priorityTasks.map(task => (
-                  <div key={task._id} className="flex items-start gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors group">
-                    <button
-                      onClick={() => toggleTaskStatus(task)}
-                      className="mt-0.5 text-gray-300 hover:text-emerald-500 transition-colors flex-shrink-0"
+                {sortedTasks.map(task => {
+                  const isCompleted = task.status === 'completed';
+                  return (
+                    <div 
+                      key={task._id} 
+                      className={`flex items-start gap-3 p-3 border rounded-xl transition-all cursor-pointer hover:shadow-sm ${
+                        isCompleted ? 'border-gray-100 opacity-60 bg-gray-50' : 'border-gray-100 hover:border-emerald-200 bg-white'
+                      }`}
+                      onClick={() => handleEditClick(task)}
                     >
-                      <Circle className="w-5 h-5" />
-                    </button>
-                    <div className="flex-1 min-w-0">
-                      <span className="text-sm font-medium text-gray-700 block truncate">{task.title}</span>
-                      {isBefore(parseISO(task.start_time), startOfDay(now)) && (
-                        <span className="text-[10px] font-bold text-red-500 uppercase tracking-wide">Overdue</span>
-                      )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleTaskStatus(task);
+                        }}
+                        className={`mt-0.5 transition-colors flex-shrink-0 ${
+                          isCompleted ? 'text-emerald-500' : 'text-gray-300 hover:text-emerald-500'
+                        }`}
+                      >
+                        <Circle className={`w-5 h-5 ${isCompleted ? 'fill-emerald-500 text-emerald-500' : ''}`} />
+                      </button>
+                      <div className="flex-1 min-w-0">
+                        <span className={`text-sm font-medium block truncate ${isCompleted ? 'line-through text-gray-500' : 'text-gray-700'}`}>
+                          {task.title}
+                        </span>
+                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5" />
+                            <span>{format(new Date(task.start_time), 'MMM d, yyyy')}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>{format(new Date(task.start_time), 'h:mm a')} - {format(new Date(task.end_time), 'h:mm a')}</span>
+                          </div>
+                          {isBefore(parseISO(task.start_time), startOfDay(now)) && !isCompleted && (
+                            <span className="text-[10px] font-bold text-red-500 uppercase tracking-wide">Overdue</span>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -114,6 +162,8 @@ export default function Home() {
         isOpen={taskModalOpen}
         onClose={() => setTaskModalOpen(false)}
         onSave={handleSaveTask}
+        onDelete={handleDeleteTask}
+        editingTask={editingTask}
         defaultType="task"
         hideTypeSelector={true}
       />
