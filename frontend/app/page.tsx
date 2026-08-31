@@ -7,13 +7,17 @@ import { Calendar, CheckCircle2, Zap, Circle, Clock, Plus } from 'lucide-react';
 import { GoalsSection } from '@/components/GoalsSection';
 import { MiniHabitsSection } from '@/components/MiniHabitsSection';
 import { TaskModal } from '@/components/TaskModal';
+import { AtomicHabitModal } from '@/components/AtomicHabitModal';
+import { MiniHabit } from '@/store/useStore';
 
 export default function Home() {
-  const { user, tasks, habits, habitLogs, streaks, toggleHabitLog, updateTask, deleteTask, goals, addGoal, updateGoal, deleteGoal, setHabitStatus, addHabit, addTask } = useStore();
+  const { user, tasks, habits, habitLogs, streaks, toggleHabitLog, updateTask, deleteTask, goals, addGoal, updateGoal, deleteGoal, setHabitStatus, addHabit, updateHabit, deleteHabit, addTask } = useStore();
   const todayStr = format(new Date(), 'yyyy-MM-dd');
   const now = new Date();
   const [taskModalOpen, setTaskModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [habitModalOpen, setHabitModalOpen] = useState(false);
+  const [editingHabit, setEditingHabit] = useState<MiniHabit | null>(null);
 
   // Filter and Sort Tasks
   const sortedTasks = [...tasks].filter(t => t.type !== 'atomic_habit').sort((a, b) => {
@@ -22,7 +26,31 @@ export default function Home() {
     return new Date(a.start_time).getTime() - new Date(b.start_time).getTime();
   });
 
-  const atomicHabitTasks = tasks.filter(t => t.type === 'atomic_habit');
+  const handleSaveHabit = async (habitData: any) => {
+    if (editingHabit) {
+      await updateHabit(editingHabit._id, habitData);
+    } else {
+      await addHabit(habitData);
+    }
+    setHabitModalOpen(false);
+  };
+
+  const handleDeleteHabit = async () => {
+    if (editingHabit) {
+      await deleteHabit(editingHabit._id);
+    }
+    setHabitModalOpen(false);
+  };
+
+  const openCreateHabitModal = () => {
+    setEditingHabit(null);
+    setHabitModalOpen(true);
+  };
+
+  const handleEditHabitClick = (habit: MiniHabit) => {
+    setEditingHabit(habit);
+    setHabitModalOpen(true);
+  };
 
   const toggleTaskStatus = (task: Task) => {
     updateTask(task._id, { status: task.status === 'completed' ? 'pending' : 'completed' });
@@ -65,14 +93,14 @@ export default function Home() {
             <div className="min-h-0 h-full flex flex-col">
               <MiniHabitsSection
                 habits={habits}
-                atomicHabitTasks={atomicHabitTasks}
                 habitLogs={habitLogs}
                 toggleHabitLog={toggleHabitLog}
                 todayStr={todayStr}
                 currentDate={now}
                 streaks={streaks}
                 setHabitStatus={setHabitStatus}
-                onAddTask={addTask}
+                onAddHabit={openCreateHabitModal}
+                onEditHabit={handleEditHabitClick}
               />
             </div>
 
@@ -166,6 +194,17 @@ export default function Home() {
         editingTask={editingTask}
         defaultType="task"
         hideTypeSelector={true}
+      />
+      <AtomicHabitModal
+        isOpen={habitModalOpen}
+        onClose={() => setHabitModalOpen(false)}
+        onSave={handleSaveHabit}
+        onDelete={handleDeleteHabit}
+        editingHabit={editingHabit}
+        onToggleHabit={toggleHabitLog}
+        habitLogs={habitLogs}
+        streaks={streaks}
+        todayStr={todayStr}
       />
     </div>
   );

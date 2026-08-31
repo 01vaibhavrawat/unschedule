@@ -47,6 +47,8 @@ class TaskUpdate(BaseModel):
 
 class MiniHabitUpdate(BaseModel):
     title: Optional[str] = None
+    trigger: Optional[str] = None
+    identity: Optional[str] = None
     frequency: Optional[List[str]] = None
 
     class Config:
@@ -57,7 +59,9 @@ class MiniHabit(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     user_id: Optional[str] = None
     title: str
-    frequency: List[str]
+    trigger: str = ""
+    identity: Optional[str] = None
+    frequency: List[str] = Field(default_factory=list)
     created_at: Optional[str] = None
 
     class Config:

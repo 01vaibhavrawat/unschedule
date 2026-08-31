@@ -14,6 +14,8 @@ export interface Task {
 export interface MiniHabit {
   _id: string;
   title: string;
+  trigger: string;
+  identity?: string;
   frequency: string[];
   created_at: string;
 }
@@ -47,6 +49,8 @@ interface AppState {
   deleteTask: (id: string) => Promise<void>;
 
   addHabit: (habit: any) => Promise<any>;
+  updateHabit: (id: string, habit: any) => Promise<void>;
+  deleteHabit: (id: string) => Promise<void>;
   toggleHabitLog: (habitId: string, date: string) => Promise<void>;
   setHabitStatus: (habitId: string, date: string, status: 'completed' | 'skipped' | 'none') => Promise<void>;
 
@@ -138,6 +142,16 @@ export const useStore = create<AppState>((set, get) => ({
     const newHabit = await api.createHabit(habit);
     set((state) => ({ habits: [...state.habits, newHabit] }));
     return newHabit;
+  },
+
+  updateHabit: async (id, updatedHabit) => {
+    const newHabit = await api.updateHabit(id, updatedHabit);
+    set((state) => ({ habits: state.habits.map(h => h._id === id ? newHabit : h) }));
+  },
+
+  deleteHabit: async (id) => {
+    await api.deleteHabit(id);
+    set((state) => ({ habits: state.habits.filter(h => h._id !== id) }));
   },
 
   toggleHabitLog: async (habitId, date) => {

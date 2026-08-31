@@ -55,6 +55,7 @@ export const api = {
   // ── Habits ───────────────────────────────────────────────────
   getHabits: () => fetchAPI("/habits/"),
   createHabit: (data: any) => fetchAPI("/habits/", { method: "POST", body: JSON.stringify(data) }),
+  updateHabit: (id: string, data: any) => fetchAPI(`/habits/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   deleteHabit: (id: string) => fetchAPI(`/habits/${id}`, { method: "DELETE" }),
 
   // ── Habit Logs ───────────────────────────────────────────────
