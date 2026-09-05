@@ -6,7 +6,7 @@ import { useStore } from '@/store/useStore';
 import { api } from '@/lib/api';
 
 export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?: boolean; onClose?: () => void; isEmbedded?: boolean }) => {
-  const { user } = useStore();
+  const { user, fetchInitialData } = useStore();
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -57,6 +57,9 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
         // Backend returns the message object directly, no 'data' wrapper
         const newMessage = res.data ? res.data : res;
         setMessages(prev => [...prev, newMessage]);
+        if (newMessage.action_data) {
+          fetchInitialData();
+        }
       }
     } catch (err) {
       console.error('Failed to send message', err);
@@ -125,7 +128,20 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
                       <CheckCircle2 className="h-3.5 w-3.5" /> Action Executed
                     </div>
                     <div className="text-green-600">
-                      Created {msg.action_data.action.replace('create_', '')}: <span className="font-semibold">{msg.action_data.data?.title || 'Item'}</span>
+                      {(() => {
+                        const action = msg.action_data.action;
+                        let verb = 'Executed';
+                        let noun = action;
+                        if (action.startsWith('create_')) { verb = 'Created'; noun = action.replace('create_', ''); }
+                        else if (action.startsWith('update_')) { verb = 'Updated'; noun = action.replace('update_', ''); }
+                        else if (action.startsWith('delete_')) { verb = 'Deleted'; noun = action.replace('delete_', ''); }
+                        else if (action.startsWith('get_')) { verb = 'Retrieved'; noun = action.replace('get_', ''); }
+                        return (
+                          <span>
+                            {verb} {noun.replace('_', ' ')}: <span className="font-semibold">{msg.action_data.data?.title || msg.action_data.data?.task_id || msg.action_data.data?.habit_id || msg.action_data.data?.goal_id || msg.action_data.data?.note_id || msg.action_data.data?.journal_id || 'Items'}</span>
+                          </span>
+                        );
+                      })()}
                     </div>
                   </div>
                 )}
