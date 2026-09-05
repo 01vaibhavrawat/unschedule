@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import { Target, Plus, Pencil, Trash2, X, Flag, ArrowRight, Sparkles } from 'lucide-react';
+import { Target, Plus, Pencil, Trash2, X, Flag, ArrowRight, Sparkles, Calendar, Clock } from 'lucide-react';
 import { RichTextEditor } from './RichTextEditor';
 import { Goal } from '@/store/useStore';
 
@@ -20,19 +20,38 @@ const GOAL_COLORS = [
 
 const DEFAULT_COLOR = GOAL_COLORS[0].value;
 
+const calculateProgress = (created_at?: string, deadline?: string) => {
+  if (!deadline) return null;
+  const end = new Date(deadline);
+  const now = new Date();
+  const start = created_at ? new Date(created_at) : new Date(end.getTime() - 7 * 24 * 60 * 60 * 1000); // fallback to 7 days if no created_at
+  
+  const total = end.getTime() - start.getTime();
+  const elapsed = now.getTime() - start.getTime();
+  
+  const daysLeft = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  
+  let percent = 100;
+  if (total > 0) {
+    percent = Math.max(0, Math.min(100, (elapsed / total) * 100));
+  }
+  
+  return { daysLeft, percent };
+};
+
 // ── GoalsModal ─────────────────────────────────────────────────────────
 interface GoalsModalProps {
   goals: Goal[];
   onClose: () => void;
-  onAdd: (goal: { title: string; description?: string; color?: string }) => Promise<void>;
-  onUpdate: (id: string, goal: { title: string; description?: string; color?: string }) => Promise<void>;
+  onAdd: (goal: { title: string; description?: string; color?: string; deadline?: string }) => Promise<void>;
+  onUpdate: (id: string, goal: { title: string; description?: string; color?: string; deadline?: string }) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }
 
 const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate, onDelete }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(goals.length === 0);
-  const [form, setForm] = useState({ title: '', description: '', color: DEFAULT_COLOR });
+  const [form, setForm] = useState({ title: '', description: '', color: DEFAULT_COLOR, deadline: '' });
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const titleRef = useRef<HTMLInputElement>(null);
@@ -46,13 +65,13 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
   const startEdit = (g: Goal) => {
     setIsAdding(false);
     setEditingId(g._id);
-    setForm({ title: g.title, description: g.description || '', color: g.color || DEFAULT_COLOR });
+    setForm({ title: g.title, description: g.description || '', color: g.color || DEFAULT_COLOR, deadline: g.deadline || '' });
   };
 
   const startAdd = () => {
     setEditingId(null);
     setIsAdding(true);
-    setForm({ title: '', description: '', color: DEFAULT_COLOR });
+    setForm({ title: '', description: '', color: DEFAULT_COLOR, deadline: '' });
   };
 
   const cancelEdit = () => {
@@ -65,12 +84,12 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
     setSaving(true);
     try {
       if (editingId) {
-        await onUpdate(editingId, { title: form.title.trim(), description: form.description.trim(), color: form.color });
+        await onUpdate(editingId, { title: form.title.trim(), description: form.description.trim(), color: form.color, deadline: form.deadline });
         setEditingId(null);
       } else {
-        await onAdd({ title: form.title.trim(), description: form.description.trim(), color: form.color });
+        await onAdd({ title: form.title.trim(), description: form.description.trim(), color: form.color, deadline: form.deadline });
         setIsAdding(false);
-        setForm({ title: '', description: '', color: DEFAULT_COLOR });
+        setForm({ title: '', description: '', color: DEFAULT_COLOR, deadline: '' });
       }
     } finally {
       setSaving(false);
@@ -182,6 +201,18 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
                 minHeight="80px"
               />
             </div>
+            <div className="mb-2 flex items-center gap-2">
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="date"
+                  title="Deadline (optional)"
+                  value={form.deadline}
+                  onChange={e => setForm(f => ({ ...f, deadline: e.target.value }))}
+                  className="w-full rounded-xl border border-indigo-100 bg-white pl-9 pr-4 py-2 text-sm text-gray-800 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                />
+              </div>
+            </div>
             <div className="mt-3 flex justify-end gap-2">
               <button
                 onClick={cancelEdit}
@@ -247,6 +278,29 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
                   {g.description && (
                     <p className="mt-0.5 text-xs text-gray-400 leading-relaxed line-clamp-2">{g.description}</p>
                   )}
+                  {g.deadline && (() => {
+                    const progress = calculateProgress(g.created_at, g.deadline);
+                    if (!progress) return null;
+                    const isUrgent = progress.daysLeft <= 3;
+                    return (
+                      <div className="mt-3 w-full max-w-sm">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className={`text-[10px] font-semibold uppercase tracking-wider ${isUrgent ? 'text-rose-500' : 'text-gray-400'}`}>
+                            {progress.daysLeft < 0 ? 'Overdue' : progress.daysLeft === 0 ? 'Due Today' : `${progress.daysLeft} Days Left`}
+                          </span>
+                        </div>
+                        <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full rounded-full transition-all duration-500"
+                            style={{ 
+                              width: `${progress.percent}%`,
+                              backgroundColor: isUrgent ? '#f43f5e' : color 
+                            }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* actions */}
@@ -343,6 +397,29 @@ export const GoalsSection: React.FC<GoalsSectionProps> = ({ goals, onAddGoal, on
                     {g.description && (
                       <p className="truncate text-xs text-gray-500 mt-0.5">{g.description}</p>
                     )}
+                    {g.deadline && (() => {
+                      const progress = calculateProgress(g.created_at, g.deadline);
+                      if (!progress) return null;
+                      const isUrgent = progress.daysLeft <= 3;
+                      return (
+                        <div className="mt-2 w-full max-w-[200px]">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className={`text-[9px] font-semibold uppercase tracking-wider ${isUrgent ? 'text-rose-500' : 'text-gray-400'}`}>
+                              {progress.daysLeft < 0 ? 'Overdue' : progress.daysLeft === 0 ? 'Due Today' : `${progress.daysLeft} Days Left`}
+                            </span>
+                          </div>
+                          <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full rounded-full transition-all duration-500"
+                              style={{ 
+                                width: `${progress.percent}%`,
+                                backgroundColor: isUrgent ? '#f43f5e' : color 
+                              }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               );

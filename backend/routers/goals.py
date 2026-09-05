@@ -4,12 +4,16 @@ from database import goals_collection
 from bson import ObjectId
 from .auth import get_current_user_id
 
+from datetime import datetime
+
 router = APIRouter()
 
 @router.post("/", response_description="Add new goal", response_model=Goal)
 async def create_goal(goal: Goal, user_id: str = Depends(get_current_user_id)):
     goal_dict = goal.dict(by_alias=True, exclude={"id"})
     goal_dict["user_id"] = user_id
+    if not goal_dict.get("created_at"):
+        goal_dict["created_at"] = datetime.utcnow().isoformat() + "Z"
     new_goal = await goals_collection.insert_one(goal_dict)
     created_goal = await goals_collection.find_one({"_id": new_goal.inserted_id})
     return created_goal

@@ -92,6 +92,7 @@ class GoalUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     color: Optional[str] = None
+    deadline: Optional[str] = None
 
     class Config:
         populate_by_name = True
@@ -103,6 +104,8 @@ class Goal(BaseModel):
     title: str
     description: Optional[str] = None
     color: Optional[str] = None
+    created_at: Optional[str] = None
+    deadline: Optional[str] = None
 
     class Config:
         populate_by_name = True

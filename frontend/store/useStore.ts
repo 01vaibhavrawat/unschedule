@@ -20,6 +20,15 @@ export interface MiniHabit {
   created_at: string;
 }
 
+export interface Goal {
+  _id: string;
+  title: string;
+  description?: string;
+  color?: string;
+  created_at?: string;
+  deadline?: string;
+}
+
 export interface AuthUser {
   id: string;
   name: string;
@@ -31,7 +40,7 @@ interface AppState {
   user: AuthUser | null;
   tasks: any[];
   habits: any[];
-  goals: any[];
+  goals: Goal[];
   habitLogs: Record<string, any>;
   streaks: Record<string, number>;
   notes: any[];
