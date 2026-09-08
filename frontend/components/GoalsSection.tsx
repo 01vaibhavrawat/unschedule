@@ -39,6 +39,20 @@ const calculateProgress = (created_at?: string, deadline?: string) => {
   return { daysLeft, percent };
 };
 
+// ── clean description helper ───────────────────────────────────────────
+export const cleanDescription = (desc?: string): string => {
+  if (!desc) return '';
+  const normalized = desc.replace(/&nbsp;/g, ' ');
+  const textOnly = normalized.replace(/<[^>]*>/g, '').trim();
+  if (!textOnly) return '';
+
+  return normalized
+    .replace(/<br[^>]*\/?>/gi, '\n')
+    .replace(/<\/p>\s*<p[^>]*>/gi, '\n')
+    .replace(/<\/?p[^>]*>/gi, '')
+    .trim();
+};
+
 // ── GoalsModal ─────────────────────────────────────────────────────────
 interface GoalsModalProps {
   goals: Goal[];
@@ -65,7 +79,7 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
   const startEdit = (g: Goal) => {
     setIsAdding(false);
     setEditingId(g._id);
-    setForm({ title: g.title, description: g.description || '', color: g.color || DEFAULT_COLOR, deadline: g.deadline || '' });
+    setForm({ title: g.title, description: cleanDescription(g.description || ''), color: g.color || DEFAULT_COLOR, deadline: g.deadline || '' });
   };
 
   const startAdd = () => {
@@ -82,12 +96,13 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
   const handleSave = async () => {
     if (!form.title.trim()) return;
     setSaving(true);
+    const cleanedDescription = cleanDescription(form.description);
     try {
       if (editingId) {
-        await onUpdate(editingId, { title: form.title.trim(), description: form.description.trim(), color: form.color, deadline: form.deadline });
+        await onUpdate(editingId, { title: form.title.trim(), description: cleanedDescription, color: form.color, deadline: form.deadline });
         setEditingId(null);
       } else {
-        await onAdd({ title: form.title.trim(), description: form.description.trim(), color: form.color, deadline: form.deadline });
+        await onAdd({ title: form.title.trim(), description: cleanedDescription, color: form.color, deadline: form.deadline });
         setIsAdding(false);
         setForm({ title: '', description: '', color: DEFAULT_COLOR, deadline: '' });
       }
@@ -275,8 +290,8 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
                     <p className="text-sm font-semibold text-gray-800 leading-snug">{g.title}</p>
                     <Flag className="h-3 w-3 flex-shrink-0" style={{ color }} />
                   </div>
-                  {g.description && (
-                    <p className="mt-0.5 text-xs text-gray-400 leading-relaxed line-clamp-2">{g.description}</p>
+                  {cleanDescription(g.description) && (
+                    <p className="mt-0.5 text-xs text-gray-400 leading-relaxed line-clamp-2">{cleanDescription(g.description)}</p>
                   )}
                   {g.deadline && (() => {
                     const progress = calculateProgress(g.created_at, g.deadline);
@@ -394,8 +409,8 @@ export const GoalsSection: React.FC<GoalsSectionProps> = ({ goals, onAddGoal, on
                   />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-gray-800">{g.title}</p>
-                    {g.description && (
-                      <p className="truncate text-xs text-gray-500 mt-0.5">{g.description}</p>
+                    {cleanDescription(g.description) && (
+                      <p className="truncate text-xs text-gray-500 mt-0.5">{cleanDescription(g.description)}</p>
                     )}
                     {g.deadline && (() => {
                       const progress = calculateProgress(g.created_at, g.deadline);
