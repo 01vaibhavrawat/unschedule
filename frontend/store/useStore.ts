@@ -36,6 +36,13 @@ export interface AuthUser {
   has_completed_onboarding: boolean;
 }
 
+export interface Board {
+  _id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
 interface AppState {
   user: AuthUser | null;
   tasks: any[];
@@ -45,6 +52,7 @@ interface AppState {
   streaks: Record<string, number>;
   notes: any[];
   journals: any[];
+  board: Board | null;
   assistantOpen: boolean;
 
   setAssistantOpen: (open: boolean) => void;
@@ -74,6 +82,8 @@ interface AppState {
   addJournal: (journal: any) => Promise<any>;
   updateJournal: (id: string, journal: any) => Promise<void>;
   deleteJournal: (id: string) => Promise<void>;
+
+  updateBoard: (content: string) => Promise<void>;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -85,6 +95,7 @@ export const useStore = create<AppState>((set, get) => ({
   streaks: {},
   notes: [],
   journals: [],
+  board: null,
   assistantOpen: false,
 
   setAssistantOpen: (open) => set({ assistantOpen: open }),
@@ -92,20 +103,21 @@ export const useStore = create<AppState>((set, get) => ({
 
   logout: async () => {
     await api.logout();
-    set({ user: null, tasks: [], habits: [], goals: [], habitLogs: {}, streaks: {}, notes: [], journals: [] });
+    set({ user: null, tasks: [], habits: [], goals: [], habitLogs: {}, streaks: {}, notes: [], journals: [], board: null });
     window.location.href = '/login';
   },
 
   fetchInitialData: async () => {
     try {
-      const [tasks, habits, goals, notes, journals] = await Promise.all([
+      const [tasks, habits, goals, notes, journals, board] = await Promise.all([
         api.getTasks(),
         api.getHabits(),
         api.getGoals(),
         api.getNotes(),
-        api.getJournals()
+        api.getJournals(),
+        api.getBoard()
       ]);
-      set({ tasks, habits, goals, notes, journals });
+      set({ tasks, habits, goals, notes, journals, board });
 
       const itemsToFetchLogs = [
         ...habits,
@@ -227,5 +239,10 @@ export const useStore = create<AppState>((set, get) => ({
   deleteJournal: async (id) => {
     await api.deleteJournal(id);
     set((state) => ({ journals: state.journals.filter(j => j._id !== id) }));
+  },
+
+  updateBoard: async (content) => {
+    const updatedBoard = await api.updateBoard({ content });
+    set({ board: updatedBoard });
   }
 }));

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import tasks, habits, habit_logs, goals, auth, notifications, notes, journals, assistant
+from routers import tasks, habits, habit_logs, goals, auth, notifications, notes, journals, assistant, boards
 
 app = FastAPI(title="Unschedule MVP API")
 
@@ -22,6 +22,7 @@ app.include_router(notifications.router, prefix="/notifications", tags=["Notific
 app.include_router(notes.router, prefix="/notes", tags=["Notes"])
 app.include_router(journals.router, prefix="/journals", tags=["Journals"])
 app.include_router(assistant.router, prefix="/assistant", tags=["Assistant"])
+app.include_router(boards.router, prefix="/boards", tags=["Boards"])
 
 @app.get("/")
 def read_root():

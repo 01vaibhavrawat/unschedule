@@ -153,4 +153,8 @@ export const api = {
   // ── Assistant ────────────────────────────────────────────────
   getAssistantHistory: () => fetchAPI("/assistant/history"),
   sendAssistantMessage: (data: { message: string }) => fetchAPI("/assistant/chat", { method: "POST", body: JSON.stringify(data) }),
+
+  // ── Board ────────────────────────────────────────────────────
+  getBoard: () => fetchAPI("/boards/"),
+  updateBoard: (data: { content: string }) => fetchAPI("/boards/", { method: "PUT", body: JSON.stringify(data) }),
 };

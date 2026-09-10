@@ -9,6 +9,7 @@ import { MiniHabitsSection } from '@/components/MiniHabitsSection';
 import { TaskModal } from '@/components/TaskModal';
 import { AtomicHabitModal } from '@/components/AtomicHabitModal';
 import { MiniHabit } from '@/store/useStore';
+import { BoardSection } from '@/components/BoardSection';
 
 export default function Home() {
   const { user, tasks, habits, habitLogs, streaks, toggleHabitLog, updateTask, deleteTask, goals, addGoal, updateGoal, deleteGoal, setHabitStatus, addHabit, updateHabit, deleteHabit, addTask } = useStore();
@@ -87,9 +88,14 @@ export default function Home() {
     <div className="flex-1 flex overflow-hidden bg-white">
       {/* Dashboard (60%) */}
       <div className="w-[60%] flex flex-col p-3 overflow-y-auto">
-        <div className="flex flex-col gap-3">
-          {/* First Row: Mini Habits and Goals */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 min-h-[45vh]">
+        <div className="flex flex-col gap-3 h-full">
+          {/* First Row: Board */}
+          <div className="flex-1 min-h-[200px]">
+            <BoardSection />
+          </div>
+
+          {/* Second Row: Mini Habits and Goals */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 flex-1 min-h-[200px]">
             <div className="min-h-0 h-full flex flex-col">
               <MiniHabitsSection
                 habits={habits}
@@ -114,8 +120,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Second Row: Focus Tasks */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col min-h-[30vh]">
+          {/* Third Row: Focus Tasks */}
+          <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col flex-1 min-h-[200px]">
             <div className="flex items-center justify-between mb-3 flex-shrink-0">
               <div className="flex items-center gap-2 text-gray-900 font-bold">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
@@ -132,15 +138,14 @@ export default function Home() {
             {sortedTasks.length === 0 ? (
               <p className="text-sm text-gray-400 italic">No tasks found. Click "+" to create one.</p>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-2 overflow-y-auto min-h-0 pr-1">
                 {sortedTasks.map(task => {
                   const isCompleted = task.status === 'completed';
                   return (
-                    <div 
-                      key={task._id} 
-                      className={`flex items-start gap-3 p-3 border rounded-xl transition-all cursor-pointer hover:shadow-sm ${
-                        isCompleted ? 'border-gray-100 opacity-60 bg-gray-50' : 'border-gray-100 hover:border-emerald-200 bg-white'
-                      }`}
+                    <div
+                      key={task._id}
+                      className={`flex items-start gap-3 p-3 border rounded-xl transition-all cursor-pointer hover:shadow-sm ${isCompleted ? 'border-gray-100 opacity-60 bg-gray-50' : 'border-gray-100 hover:border-emerald-200 bg-white'
+                        }`}
                       onClick={() => handleEditClick(task)}
                     >
                       <button
@@ -148,9 +153,8 @@ export default function Home() {
                           e.stopPropagation();
                           toggleTaskStatus(task);
                         }}
-                        className={`mt-0.5 transition-colors flex-shrink-0 ${
-                          isCompleted ? 'text-emerald-500' : 'text-gray-300 hover:text-emerald-500'
-                        }`}
+                        className={`mt-0.5 transition-colors flex-shrink-0 ${isCompleted ? 'text-emerald-500' : 'text-gray-300 hover:text-emerald-500'
+                          }`}
                       >
                         <Circle className={`w-5 h-5 ${isCompleted ? 'fill-emerald-500 text-emerald-500' : ''}`} />
                       </button>

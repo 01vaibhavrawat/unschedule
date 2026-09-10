@@ -155,6 +155,25 @@ class NoteUpdate(BaseModel):
         populate_by_name = True
         json_encoders = {ObjectId: str}
 
+class Board(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    user_id: Optional[str] = None
+    content: str = ""
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class BoardUpdate(BaseModel):
+    content: Optional[str] = None
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+
 
 # ── Auth Models ────────────────────────────────────────────────────────────
 
