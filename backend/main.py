@@ -4,7 +4,21 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routers import tasks, habits, habit_logs, goals, auth, notifications, notes, journals, assistant, boards
 
+from starlette.middleware.base import BaseHTTPMiddleware
+
 app = FastAPI(title="Unschedule MVP API")
+
+class ProxyRedirectMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+        location = response.headers.get("location")
+        if location and ("backend:8000" in location or "127.0.0.1:8000" in location or "localhost:8000" in location):
+            for target in ["http://backend:8000", "http://127.0.0.1:8000", "http://localhost:8000"]:
+                location = location.replace(target, "/api/backend")
+            response.headers["location"] = location
+        return response
+
+app.add_middleware(ProxyRedirectMiddleware)
 
 # Read CORS_ORIGINS from environment, default to localhost for development
 cors_origins_str = os.getenv("CORS_ORIGINS", "http://localhost:3000,https://mvp1.d1304gy8kwnblp.amplifyapp.com")

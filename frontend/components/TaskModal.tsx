@@ -402,9 +402,11 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             {isEditingHabit && onToggleHabit && (
               <button
                 type="button"
-                onClick={() =>
-                  onToggleHabit(editingTask._id!, dateInput)
-                }
+                onClick={() => {
+                  if (editingTask?._id) {
+                    onToggleHabit(editingTask._id, dateInput);
+                  }
+                }}
                 className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${isCompletedForSelectedDay
                     ? 'bg-[var(--color-brand-success-soft)] text-[var(--color-brand-success-strong)]'
                     : 'bg-[var(--color-bg-hover)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border-strong)]'
