@@ -1,6 +1,4 @@
-const API_URL = "http://localhost:8000";
-// const API_URL = "http://13.53.168.160:8000";
-// const API_URL = "https://unschedule-backend-latest.onrender.com"
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const getAuthToken = () => {
   if (typeof document !== "undefined") {

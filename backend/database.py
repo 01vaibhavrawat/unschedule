@@ -6,7 +6,7 @@ load_dotenv()
 
 MONGO_DETAILS = os.getenv(
     "MONGO_URI",
-    "mongodb://smartwire:smartwire@etd-shard-00-00.nvgep.mongodb.net:27017,etd-shard-00-01.nvgep.mongodb.net:27017,etd-shard-00-02.nvgep.mongodb.net:27017/?replicaSet=atlas-rciogd-shard-0&ssl=true&authSource=admin&retryWrites=true&w=majority&appName=ETD"
+    "mongodb://localhost:27017/unschedule"
 )
 client = AsyncIOMotorClient(MONGO_DETAILS)
 database = client.unschedule

@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -5,9 +6,13 @@ from routers import tasks, habits, habit_logs, goals, auth, notifications, notes
 
 app = FastAPI(title="Unschedule MVP API")
 
+# Read CORS_ORIGINS from environment, default to localhost for development
+cors_origins_str = os.getenv("CORS_ORIGINS", "http://localhost:3000,https://mvp1.d1304gy8kwnblp.amplifyapp.com")
+origins = [origin.strip() for origin in cors_origins_str.split(",")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://mvp1.d1304gy8kwnblp.amplifyapp.com", "https://mvp1.d1304gy8kwnblp.amplifyapp.com/"],   # explicit origin required for cookie auth
+    allow_origins=origins,   # explicit origin required for cookie auth
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
