@@ -1,15 +1,4 @@
-version: '3.8'
-
 services:
-  mongodb:
-    image: mongo:7.0
-    container_name: unschedule-mongodb
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-    restart: always
-
   backend:
     build:
       context: ./backend
@@ -18,14 +7,12 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/unschedule
-      - JWT_SECRET=${JWT_SECRET:-your_super_secret_jwt_key_here}
+      - MONGO_URI=${MONGO_URI:-mongodb://smartwire:smartwire@etd-shard-00-00.nvgep.mongodb.net:27017,etd-shard-00-01.nvgep.mongodb.net:27017,etd-shard-00-02.nvgep.mongodb.net:27017/?replicaSet=atlas-rciogd-shard-0&ssl=true&authSource=admin&retryWrites=true&w=majority&appName=ETD}
+      - JWT_SECRET=${JWT_SECRET:-unschedule-super-secret-jwt-key-change-in-production-2026}
       - JWT_ALGORITHM=HS256
       - JWT_EXPIRE_DAYS=7
       - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,http://localhost}
       - GEMINI_API_KEY=${GEMINI_API_KEY:-AQ.Ab8RN6Jlb7dst5BKtzCBL-snfD5K7eHm_IyZKhjpOP_swwKwJQ}
-    depends_on:
-      - mongodb
     restart: always
 
   frontend:
@@ -43,6 +30,3 @@ services:
     depends_on:
       - backend
     restart: always
-
-volumes:
-  mongodb_data:
