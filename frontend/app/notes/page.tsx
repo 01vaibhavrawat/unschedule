@@ -1,10 +1,12 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { useStore } from '@/store/useStore';
-import { Plus, Search, FileText, Trash2, Save, FolderOpen, Menu, PanelLeftClose } from 'lucide-react';
+import { useStore, Task } from '@/store/useStore';
+import { Plus, Search, FileText, Trash2, Save, FolderOpen, Menu, PanelLeftClose, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { RichTextEditor } from '@/components/RichTextEditor';
 import { useAutoSave } from '@/hooks/useAutoSave';
+import { FocusTasksSection } from '@/components/FocusTasksSection';
+import { TaskModal } from '@/components/TaskModal';
 
 function NoteEditor({ note, updateNote, isSidebarOpen, setIsSidebarOpen }: { note: any; updateNote: (id: string, updates: any) => Promise<void>; isSidebarOpen: boolean; setIsSidebarOpen: (v: boolean) => void }) {
   const [localTitle, setLocalTitle] = useState(note.title || '');
@@ -63,10 +65,14 @@ function NoteEditor({ note, updateNote, isSidebarOpen, setIsSidebarOpen }: { not
 }
 
 export default function NotesPage() {
-  const { notes, addNote, updateNote, deleteNote } = useStore();
-  const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
+  const { notes, addNote, updateNote, deleteNote, tasks, updateTask, addTask, deleteTask } = useStore();
+  const [activeNoteId, setActiveNoteId] = useState<string | null>('focus-tasks');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Task modal state
+  const [taskModalOpen, setTaskModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   const activeNote = notes.find(n => n._id === activeNoteId);
 
@@ -88,6 +94,38 @@ export default function NotesPage() {
       await deleteNote(id);
       if (activeNoteId === id) setActiveNoteId(null);
     }
+  };
+
+  // Task Handlers
+  const toggleTaskStatus = (task: Task) => {
+    updateTask(task._id, { status: task.status === 'completed' ? 'pending' : 'completed' });
+  };
+
+  const handleSaveTask = async (taskData: any) => {
+    if (editingTask) {
+      const { _id, user_id, ...rest } = editingTask as any;
+      updateTask(editingTask._id, { ...rest, ...taskData });
+    } else {
+      await addTask(taskData);
+    }
+    setTaskModalOpen(false);
+  };
+
+  const handleDeleteTask = () => {
+    if (editingTask) {
+      deleteTask(editingTask._id);
+    }
+    setTaskModalOpen(false);
+  };
+
+  const openCreateModal = () => {
+    setEditingTask(null);
+    setTaskModalOpen(true);
+  };
+
+  const handleEditClick = (task: Task) => {
+    setEditingTask(task);
+    setTaskModalOpen(true);
   };
 
   return (
@@ -130,6 +168,30 @@ export default function NotesPage() {
         </div>
         
         <div className="flex-1 overflow-y-auto p-2 space-y-1">
+          {/* Focus Tasks Section */}
+          <div 
+            onClick={() => setActiveNoteId('focus-tasks')}
+            className={`p-3 rounded-lg cursor-pointer transition-colors group flex items-center gap-3 ${
+              activeNoteId === 'focus-tasks' ? 'bg-indigo-50 border border-indigo-100' : 'hover:bg-gray-100 border border-transparent'
+            }`}
+          >
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${activeNoteId === 'focus-tasks' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-200 text-gray-500'}`}>
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className={`font-semibold text-sm ${activeNoteId === 'focus-tasks' ? 'text-indigo-900' : 'text-gray-700'}`}>
+                Focus Tasks
+              </h4>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Manage your priorities
+              </p>
+            </div>
+          </div>
+
+          <div className="px-3 py-2 mt-2 mb-1">
+             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">My Notes</h3>
+          </div>
+
           {filteredNotes.length === 0 ? (
             <div className="text-center py-8 text-xs text-gray-400">
               No notes found.
@@ -167,7 +229,33 @@ export default function NotesPage() {
 
       {/* Main Editor */}
       <div className="flex-1 flex flex-col relative bg-white min-w-0">
-        {activeNote ? (
+        {activeNoteId === 'focus-tasks' ? (
+          <div className="flex-1 p-8 bg-gray-50 flex flex-col items-center overflow-hidden">
+            <div className="w-full max-w-4xl h-full flex flex-col min-h-0">
+              <div className="mb-6 flex items-center gap-3 flex-shrink-0">
+                {!isSidebarOpen && (
+                  <button 
+                    onClick={() => setIsSidebarOpen(true)}
+                    className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg bg-white shadow-sm border border-gray-200"
+                  >
+                    <Menu className="w-5 h-5" />
+                  </button>
+                )}
+                <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                  Focus Tasks
+                </h1>
+              </div>
+              <div className="flex-1 min-h-0">
+                <FocusTasksSection
+                  tasks={tasks}
+                  onToggleTaskStatus={toggleTaskStatus}
+                  onEditTask={handleEditClick}
+                  onAddTask={openCreateModal}
+                />
+              </div>
+            </div>
+          </div>
+        ) : activeNote ? (
           <NoteEditor key={activeNote._id} note={activeNote} updateNote={updateNote} isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-gray-400 bg-gray-50/30 relative">
@@ -186,6 +274,16 @@ export default function NotesPage() {
           </div>
         )}
       </div>
+
+      <TaskModal
+        isOpen={taskModalOpen}
+        onClose={() => setTaskModalOpen(false)}
+        onSave={handleSaveTask}
+        onDelete={handleDeleteTask}
+        editingTask={editingTask}
+        defaultType="task"
+        hideTypeSelector={true}
+      />
     </div>
   );
 }

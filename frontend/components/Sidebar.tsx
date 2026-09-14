@@ -60,7 +60,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      <div className="flex-1"></div>
 
       {/* Mini Calendar */}
       <div className="px-6 pb-4 pt-4 border-t border-[var(--color-border-subtle)]">
