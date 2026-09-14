@@ -13,6 +13,7 @@ interface RichTextEditorProps {
   placeholder?: string;
   className?: string;
   minHeight?: string;
+  borderless?: boolean;
 }
 
 export function RichTextEditor({ 
@@ -20,7 +21,8 @@ export function RichTextEditor({
   onChange, 
   placeholder,
   className = '',
-  minHeight = '120px'
+  minHeight = '120px',
+  borderless = false,
 }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [
@@ -52,13 +54,13 @@ export function RichTextEditor({
   }, [value, editor]);
 
   if (!editor) {
-    return <div style={{ minHeight }} className={`w-full ${className} border border-gray-200 rounded-xl bg-gray-50/50 animate-pulse`} />;
+    return <div style={{ minHeight }} className={`w-full ${className} ${borderless ? '' : 'border border-gray-200 rounded-xl'} bg-gray-50/50 animate-pulse`} />;
   }
 
   return (
-    <div className={`w-full flex flex-col rounded-xl border border-gray-200 bg-white overflow-hidden transition-all focus-within:ring-2 focus-within:ring-indigo-100 focus-within:border-indigo-400`}>
+    <div className={`w-full h-full flex flex-col ${borderless ? 'rounded-xl overflow-hidden' : 'rounded-xl border border-gray-200 bg-white overflow-hidden transition-all focus-within:ring-2 focus-within:ring-indigo-100 focus-within:border-indigo-400'}`}>
       {/* Toolbar */}
-      <div className="flex items-center gap-1 p-2 border-b border-gray-100 bg-gray-50/50">
+      <div className="flex flex-wrap items-center gap-0.5 p-1.5 border-b border-gray-100 bg-gray-50/60 flex-shrink-0">
         <button
           onClick={(e) => { e.preventDefault(); editor.chain().focus().toggleBold().run(); }}
           className={`p-1.5 rounded-lg transition-colors flex items-center justify-center ${

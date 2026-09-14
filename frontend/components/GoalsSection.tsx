@@ -369,30 +369,37 @@ export const GoalsSection: React.FC<GoalsSectionProps> = ({ goals, onAddGoal, on
   const [goalsModalOpen, setGoalsModalOpen] = useState(false);
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col h-full">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2 text-indigo-900 font-bold">
-          <Target className="w-5 h-5 text-indigo-500" />
-          <h2>Goals & Priorities</h2>
+    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col h-full min-h-0">
+      <div className="flex items-center justify-between gap-2 mb-3 flex-shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <Target className="w-5 h-5 text-indigo-500 flex-shrink-0" />
+          <h2 className="text-base font-bold text-gray-900 truncate">Goals & Priorities</h2>
+          {goals.length > 0 && (
+            <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 flex-shrink-0">
+              {goals.length}
+            </span>
+          )}
         </div>
         <button
           onClick={() => setGoalsModalOpen(true)}
           title="Manage goals"
-          className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:bg-indigo-50 hover:text-indigo-500 transition-colors"
+          className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:bg-indigo-50 hover:text-indigo-500 transition-colors flex-shrink-0"
         >
           <Plus className="h-4 w-4" />
         </button>
       </div>
       
-      <div className="flex-1 overflow-y-auto pr-1 -mr-1">
+      <div className="flex-1 min-h-0 overflow-y-auto pr-1 -mr-1">
         {goals.length === 0 ? (
-          <button
-            onClick={() => setGoalsModalOpen(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-indigo-200 py-6 text-sm font-medium text-indigo-400 transition-all hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600"
-          >
-            <Plus className="h-4 w-4" />
-            Add your first goal
-          </button>
+          <div className="h-full min-h-[100px] flex items-center justify-center">
+            <button
+              onClick={() => setGoalsModalOpen(true)}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-indigo-200 py-6 text-xs font-medium text-indigo-500 transition-all hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600"
+            >
+              <Plus className="h-4 w-4" />
+              Add your first goal
+            </button>
+          </div>
         ) : (
           <div className="space-y-2">
             {goals.map((g) => {

@@ -44,24 +44,29 @@ export const MiniHabitsSection: React.FC<MiniHabitsSectionProps> = ({
   while (habitDay <= habitEndDate) { habitDays.push(habitDay); habitDay = addDays(habitDay, 1); }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col h-full">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2 text-gray-900 font-bold">
-          <Zap className="w-5 h-5 text-amber-500" />
-          <h2>Atomic Habits</h2>
+    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col h-full min-h-0">
+      <div className="flex items-center justify-between gap-2 mb-3 flex-shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <Zap className="w-5 h-5 text-amber-500 flex-shrink-0" />
+          <h2 className="text-base font-bold text-gray-900 truncate">Atomic Habits</h2>
+          {habits.length > 0 && (
+            <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-100 flex-shrink-0">
+              {habits.length}
+            </span>
+          )}
         </div>
         {onAddHabit && (
           <button
             onClick={onAddHabit}
             title="Add habit"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:bg-amber-50 hover:text-amber-500 transition-colors"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:bg-amber-50 hover:text-amber-500 transition-colors flex-shrink-0"
           >
             <Plus className="h-4 w-4" />
           </button>
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto pr-1 -mr-1 space-y-2 text-sm">
+      <div className="flex-1 min-h-0 overflow-y-auto pr-1 -mr-1 space-y-2 text-sm">
         {habits.map(habit => {
           const streakCount = streaks[habit._id] || 0;
           const logs = habitLogs[habit._id] || [];
