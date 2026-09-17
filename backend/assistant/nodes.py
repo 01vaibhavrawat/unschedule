@@ -7,9 +7,9 @@ from assistant.tools import tools
 
 # Initialize LLMs
 gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or "AIzaSy_placeholder_key"
-llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", temperature=0.7, google_api_key=gemini_key)
+llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", temperature=0.7, google_api_key=gemini_key, transport="rest")
 llm_with_tools = llm.bind_tools(tools)
-security_llm = ChatGoogleGenerativeAI(model="gemma-4-31b-it", temperature=0.0, google_api_key=gemini_key)
+security_llm = ChatGoogleGenerativeAI(model="gemma-4-31b-it", temperature=0.0, google_api_key=gemini_key, transport="rest")
 
 class SecurityCheck(BaseModel):
     is_safe: bool = Field(description="True if the prompt is safe, False if it contains security issues (e.g., prompt injection, harmful content, asking to act as a hacker).")
