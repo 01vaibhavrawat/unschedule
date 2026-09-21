@@ -8,11 +8,36 @@ MONGO_DETAILS = os.getenv(
     "MONGO_URI",
     "mongodb://smartwire:smartwire@etd-shard-00-00.nvgep.mongodb.net:27017,etd-shard-00-01.nvgep.mongodb.net:27017,etd-shard-00-02.nvgep.mongodb.net:27017/?replicaSet=atlas-rciogd-shard-0&ssl=true&authSource=admin&retryWrites=true&w=majority&appName=ETD"
 )
-client = AsyncIOMotorClient(MONGO_DETAILS)
+client = AsyncIOMotorClient(
+    MONGO_DETAILS,
+    maxPoolSize=100,
+    minPoolSize=10,
+    maxIdleTimeMS=45000,
+    serverSelectionTimeoutMS=5000
+)
 database = client.unschedule
 
 def get_db():
     return database
+
+import pymongo
+async def init_db_indexes():
+    print("Initializing database indexes...")
+    db = get_db()
+    # Assistant Messages
+    await db.assistant_messages.create_index([("user_id", pymongo.ASCENDING), ("created_at", pymongo.DESCENDING)])
+    # Tasks
+    await db.tasks.create_index([("user_id", pymongo.ASCENDING), ("start_time", pymongo.ASCENDING)])
+    await db.tasks.create_index([("user_id", pymongo.ASCENDING), ("created_at", pymongo.DESCENDING)])
+    # Mini Habits
+    await db.mini_habits.create_index([("user_id", pymongo.ASCENDING), ("created_at", pymongo.DESCENDING)])
+    # Goals
+    await db.goals.create_index([("user_id", pymongo.ASCENDING), ("created_at", pymongo.DESCENDING)])
+    # Notes
+    await db.notes.create_index([("user_id", pymongo.ASCENDING), ("created_at", pymongo.DESCENDING)])
+    # Journal Entries
+    await db.journal_entries.create_index([("user_id", pymongo.ASCENDING), ("date", pymongo.DESCENDING)])
+    print("Database indexes initialized successfully.")
 
 tasks_collection = database.get_collection("tasks")
 habits_collection = database.get_collection("mini_habits")

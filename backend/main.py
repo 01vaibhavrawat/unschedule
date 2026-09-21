@@ -6,7 +6,15 @@ from routers import tasks, habits, habit_logs, goals, auth, notifications, notes
 
 from starlette.middleware.base import BaseHTTPMiddleware
 
-app = FastAPI(title="Unschedule MVP API")
+from contextlib import asynccontextmanager
+from database import init_db_indexes
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db_indexes()
+    yield
+
+app = FastAPI(title="Unschedule MVP API", lifespan=lifespan)
 
 class ProxyRedirectMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):

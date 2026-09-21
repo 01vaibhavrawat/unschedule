@@ -43,6 +43,59 @@ export const fetchAPI = async (endpoint: string, options: RequestInit = {}) => {
   return res.json();
 };
 
+export const fetchStreamAPI = async (endpoint: string, options: RequestInit = {}, onEvent: (event: any) => void) => {
+  const token = getAuthToken();
+  const headers = new Headers(options.headers);
+
+  if (!headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  const res = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    credentials: "omit",
+    headers,
+  });
+
+  if (!res.ok) {
+    throw new Error(`API stream error: ${res.statusText}`);
+  }
+
+  const reader = res.body?.getReader();
+  if (!reader) throw new Error("No response body to read");
+
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    
+    buffer += decoder.decode(value, { stream: true });
+    
+    let boundary = buffer.indexOf("\n\n");
+    while (boundary !== -1) {
+      const chunk = buffer.slice(0, boundary).trim();
+      buffer = buffer.slice(boundary + 2);
+      
+      if (chunk.startsWith("data: ")) {
+        try {
+          const data = JSON.parse(chunk.slice(6));
+          onEvent(data);
+        } catch (e) {
+          console.error("Failed to parse stream chunk", e);
+        }
+      }
+      
+      boundary = buffer.indexOf("\n\n");
+    }
+  }
+};
+
 export const api = {
   // ── Tasks ────────────────────────────────────────────────────
   getTasks: () => fetchAPI("/tasks/"),
@@ -151,6 +204,7 @@ export const api = {
   // ── Assistant ────────────────────────────────────────────────
   getAssistantHistory: () => fetchAPI("/assistant/history"),
   sendAssistantMessage: (data: { message: string }) => fetchAPI("/assistant/chat", { method: "POST", body: JSON.stringify(data) }),
+  streamAssistantMessage: (data: { message: string }, onEvent: (event: any) => void) => fetchStreamAPI("/assistant/chat/stream", { method: "POST", body: JSON.stringify(data) }, onEvent),
 
   // ── Board ────────────────────────────────────────────────────
   getBoard: () => fetchAPI("/boards/"),

@@ -47,29 +47,53 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
       created_at: new Date().toISOString()
     };
     
-    setMessages(prev => [...prev, userMessage]);
+    const tempAsstId = (Date.now() + 1).toString();
+    const asstMessage = {
+      _id: tempAsstId,
+      role: 'assistant',
+      content: '',
+      action_data: null as any,
+      created_at: new Date().toISOString(),
+      is_streaming: true,
+      is_running_tool: null as string | null
+    };
+
+    setMessages(prev => [...prev, userMessage, asstMessage]);
     setInput('');
     setIsTyping(true);
 
     try {
-      const res = await api.sendAssistantMessage({ message: userMessage.content });
-      if (res) {
-        // Backend returns the message object directly, no 'data' wrapper
-        const newMessage = res.data ? res.data : res;
-        setMessages(prev => [...prev, newMessage]);
-        if (newMessage.action_data) {
-          fetchInitialData();
+      await api.streamAssistantMessage({ message: userMessage.content }, (event: any) => {
+        setIsTyping(false); // Hide generic typing once streaming starts
+        
+        if (event.type === 'token') {
+          setMessages(prev => prev.map(m => 
+            m._id === tempAsstId ? { ...m, content: m.content + event.content } : m
+          ));
+        } else if (event.type === 'tool_start') {
+          setMessages(prev => prev.map(m => 
+            m._id === tempAsstId ? { ...m, is_running_tool: event.action } : m
+          ));
+        } else if (event.type === 'done') {
+          setMessages(prev => prev.map(m => 
+            m._id === tempAsstId ? { 
+              ...m, 
+              _id: event.message._id || tempAsstId, 
+              is_streaming: false, 
+              is_running_tool: null, 
+              action_data: event.message.action_data 
+            } : m
+          ));
+          if (event.message.action_data) {
+            fetchInitialData();
+          }
         }
-      }
+      });
     } catch (err) {
-      console.error('Failed to send message', err);
-      // Fallback message
-      setMessages(prev => [...prev, {
-        _id: Date.now().toString(),
-        role: 'assistant',
-        content: 'Sorry, I encountered an error. Please try again later.',
-        created_at: new Date().toISOString()
-      }]);
+      console.error('Failed to stream message', err);
+      setMessages(prev => prev.map(m => 
+        m._id === tempAsstId ? { ...m, content: 'Sorry, I encountered an error. Please try again later.', is_streaming: false, is_running_tool: null } : m
+      ));
     } finally {
       setIsTyping(false);
     }
@@ -120,7 +144,16 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
               </div>
               <div className={`flex flex-col ${isAssistant ? 'items-start' : 'items-end'}`}>
                 <div className={`px-4 py-2.5 rounded-2xl text-sm max-w-[240px] whitespace-pre-wrap leading-relaxed ${isAssistant ? 'bg-white border border-gray-100 text-gray-800 rounded-tl-none shadow-sm' : 'bg-indigo-600 text-white rounded-tr-none shadow-sm'}`}>
+                  {msg.is_running_tool && (
+                    <div className="flex items-center gap-2 text-indigo-500 font-medium mb-2 text-xs">
+                      <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
+                      Executing {msg.is_running_tool.replace('_', ' ')}...
+                    </div>
+                  )}
                   {msg.content}
+                  {msg.is_streaming && !msg.is_running_tool && (
+                    <span className="inline-block w-1 h-3 ml-1 bg-indigo-400 animate-pulse" />
+                  )}
                 </div>
                 {msg.action_data && (
                   <div className="mt-2 bg-green-50 border border-green-100 rounded-xl p-3 text-xs w-[240px] shadow-sm">

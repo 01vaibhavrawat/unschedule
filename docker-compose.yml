@@ -13,6 +13,7 @@ services:
       - JWT_EXPIRE_DAYS=7
       - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,http://localhost}
       - GEMINI_API_KEY=${GEMINI_API_KEY:-AQ.Ab8RN6Jlb7dst5BKtzCBL-snfD5K7eHm_IyZKhjpOP_swwKwJQ}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
     restart: always
 
   frontend:
@@ -29,4 +30,11 @@ services:
       - INTERNAL_API_URL=http://backend:8000
     depends_on:
       - backend
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: unschedule-redis
+    ports:
+      - "6379:6379"
     restart: always
