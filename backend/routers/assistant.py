@@ -71,9 +71,19 @@ async def chat_with_assistant_stream(
                 kind = event["event"]
                 if kind == "on_chat_model_stream":
                     chunk = event["data"]["chunk"]
-                    if chunk.content and isinstance(chunk.content, str):
-                        final_content += chunk.content
-                        yield f"data: {json.dumps({'type': 'token', 'content': chunk.content})}\n\n"
+                    chunk_text = ""
+                    if isinstance(chunk.content, list):
+                        for part in chunk.content:
+                            if isinstance(part, dict) and part.get("type") == "text":
+                                chunk_text += part.get("text", "")
+                            elif isinstance(part, str):
+                                chunk_text += part
+                    elif isinstance(chunk.content, str):
+                        chunk_text = chunk.content
+                        
+                    if chunk_text:
+                        final_content += chunk_text
+                        yield f"data: {json.dumps({'type': 'token', 'content': chunk_text})}\n\n"
                         
                 elif kind == "on_tool_start":
                     tool_name = event["name"]
