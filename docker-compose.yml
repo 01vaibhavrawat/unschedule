@@ -6,6 +6,9 @@ services:
     container_name: unschedule-backend
     ports:
       - "8000:8000"
+    volumes:
+      - ./backend:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --loop asyncio --reload
     environment:
       - MONGO_URI=${MONGO_URI:-mongodb://smartwire:smartwire@etd-shard-00-00.nvgep.mongodb.net:27017,etd-shard-00-01.nvgep.mongodb.net:27017,etd-shard-00-02.nvgep.mongodb.net:27017/?replicaSet=atlas-rciogd-shard-0&ssl=true&authSource=admin&retryWrites=true&w=majority&appName=ETD}
       - JWT_SECRET=${JWT_SECRET:-unschedule-super-secret-jwt-key-change-in-production-2026}

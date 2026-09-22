@@ -23,8 +23,9 @@ async def get_chat_history(user: User = Depends(get_current_user)):
     # Note: get_recent_messages limits to what's in cache, for full history we could hit mongo
     # For now, let's keep it simple and just hit mongo for full history if requested
     db = get_db()
-    cursor = db.assistant_messages.find({"user_id": str(user.id)}).sort("created_at", 1)
+    cursor = db.assistant_messages.find({"user_id": str(user.id)}).sort("created_at", -1)
     messages = await cursor.to_list(length=100)
+    messages.reverse()
     return messages
 
 @router.post("/chat/stream")
