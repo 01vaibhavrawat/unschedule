@@ -103,3 +103,55 @@ async def _fallback_mongo_read(user_id: str, limit: int) -> List[dict]:
         if "_id" in m:
             m["_id"] = str(m["_id"])
     return messages
+
+async def sync_memory_to_mongo(user_id: str, memory_profile: str):
+    """Asynchronously saves memory profile to MongoDB."""
+    db = get_db()
+    try:
+        from bson import ObjectId
+        await db.users.update_one({"_id": ObjectId(user_id)}, {"$set": {"memory_profile": memory_profile}})
+    except Exception as e:
+        print(f"Background MongoDB memory sync failed: {e}")
+
+async def get_user_memory(user_id: str) -> str:
+    """Fetches user memory from Redis, falls back to Mongo."""
+    if not redis_client:
+        return await _fallback_mongo_memory_read(user_id)
+        
+    key = f"user:memory:{user_id}"
+    try:
+        memory = await redis_client.get(key)
+        if memory is not None:
+            return memory
+            
+        memory = await _fallback_mongo_memory_read(user_id)
+        if memory:
+            await redis_client.set(key, memory, ex=86400) # cache for 24h
+        return memory
+    except Exception as e:
+        print(f"Redis get_user_memory failed: {e}")
+        return await _fallback_mongo_memory_read(user_id)
+
+async def set_user_memory(user_id: str, memory_profile: str):
+    """Sets memory in Redis and launches background Mongo sync."""
+    asyncio.create_task(sync_memory_to_mongo(user_id, memory_profile))
+    
+    if not redis_client:
+        return
+        
+    key = f"user:memory:{user_id}"
+    try:
+        await redis_client.set(key, memory_profile, ex=86400)
+    except Exception as e:
+        print(f"Redis set_user_memory failed: {e}")
+
+async def _fallback_mongo_memory_read(user_id: str) -> str:
+    db = get_db()
+    try:
+        from bson import ObjectId
+        user = await db.users.find_one({"_id": ObjectId(user_id)})
+        if user and "memory_profile" in user:
+            return user["memory_profile"]
+    except Exception as e:
+        print(f"Mongo memory read failed: {e}")
+    return ""

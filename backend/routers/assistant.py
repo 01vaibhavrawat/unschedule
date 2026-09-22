@@ -8,7 +8,7 @@ from datetime import datetime
 from database import get_db
 from models import AssistantMessage, User
 from routers.auth import get_current_user
-from redis_client import get_recent_messages, push_message
+from redis_client import get_recent_messages, push_message, get_user_memory
 
 from langchain_core.messages import HumanMessage, AIMessage
 from assistant.graph import assistant_graph
@@ -63,9 +63,12 @@ async def chat_with_assistant_stream(
             action_data = None
             final_content = ""
             
+            # Fetch memory profile from Redis
+            memory_profile = await get_user_memory(str(user.id))
+            
             # Using langgraph streaming
             async for event in assistant_graph.astream_events(
-                {"messages": lc_messages, "user_id": str(user.id)},
+                {"messages": lc_messages, "user_id": str(user.id), "memory_profile": memory_profile},
                 config={"configurable": {"user_id": str(user.id)}},
                 version="v2"
             ):
@@ -143,8 +146,11 @@ async def chat_with_assistant(
             lc_messages.append(AIMessage(content=m["content"]))
             
     try:
+        # Fetch memory profile from Redis
+        memory_profile = await get_user_memory(str(user.id))
+        
         result = await assistant_graph.ainvoke(
-            {"messages": lc_messages, "user_id": str(user.id)},
+            {"messages": lc_messages, "user_id": str(user.id), "memory_profile": memory_profile},
             config={"configurable": {"user_id": str(user.id)}}
         )
         

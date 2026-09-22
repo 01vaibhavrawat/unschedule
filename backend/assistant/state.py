@@ -7,5 +7,6 @@ class GraphState(TypedDict):
     State for the Assistant Graph.
     """
     user_id: str
+    memory_profile: str
     messages: Annotated[Sequence[BaseMessage], operator.add]
     is_safe: bool

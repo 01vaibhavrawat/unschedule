@@ -6,6 +6,7 @@ from bson import ObjectId
 from models import Note, JournalEntry, Task, MiniHabit, Goal
 from datetime import datetime
 import json
+from redis_client import set_user_memory
 
 # --- Helper functions ---
 def get_user_id(config: RunnableConfig) -> str:
@@ -243,11 +244,28 @@ async def delete_journal_entry(journal_id: str, config: RunnableConfig) -> str:
         return f"Journal entry {journal_id} deleted successfully."
     return f"Journal entry {journal_id} not found."
 
+# --- User Profile Tools ---
+@tool
+async def update_user_memory(new_memory_profile: str, config: RunnableConfig) -> str:
+    """
+    Updates the long-term memory profile of the user. 
+    Use this to summarize, add, or delete facts about the user's personality, job, hobbies, family, or challenges.
+    You must pass a rewritten, concise block of text that represents the user's entire memory profile.
+    Keep it concise to fit in the context window.
+    """
+    if len(new_memory_profile) > 1000:
+        return f"Error: Memory profile is {len(new_memory_profile)} characters long. It MUST NOT exceed 1000 characters. Please summarize the facts and call this tool again."
+        
+    user_id = get_user_id(config)
+    await set_user_memory(user_id, new_memory_profile)
+    return "User memory profile updated successfully."
+
 # List of tools to be bound to the model and executed by ToolNode
 tools = [
     create_task, get_tasks, update_task, delete_task,
     create_habit, get_habits, update_habit, delete_habit,
     create_goal, get_goals, update_goal, delete_goal,
     create_note, get_notes, update_note, delete_note,
-    create_journal_entry, get_journal_entries, update_journal_entry, delete_journal_entry
+    create_journal_entry, get_journal_entries, update_journal_entry, delete_journal_entry,
+    update_user_memory
 ]

@@ -184,6 +184,7 @@ class User(BaseModel):
     hashed_password: str
     created_at: Optional[str] = None
     has_completed_onboarding: bool = False
+    memory_profile: str = ""
 
     class Config:
         populate_by_name = True
