@@ -27,7 +27,7 @@ echo "=========================================="
 echo ""
 echo "📦 Step 1: Compressing and uploading project files to EC2..."
 ARCHIVE="app_deploy.tar.gz"
-tar --exclude='node_modules' --exclude='.next' --exclude='.venv' --exclude='__pycache__' --exclude='.git' --exclude="$ARCHIVE" -czf "$ARCHIVE" .
+tar --exclude='node_modules' --exclude='.next' --exclude='.venv' --exclude='__pycache__' --exclude='.git' --exclude='docker-compose.override.yml' --exclude="$ARCHIVE" -czf "$ARCHIVE" .
 $SCP_CMD -i "$KEY" -o StrictHostKeyChecking=no "$ARCHIVE" ubuntu@$IP:~/app_deploy.tar.gz
 rm -f "$ARCHIVE"
 

@@ -26,7 +26,7 @@ Write-Host "`nStep 1: Compressing and uploading project files to EC2..." -Foregr
 $archiveName = "app_deploy.tar.gz"
 
 try {
-    tar.exe --exclude="node_modules" --exclude=".next" --exclude=".venv" --exclude="__pycache__" --exclude=".git" --exclude=$archiveName -czf $archiveName .
+    tar.exe --exclude="node_modules" --exclude=".next" --exclude=".venv" --exclude="__pycache__" --exclude=".git" --exclude="docker-compose.override.yml" --exclude=$archiveName -czf $archiveName .
     scp.exe -i $KeyPath -o StrictHostKeyChecking=no $archiveName "ubuntu@${IP}:~/app_deploy.tar.gz"
 }
 finally {

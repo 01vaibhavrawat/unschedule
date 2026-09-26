@@ -1,0 +1,6 @@
+FROM node:20-alpine
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+# Dependencies will be installed via docker-compose command,
+# and code will be mounted via volumes.
+CMD ["npm", "run", "dev"]

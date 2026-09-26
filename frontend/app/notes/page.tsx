@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useStore, Task } from '@/store/useStore';
 import { Plus, Search, FileText, Trash2, Save, FolderOpen, Menu, PanelLeftClose, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -64,9 +65,33 @@ function NoteEditor({ note, updateNote, isSidebarOpen, setIsSidebarOpen }: { not
   );
 }
 
-export default function NotesPage() {
+function NotesContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const urlId = searchParams.get('id');
+
   const { notes, addNote, updateNote, deleteNote, tasks, updateTask, addTask, deleteTask } = useStore();
-  const [activeNoteId, setActiveNoteId] = useState<string | null>('focus-tasks');
+  const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (urlId) {
+      setActiveNoteId(urlId);
+      sessionStorage.setItem('activeNoteId', urlId);
+    } else {
+      const savedId = sessionStorage.getItem('activeNoteId');
+      if (savedId) {
+        router.replace(`/notes?id=${savedId}`);
+      } else {
+        setActiveNoteId('focus-tasks');
+      }
+    }
+  }, [urlId, router]);
+
+  const handleSelectNote = (id: string) => {
+    setActiveNoteId(id);
+    sessionStorage.setItem('activeNoteId', id);
+    router.push(`/notes?id=${id}`);
+  };
   const [searchQuery, setSearchQuery] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
@@ -85,14 +110,17 @@ export default function NotesPage() {
     const tempTitle = "Untitled Note";
     const newNote = await addNote({ title: tempTitle, content: "" });
     if (newNote && newNote._id) {
-      setActiveNoteId(newNote._id);
+      handleSelectNote(newNote._id);
     }
   };
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this note?")) {
       await deleteNote(id);
-      if (activeNoteId === id) setActiveNoteId(null);
+      if (activeNoteId === id) {
+        sessionStorage.removeItem('activeNoteId');
+        router.push('/notes');
+      }
     }
   };
 
@@ -170,7 +198,10 @@ export default function NotesPage() {
         <div className="flex-1 overflow-y-auto p-2 space-y-1">
           {/* Focus Tasks Section */}
           <div 
-            onClick={() => setActiveNoteId('focus-tasks')}
+            onClick={() => {
+              sessionStorage.removeItem('activeNoteId');
+              router.push('/notes');
+            }}
             className={`p-3 rounded-lg cursor-pointer transition-colors group flex items-center gap-3 ${
               activeNoteId === 'focus-tasks' ? 'bg-indigo-50 border border-indigo-100' : 'hover:bg-gray-100 border border-transparent'
             }`}
@@ -200,7 +231,7 @@ export default function NotesPage() {
             filteredNotes.map(note => (
               <div 
                 key={note._id}
-                onClick={() => setActiveNoteId(note._id)}
+                onClick={() => handleSelectNote(note._id)}
                 className={`p-3 rounded-lg cursor-pointer transition-colors group relative ${
                   activeNoteId === note._id ? 'bg-indigo-50 border border-indigo-100' : 'hover:bg-gray-100 border border-transparent'
                 }`}
@@ -285,5 +316,13 @@ export default function NotesPage() {
         hideTypeSelector={true}
       />
     </div>
+  );
+}
+
+export default function NotesPage() {
+  return (
+    <Suspense fallback={<div className="flex-1 flex items-center justify-center bg-white"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div></div>}>
+      <NotesContent />
+    </Suspense>
   );
 }
