@@ -33,20 +33,34 @@ export default function SignupPage() {
   const passwordsMatch = form.password && form.confirm && form.password === form.confirm;
   const passwordsMismatch = form.confirm && form.password !== form.confirm;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    const formData = new FormData(e.currentTarget);
+    const name = (formData.get('name') as string) || form.name;
+    const email = (formData.get('email') as string) || form.email;
+    const password = (formData.get('password') as string) || form.password;
+    const confirm = (formData.get('confirm') as string) || form.confirm;
+
     setError('');
-    if (form.password !== form.confirm) {
+    
+    if (!name || !email || !password || !confirm) {
+      setError('Please fill in all fields.');
+      return;
+    }
+    
+    if (password !== confirm) {
       setError('Passwords do not match.');
       return;
     }
-    if (form.password.length < 6) {
+    if (password.length < 6) {
       setError('Password must be at least 6 characters.');
       return;
     }
+    
     setLoading(true);
     try {
-      const user = await api.signup({ name: form.name, email: form.email, password: form.password });
+      const user = await api.signup({ name, email, password });
       setUser(user);
       router.push('/');
     } catch (err: any) {
@@ -125,6 +139,7 @@ export default function SignupPage() {
               <label htmlFor="signup-name" className="auth-label">Full name</label>
               <input
                 id="signup-name"
+                name="name"
                 type="text"
                 autoComplete="name"
                 required
@@ -139,6 +154,7 @@ export default function SignupPage() {
               <label htmlFor="signup-email" className="auth-label">Email address</label>
               <input
                 id="signup-email"
+                name="email"
                 type="email"
                 autoComplete="email"
                 required
@@ -154,6 +170,7 @@ export default function SignupPage() {
               <div className="auth-input-wrapper">
                 <input
                   id="signup-password"
+                  name="password"
                   type={showPwd ? 'text' : 'password'}
                   autoComplete="new-password"
                   required
@@ -196,6 +213,7 @@ export default function SignupPage() {
               <div className="auth-input-wrapper">
                 <input
                   id="signup-confirm"
+                  name="confirm"
                   type={showConfirm ? 'text' : 'password'}
                   autoComplete="new-password"
                   required
@@ -221,7 +239,7 @@ export default function SignupPage() {
 
             <button
               type="submit"
-              disabled={loading || !canSubmit}
+              disabled={loading}
               className="auth-submit-btn"
               id="signup-submit"
             >

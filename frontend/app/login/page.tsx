@@ -15,12 +15,22 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    const formData = new FormData(e.currentTarget);
+    const email = (formData.get('email') as string) || form.email;
+    const password = (formData.get('password') as string) || form.password;
+
+    if (!email || !password) {
+      setError('Please enter both email and password.');
+      return;
+    }
+
     setError('');
     setLoading(true);
     try {
-      const user = await api.login({ email: form.email, password: form.password });
+      const user = await api.login({ email, password });
       setUser(user);
       router.push('/');
     } catch (err: any) {
@@ -95,6 +105,7 @@ export default function LoginPage() {
               <label htmlFor="login-email" className="auth-label">Email address</label>
               <input
                 id="login-email"
+                name="email"
                 type="email"
                 autoComplete="email"
                 required
@@ -110,6 +121,7 @@ export default function LoginPage() {
               <div className="auth-input-wrapper">
                 <input
                   id="login-password"
+                  name="password"
                   type={showPwd ? 'text' : 'password'}
                   autoComplete="current-password"
                   required
@@ -132,7 +144,7 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              disabled={loading || !form.email || !form.password}
+              disabled={loading}
               className="auth-submit-btn"
               id="login-submit"
             >
