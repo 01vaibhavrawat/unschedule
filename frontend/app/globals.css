@@ -21,6 +21,22 @@ body {
   color: var(--foreground);
 }
 
+button,
+[role="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
+input[type="checkbox"],
+input[type="radio"],
+input[type="file"],
+input[type="range"],
+select,
+summary,
+label,
+.fc-event {
+  cursor: pointer;
+}
+
 .card {
   background-color: var(--card-bg);
   border: 1px solid var(--card-border);

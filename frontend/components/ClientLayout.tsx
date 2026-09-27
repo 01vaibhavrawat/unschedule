@@ -69,7 +69,7 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
       {pathname !== '/' && !assistantOpen && (
         <button 
           onClick={() => setAssistantOpen(true)}
-          className="fixed bottom-6 right-6 h-14 w-14 bg-[var(--color-brand-primary)] rounded-full flex items-center justify-center text-white shadow-[var(--shadow-glow)] hover:bg-[var(--color-brand-primary-hover)] transition-all hover:scale-105 hover:-translate-y-1 z-40 border border-white/10"
+          className="fixed bottom-6 right-6 h-14 w-14 bg-[var(--color-brand-primary)] rounded-full flex items-center justify-center text-white shadow-[var(--shadow-glow)] hover:bg-[var(--color-brand-primary-hover)] transition-all hover:scale-105 hover:-translate-y-1 z-40 border border-white/10 cursor-pointer"
         >
           <Bot className="h-6 w-6" />
         </button>

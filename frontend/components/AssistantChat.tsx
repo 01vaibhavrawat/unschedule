@@ -124,8 +124,8 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
             <p className="text-xs text-[var(--color-brand-primary)] font-medium">Always here to help</p>
           </div>
         </div>
-        {!isEmbedded && onClose && (
-          <button onClick={onClose} className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)] rounded-xl transition-all">
+        {onClose && (
+          <button onClick={onClose} className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)] rounded-xl transition-all cursor-pointer">
             <X className="h-5 w-5" />
           </button>
         )}
@@ -259,7 +259,7 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
           <button
             type="submit"
             disabled={!input.trim() || isTyping}
-            className="absolute right-2 p-2 rounded-xl text-white bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary-hover)] disabled:opacity-50 transition-all shadow-[var(--shadow-glow)]"
+            className="absolute right-2 p-2 rounded-xl text-white bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary-hover)] disabled:opacity-50 transition-all shadow-[var(--shadow-glow)] cursor-pointer disabled:cursor-not-allowed"
           >
             <Send className="h-4 w-4 ml-0.5" />
           </button>
