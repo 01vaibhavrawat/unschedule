@@ -38,13 +38,13 @@ function JournalEditor({
   const { isSaving, forceSave } = useAutoSave(content, saveToStore, 1500);
 
   return (
-    <div className="w-full flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-        <div className="text-sm text-gray-500 font-medium">
+    <div className="w-full flex-1 flex flex-col bg-[var(--color-bg-surface)] rounded-2xl shadow-sm border border-[var(--color-border-default)] overflow-hidden">
+      <div className="p-4 border-b border-[var(--color-border-subtle)] flex justify-between items-center bg-[var(--color-bg-surface-muted)]/50">
+        <div className="text-sm text-[var(--color-text-secondary)] font-medium">
           Entry for {format(selectedDate, 'EEEE, MMMM do')}
         </div>
         <div className="flex items-center gap-3">
-          <span className={`text-sm transition-opacity ${isSaving ? 'opacity-100 text-gray-500' : 'opacity-0'}`}>
+          <span className={`text-sm transition-opacity ${isSaving ? 'opacity-100 text-[var(--color-text-secondary)]' : 'opacity-0'}`}>
             Saving...
           </span>
           <button
@@ -82,27 +82,27 @@ export default function JournalPage() {
   const handleToday = () => setSelectedDate(new Date());
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-gray-50">
-      <div className="bg-white border-b border-gray-200 px-8 py-6 flex justify-between items-center">
+    <div className="flex-1 flex flex-col overflow-hidden bg-[var(--color-bg-surface-muted)]">
+      <div className="bg-[var(--color-bg-surface)] border-b border-[var(--color-border-default)] px-8 py-6 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center">
             <BookOpen className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Daily Journal</h1>
-            <p className="text-sm text-gray-500 mt-1">Reflect on your day</p>
+            <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Daily Journal</h1>
+            <p className="text-sm text-[var(--color-text-secondary)] mt-1">Reflect on your day</p>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="flex items-center bg-gray-100 rounded-lg p-1">
-            <button onClick={handlePrevDay} className="p-2 hover:bg-white rounded shadow-sm transition-all text-gray-600">
+          <div className="flex items-center bg-[var(--color-bg-hover)] rounded-lg p-1">
+            <button onClick={handlePrevDay} className="p-2 hover:bg-[var(--color-bg-surface)] rounded shadow-sm transition-all text-[var(--color-text-secondary)]">
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <div className="px-4 font-medium text-gray-700 min-w-[140px] text-center">
+            <div className="px-4 font-medium text-[var(--color-text-primary)] min-w-[140px] text-center">
               {format(selectedDate, 'MMMM d, yyyy')}
             </div>
-            <button onClick={handleNextDay} className="p-2 hover:bg-white rounded shadow-sm transition-all text-gray-600">
+            <button onClick={handleNextDay} className="p-2 hover:bg-[var(--color-bg-surface)] rounded shadow-sm transition-all text-[var(--color-text-secondary)]">
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>

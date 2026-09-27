@@ -11,7 +11,7 @@ import { api } from '@/lib/api';
 
 const DynamicCalendar = dynamic(() => import('@/components/CalendarComponent'), {
   ssr: false,
-  loading: () => <div className="h-full w-full bg-white flex items-center justify-center text-gray-400">Loading Calendar view...</div>
+  loading: () => <div className="h-full w-full bg-[var(--color-bg-surface)] flex items-center justify-center text-[var(--color-text-muted)]">Loading Calendar view...</div>
 });
 
 export default function Home() {

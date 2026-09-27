@@ -58,10 +58,10 @@ export function OnboardingModal({ isOpen, onComplete }: OnboardingModalProps) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity">
-      <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-y-auto max-h-[90vh] flex flex-col relative transform transition-all animate-in fade-in zoom-in duration-300">
+      <div className="bg-[var(--color-bg-surface)] w-full max-w-2xl rounded-3xl shadow-2xl overflow-y-auto max-h-[90vh] flex flex-col relative transform transition-all animate-in fade-in zoom-in duration-300">
 
         {/* Progress Bar */}
-        <div className="flex h-2 w-full bg-gray-100">
+        <div className="flex h-2 w-full bg-[var(--color-bg-hover)]">
           {steps.map((_, i) => (
             <div
               key={i}
@@ -81,19 +81,19 @@ export function OnboardingModal({ isOpen, onComplete }: OnboardingModalProps) {
           )}
 
           <div className="space-y-4">
-            <h2 className="text-4xl font-extrabold tracking-tight text-gray-900">
+            <h2 className="text-4xl font-extrabold tracking-tight text-[var(--color-text-primary)]">
               {currentStep.title}
             </h2>
             <h3 className="text-xl font-medium text-[var(--color-primary)]">
               {currentStep.subtitle}
             </h3>
-            <p className="text-lg text-gray-600 leading-relaxed max-w-lg mx-auto">
+            <p className="text-lg text-[var(--color-text-secondary)] leading-relaxed max-w-lg mx-auto">
               {currentStep.description}
             </p>
           </div>
 
           {currentStep.image && (
-            <div className="onboarding-image-container w-full max-w-lg mx-auto overflow-hidden rounded-2xl border border-gray-200 shadow-lg bg-gray-50">
+            <div className="onboarding-image-container w-full max-w-lg mx-auto overflow-hidden rounded-2xl border border-[var(--color-border-default)] shadow-lg bg-[var(--color-bg-surface-muted)]">
               <Image
                 src={currentStep.image}
                 alt={currentStep.title}

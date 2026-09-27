@@ -34,9 +34,9 @@ export function BoardSection() {
   }, [content, board, updateBoard]);
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col h-full min-h-0">
+    <div className="bg-[var(--color-bg-surface)] rounded-2xl border border-[var(--color-border-subtle)] p-4 shadow-sm flex flex-col h-full min-h-0">
       <div className="flex items-center justify-between gap-2 mb-3 flex-shrink-0">
-        <div className="flex items-center gap-2 text-gray-900 font-bold">
+        <div className="flex items-center gap-2 text-[var(--color-text-primary)] font-bold">
           <ClipboardList className="w-5 h-5 text-indigo-500" />
           <h2 className="text-base font-bold">Board</h2>
         </div>
@@ -44,7 +44,7 @@ export function BoardSection() {
         {/* Save Status Indicator */}
         <div className="flex items-center h-6">
           {saveStatus === 'saving' && (
-            <span className="text-[11px] text-gray-400 font-medium animate-pulse">
+            <span className="text-[11px] text-[var(--color-text-muted)] font-medium animate-pulse">
               Saving...
             </span>
           )}
@@ -56,7 +56,7 @@ export function BoardSection() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 border border-gray-100 rounded-xl overflow-hidden bg-white">
+      <div className="flex-1 min-h-0 border border-[var(--color-border-subtle)] rounded-xl overflow-hidden bg-[var(--color-bg-surface)]">
         <RichTextEditor
           value={content}
           onChange={setContent}

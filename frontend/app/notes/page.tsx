@@ -21,12 +21,12 @@ function NoteEditor({ note, updateNote, isSidebarOpen, setIsSidebarOpen }: { not
 
   return (
     <div className="flex flex-col h-full overflow-hidden w-full min-w-0">
-      <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10 shrink-0">
+      <div className="px-8 py-6 border-b border-[var(--color-border-subtle)] flex justify-between items-center bg-[var(--color-bg-surface)] sticky top-0 z-10 shrink-0">
         <div className="flex items-center gap-4 min-w-0 flex-1">
           {!isSidebarOpen && (
             <button 
               onClick={() => setIsSidebarOpen(true)}
-              className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg flex-shrink-0"
+              className="p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] rounded-lg flex-shrink-0"
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -35,11 +35,11 @@ function NoteEditor({ note, updateNote, isSidebarOpen, setIsSidebarOpen }: { not
             value={localTitle}
             onChange={(e) => setLocalTitle(e.target.value)}
             placeholder="Note Title"
-            className="text-2xl font-bold text-gray-800 outline-none w-full max-w-xl placeholder-gray-300 bg-transparent min-w-0"
+            className="text-2xl font-bold text-[var(--color-text-primary)] outline-none w-full max-w-xl placeholder-gray-300 bg-transparent min-w-0"
           />
         </div>
         <div className="flex items-center gap-3 shrink-0 ml-4">
-          <span className={`text-sm transition-opacity ${isSaving ? 'opacity-100 text-gray-500' : 'opacity-0'}`}>
+          <span className={`text-sm transition-opacity ${isSaving ? 'opacity-100 text-[var(--color-text-secondary)]' : 'opacity-0'}`}>
             Saving...
           </span>
           <button
@@ -157,12 +157,12 @@ function NotesContent() {
   };
 
   return (
-    <div className="flex-1 flex overflow-hidden bg-white">
+    <div className="flex-1 flex overflow-hidden bg-[var(--color-bg-surface)]">
       {/* Sidebar List */}
-      <div className={`border-r border-gray-200 flex flex-col bg-gray-50 transition-all duration-300 ${isSidebarOpen ? 'w-80' : 'w-0 overflow-hidden border-none'}`}>
-        <div className="p-4 border-b border-gray-200 min-w-[320px]">
+      <div className={`border-r border-[var(--color-border-default)] flex flex-col bg-[var(--color-bg-surface-muted)] transition-all duration-300 ${isSidebarOpen ? 'w-80' : 'w-0 overflow-hidden border-none'}`}>
+        <div className="p-4 border-b border-[var(--color-border-default)] min-w-[320px]">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+            <h2 className="text-lg font-bold text-[var(--color-text-primary)] flex items-center gap-2">
               <FolderOpen className="w-5 h-5 text-indigo-500" />
               My Notes
             </h2>
@@ -176,7 +176,7 @@ function NotesContent() {
               </button>
               <button 
                 onClick={() => setIsSidebarOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-200 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-[var(--color-border-muted)] transition-colors"
                 title="Close Sidebar"
               >
                 <PanelLeftClose className="w-4 h-4" />
@@ -184,13 +184,13 @@ function NotesContent() {
             </div>
           </div>
           <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
             <input 
               type="text" 
               placeholder="Search notes..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 transition-all"
+              className="w-full pl-9 pr-4 py-2 bg-[var(--color-bg-surface)] border border-[var(--color-border-default)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 transition-all"
             />
           </div>
         </div>
@@ -203,28 +203,28 @@ function NotesContent() {
               router.push('/notes');
             }}
             className={`p-3 rounded-lg cursor-pointer transition-colors group flex items-center gap-3 ${
-              activeNoteId === 'focus-tasks' ? 'bg-indigo-50 border border-indigo-100' : 'hover:bg-gray-100 border border-transparent'
+              activeNoteId === 'focus-tasks' ? 'bg-indigo-50 border border-indigo-100' : 'hover:bg-[var(--color-bg-hover)] border border-transparent'
             }`}
           >
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${activeNoteId === 'focus-tasks' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-200 text-gray-500'}`}>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${activeNoteId === 'focus-tasks' ? 'bg-indigo-100 text-indigo-600' : 'bg-[var(--color-border-muted)] text-[var(--color-text-secondary)]'}`}>
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <h4 className={`font-semibold text-sm ${activeNoteId === 'focus-tasks' ? 'text-indigo-900' : 'text-gray-700'}`}>
+              <h4 className={`font-semibold text-sm ${activeNoteId === 'focus-tasks' ? 'text-indigo-900' : 'text-[var(--color-text-primary)]'}`}>
                 Focus Tasks
               </h4>
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
                 Manage your priorities
               </p>
             </div>
           </div>
 
           <div className="px-3 py-2 mt-2 mb-1">
-             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">My Notes</h3>
+             <h3 className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider">My Notes</h3>
           </div>
 
           {filteredNotes.length === 0 ? (
-            <div className="text-center py-8 text-xs text-gray-400">
+            <div className="text-center py-8 text-xs text-[var(--color-text-muted)]">
               No notes found.
             </div>
           ) : (
@@ -233,13 +233,13 @@ function NotesContent() {
                 key={note._id}
                 onClick={() => handleSelectNote(note._id)}
                 className={`p-3 rounded-lg cursor-pointer transition-colors group relative ${
-                  activeNoteId === note._id ? 'bg-indigo-50 border border-indigo-100' : 'hover:bg-gray-100 border border-transparent'
+                  activeNoteId === note._id ? 'bg-indigo-50 border border-indigo-100' : 'hover:bg-[var(--color-bg-hover)] border border-transparent'
                 }`}
               >
-                <h4 className={`font-medium text-sm truncate pr-6 ${activeNoteId === note._id ? 'text-indigo-900' : 'text-gray-700'}`}>
+                <h4 className={`font-medium text-sm truncate pr-6 ${activeNoteId === note._id ? 'text-indigo-900' : 'text-[var(--color-text-primary)]'}`}>
                   {note.title || 'Untitled Note'}
                 </h4>
-                <p className="text-xs text-gray-400 mt-1 truncate">
+                <p className="text-xs text-[var(--color-text-muted)] mt-1 truncate">
                   {note.content?.replace(/<[^>]+>/g, '') || 'No content...'}
                 </p>
                 
@@ -248,7 +248,7 @@ function NotesContent() {
                     e.stopPropagation();
                     handleDelete(note._id);
                   }}
-                  className="absolute right-2 top-3 p-1 rounded text-gray-400 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
+                  className="absolute right-2 top-3 p-1 rounded text-[var(--color-text-muted)] hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -259,20 +259,20 @@ function NotesContent() {
       </div>
 
       {/* Main Editor */}
-      <div className="flex-1 flex flex-col relative bg-white min-w-0">
+      <div className="flex-1 flex flex-col relative bg-[var(--color-bg-surface)] min-w-0">
         {activeNoteId === 'focus-tasks' ? (
-          <div className="flex-1 p-8 bg-gray-50 flex flex-col items-center overflow-hidden">
+          <div className="flex-1 p-8 bg-[var(--color-bg-surface-muted)] flex flex-col items-center overflow-hidden">
             <div className="w-full max-w-4xl h-full flex flex-col min-h-0">
               <div className="mb-6 flex items-center gap-3 flex-shrink-0">
                 {!isSidebarOpen && (
                   <button 
                     onClick={() => setIsSidebarOpen(true)}
-                    className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg bg-white shadow-sm border border-gray-200"
+                    className="p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] rounded-lg bg-[var(--color-bg-surface)] shadow-sm border border-[var(--color-border-default)]"
                   >
                     <Menu className="w-5 h-5" />
                   </button>
                 )}
-                <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <h1 className="text-2xl font-bold text-[var(--color-text-primary)] flex items-center gap-2">
                   Focus Tasks
                 </h1>
               </div>
@@ -289,16 +289,16 @@ function NotesContent() {
         ) : activeNote ? (
           <NoteEditor key={activeNote._id} note={activeNote} updateNote={updateNote} isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-gray-400 bg-gray-50/30 relative">
+          <div className="flex-1 flex flex-col items-center justify-center text-[var(--color-text-muted)] bg-[var(--color-bg-surface-muted)]/30 relative">
             {!isSidebarOpen && (
               <button 
                 onClick={() => setIsSidebarOpen(true)}
-                className="absolute top-6 left-6 p-2 text-gray-500 hover:bg-gray-100 rounded-lg bg-white shadow-sm border border-gray-200"
+                className="absolute top-6 left-6 p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] rounded-lg bg-[var(--color-bg-surface)] shadow-sm border border-[var(--color-border-default)]"
               >
                 <Menu className="w-5 h-5" />
               </button>
             )}
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+            <div className="w-16 h-16 bg-[var(--color-bg-hover)] rounded-full flex items-center justify-center mb-4">
               <FileText className="w-8 h-8 text-gray-300" />
             </div>
             <p>Select a note or create a new one</p>
@@ -321,7 +321,7 @@ function NotesContent() {
 
 export default function NotesPage() {
   return (
-    <Suspense fallback={<div className="flex-1 flex items-center justify-center bg-white"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div></div>}>
+    <Suspense fallback={<div className="flex-1 flex items-center justify-center bg-[var(--color-bg-surface)]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div></div>}>
       <NotesContent />
     </Suspense>
   );

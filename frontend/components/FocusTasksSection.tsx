@@ -79,12 +79,12 @@ export const FocusTasksSection: React.FC<FocusTasksSectionProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col h-full min-h-0">
+    <div className="bg-[var(--color-bg-surface)] rounded-2xl border border-[var(--color-border-subtle)] p-4 shadow-sm flex flex-col h-full min-h-0">
       {/* Header */}
       <div className="flex items-center justify-between gap-2 mb-3 flex-shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-          <h2 className="text-gray-900 font-bold text-base truncate">Focus Tasks</h2>
+          <h2 className="text-[var(--color-text-primary)] font-bold text-base truncate">Focus Tasks</h2>
           {pendingCount > 0 && (
             <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 flex-shrink-0">
               {pendingCount}
@@ -94,13 +94,13 @@ export const FocusTasksSection: React.FC<FocusTasksSectionProps> = ({
 
         <div className="flex items-center gap-1 flex-shrink-0">
           {/* Filter Pills */}
-          <div className="flex items-center bg-gray-100/80 p-0.5 rounded-lg text-xs font-medium text-gray-500">
+          <div className="flex items-center bg-[var(--color-bg-hover)]/80 p-0.5 rounded-lg text-xs font-medium text-[var(--color-text-secondary)]">
             <button
               onClick={() => setFilter('today')}
               className={`px-2 py-1 rounded-md transition-all ${
                 filter === 'today'
-                  ? 'bg-white text-gray-900 font-semibold shadow-xs'
-                  : 'hover:text-gray-800'
+                  ? 'bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] font-semibold shadow-xs'
+                  : 'hover:text-[var(--color-text-primary)]'
               }`}
             >
               Today
@@ -109,8 +109,8 @@ export const FocusTasksSection: React.FC<FocusTasksSectionProps> = ({
               onClick={() => setFilter('all')}
               className={`px-2 py-1 rounded-md transition-all ${
                 filter === 'all'
-                  ? 'bg-white text-gray-900 font-semibold shadow-xs'
-                  : 'hover:text-gray-800'
+                  ? 'bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] font-semibold shadow-xs'
+                  : 'hover:text-[var(--color-text-primary)]'
               }`}
             >
               All
@@ -119,8 +119,8 @@ export const FocusTasksSection: React.FC<FocusTasksSectionProps> = ({
               onClick={() => setFilter('done')}
               className={`px-2 py-1 rounded-md transition-all ${
                 filter === 'done'
-                  ? 'bg-white text-gray-900 font-semibold shadow-xs'
-                  : 'hover:text-gray-800'
+                  ? 'bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] font-semibold shadow-xs'
+                  : 'hover:text-[var(--color-text-primary)]'
               }`}
             >
               Done
@@ -130,7 +130,7 @@ export const FocusTasksSection: React.FC<FocusTasksSectionProps> = ({
           <button
             onClick={onAddTask}
             title="Add task"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:bg-emerald-50 hover:text-emerald-500 transition-colors ml-1"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--color-text-muted)] hover:bg-emerald-50 hover:text-emerald-500 transition-colors ml-1"
           >
             <Plus className="h-4 w-4" />
           </button>
@@ -141,7 +141,7 @@ export const FocusTasksSection: React.FC<FocusTasksSectionProps> = ({
       <div className="flex-1 min-h-0 overflow-y-auto pr-1 -mr-1 space-y-2">
         {filteredTasks.length === 0 ? (
           <div className="h-full min-h-[100px] flex flex-col items-center justify-center text-center p-4">
-            <p className="text-xs text-gray-400 italic">
+            <p className="text-xs text-[var(--color-text-muted)] italic">
               {filter === 'today'
                 ? 'No tasks due today. Take a breather or add one!'
                 : filter === 'done'
@@ -168,8 +168,8 @@ export const FocusTasksSection: React.FC<FocusTasksSectionProps> = ({
                 onClick={() => onEditTask(task)}
                 className={`group flex items-start gap-2.5 p-2.5 rounded-xl border transition-all cursor-pointer ${
                   isCompleted
-                    ? 'border-gray-100 bg-gray-50/60 opacity-60'
-                    : 'border-gray-100 hover:border-emerald-200 bg-white hover:shadow-xs'
+                    ? 'border-[var(--color-border-subtle)] bg-[var(--color-bg-surface-muted)]/60 opacity-60'
+                    : 'border-[var(--color-border-subtle)] hover:border-emerald-200 bg-[var(--color-bg-surface)] hover:shadow-xs'
                 }`}
               >
                 {/* Complete checkbox */}
@@ -190,20 +190,20 @@ export const FocusTasksSection: React.FC<FocusTasksSectionProps> = ({
                 <div className="flex-1 min-w-0">
                   <span
                     className={`text-xs font-semibold block truncate leading-snug ${
-                      isCompleted ? 'line-through text-gray-400' : 'text-gray-800'
+                      isCompleted ? 'line-through text-[var(--color-text-muted)]' : 'text-[var(--color-text-primary)]'
                     }`}
                   >
                     {task.title}
                   </span>
 
-                  <div className="flex items-center flex-wrap gap-x-2 gap-y-0.5 mt-1 text-[11px] text-gray-500">
+                  <div className="flex items-center flex-wrap gap-x-2 gap-y-0.5 mt-1 text-[11px] text-[var(--color-text-secondary)]">
                     <div className="flex items-center gap-1 flex-shrink-0">
-                      <Calendar className="w-3 h-3 text-gray-400" />
+                      <Calendar className="w-3 h-3 text-[var(--color-text-muted)]" />
                       <span>{formatDateLabel(task.start_time)}</span>
                     </div>
 
                     <div className="flex items-center gap-1 flex-shrink-0">
-                      <Clock className="w-3 h-3 text-gray-400" />
+                      <Clock className="w-3 h-3 text-[var(--color-text-muted)]" />
                       <span>{formatTimeRange(task.start_time, task.end_time)}</span>
                     </div>
 

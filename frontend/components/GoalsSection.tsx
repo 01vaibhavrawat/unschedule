@@ -149,7 +149,7 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
           style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--color-bg-surface)]/20">
               <Target className="h-5 w-5 text-white" />
             </div>
             <div>
@@ -161,14 +161,14 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
             <button
               onClick={startAdd}
               disabled={isFormOpen}
-              className="flex items-center gap-1.5 rounded-lg bg-white/20 px-3 py-1.5 text-xs font-medium text-white transition-all hover:bg-white/30 disabled:opacity-40"
+              className="flex items-center gap-1.5 rounded-lg bg-[var(--color-bg-surface)]/20 px-3 py-1.5 text-xs font-medium text-white transition-all hover:bg-[var(--color-bg-surface)]/30 disabled:opacity-40"
             >
               <Plus className="h-3.5 w-3.5" />
               Add goal
             </button>
             <button
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20 text-white transition-all hover:bg-white/30"
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-bg-surface)]/20 text-white transition-all hover:bg-[var(--color-bg-surface)]/30"
             >
               <X className="h-4 w-4" />
             </button>
@@ -206,7 +206,7 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
               value={form.title}
               onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
               onKeyDown={handleKey}
-              className="w-full rounded-xl border border-indigo-100 bg-white px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 mb-2"
+              className="w-full rounded-xl border border-indigo-100 bg-[var(--color-bg-surface)] px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-gray-400 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 mb-2"
             />
             <div className="mb-2 w-full">
               <RichTextEditor
@@ -218,20 +218,20 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
             </div>
             <div className="mb-2 flex items-center gap-2">
               <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-text-muted)]" />
                 <input
                   type="date"
                   title="Deadline (optional)"
                   value={form.deadline}
                   onChange={e => setForm(f => ({ ...f, deadline: e.target.value }))}
-                  className="w-full rounded-xl border border-indigo-100 bg-white pl-9 pr-4 py-2 text-sm text-gray-800 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                  className="w-full rounded-xl border border-indigo-100 bg-[var(--color-bg-surface)] pl-9 pr-4 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
                 />
               </div>
             </div>
             <div className="mt-3 flex justify-end gap-2">
               <button
                 onClick={cancelEdit}
-                className="rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 transition-colors"
+                className="rounded-lg px-4 py-2 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] transition-colors"
               >
                 Cancel
               </button>
@@ -255,8 +255,8 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50">
                 <Sparkles className="h-7 w-7 text-indigo-400" />
               </div>
-              <p className="text-sm font-medium text-gray-700">No goals yet</p>
-              <p className="mt-1 text-xs text-gray-400">Add a goal to start aligning your schedule</p>
+              <p className="text-sm font-medium text-[var(--color-text-primary)]">No goals yet</p>
+              <p className="mt-1 text-xs text-[var(--color-text-muted)]">Add a goal to start aligning your schedule</p>
               <button
                 onClick={startAdd}
                 className="mt-4 flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium text-white"
@@ -275,7 +275,7 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
             return (
               <div
                 key={g._id}
-                className="group relative flex items-start gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-all hover:shadow-md hover:border-gray-200"
+                className="group relative flex items-start gap-4 rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] p-4 shadow-sm transition-all hover:shadow-md hover:border-[var(--color-border-default)]"
               >
                 {/* rank badge */}
                 <div
@@ -287,11 +287,11 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-gray-800 leading-snug">{g.title}</p>
+                    <p className="text-sm font-semibold text-[var(--color-text-primary)] leading-snug">{g.title}</p>
                     <Flag className="h-3 w-3 flex-shrink-0" style={{ color }} />
                   </div>
                   {cleanDescription(g.description) && (
-                    <p className="mt-0.5 text-xs text-gray-400 leading-relaxed line-clamp-2">{cleanDescription(g.description)}</p>
+                    <p className="mt-0.5 text-xs text-[var(--color-text-muted)] leading-relaxed line-clamp-2">{cleanDescription(g.description)}</p>
                   )}
                   {g.deadline && (() => {
                     const progress = calculateProgress(g.created_at, g.deadline);
@@ -300,11 +300,11 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
                     return (
                       <div className="mt-3 w-full max-w-sm">
                         <div className="flex justify-between items-center mb-1">
-                          <span className={`text-[10px] font-semibold uppercase tracking-wider ${isUrgent ? 'text-rose-500' : 'text-gray-400'}`}>
+                          <span className={`text-[10px] font-semibold uppercase tracking-wider ${isUrgent ? 'text-rose-500' : 'text-[var(--color-text-muted)]'}`}>
                             {progress.daysLeft < 0 ? 'Overdue' : progress.daysLeft === 0 ? 'Due Today' : `${progress.daysLeft} Days Left`}
                           </span>
                         </div>
-                        <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-1.5 w-full bg-[var(--color-bg-hover)] rounded-full overflow-hidden">
                           <div 
                             className="h-full rounded-full transition-all duration-500"
                             style={{ 
@@ -322,14 +322,14 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
                 <div className="flex flex-shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                   <button
                     onClick={() => startEdit(g)}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:bg-indigo-50 hover:text-indigo-500 transition-colors"
+                    className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--color-text-muted)] hover:bg-indigo-50 hover:text-indigo-500 transition-colors"
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
                   <button
                     onClick={() => handleDelete(g._id)}
                     disabled={deletingId === g._id}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors disabled:opacity-40"
+                    className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--color-text-muted)] hover:bg-red-50 hover:text-red-500 transition-colors disabled:opacity-40"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -349,7 +349,7 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
         {goals.length > 0 && (
           <div className="px-6 py-3 border-t border-indigo-50 flex items-center gap-2">
             <Sparkles className="h-3.5 w-3.5 text-indigo-400 flex-shrink-0" />
-            <p className="text-xs text-gray-400">Use these goals when planning tasks to stay aligned</p>
+            <p className="text-xs text-[var(--color-text-muted)]">Use these goals when planning tasks to stay aligned</p>
           </div>
         )}
       </div>
@@ -369,11 +369,11 @@ export const GoalsSection: React.FC<GoalsSectionProps> = ({ goals, onAddGoal, on
   const [goalsModalOpen, setGoalsModalOpen] = useState(false);
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col h-full min-h-0">
+    <div className="bg-[var(--color-bg-surface)] rounded-2xl border border-[var(--color-border-subtle)] p-4 shadow-sm flex flex-col h-full min-h-0">
       <div className="flex items-center justify-between gap-2 mb-3 flex-shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           <Target className="w-5 h-5 text-indigo-500 flex-shrink-0" />
-          <h2 className="text-base font-bold text-gray-900 truncate">Goals & Priorities</h2>
+          <h2 className="text-base font-bold text-[var(--color-text-primary)] truncate">Goals & Priorities</h2>
           {goals.length > 0 && (
             <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 flex-shrink-0">
               {goals.length}
@@ -383,7 +383,7 @@ export const GoalsSection: React.FC<GoalsSectionProps> = ({ goals, onAddGoal, on
         <button
           onClick={() => setGoalsModalOpen(true)}
           title="Manage goals"
-          className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:bg-indigo-50 hover:text-indigo-500 transition-colors flex-shrink-0"
+          className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--color-text-muted)] hover:bg-indigo-50 hover:text-indigo-500 transition-colors flex-shrink-0"
         >
           <Plus className="h-4 w-4" />
         </button>
@@ -407,7 +407,7 @@ export const GoalsSection: React.FC<GoalsSectionProps> = ({ goals, onAddGoal, on
               return (
                 <div
                   key={g._id}
-                  className="group flex cursor-pointer items-start gap-3 rounded-xl p-3 transition-colors hover:bg-gray-50 border border-transparent hover:border-gray-100"
+                  className="group flex cursor-pointer items-start gap-3 rounded-xl p-3 transition-colors hover:bg-[var(--color-bg-surface-muted)] border border-transparent hover:border-[var(--color-border-subtle)]"
                   onClick={() => setGoalsModalOpen(true)}
                 >
                   <div
@@ -415,9 +415,9 @@ export const GoalsSection: React.FC<GoalsSectionProps> = ({ goals, onAddGoal, on
                     style={{ backgroundColor: color }}
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-gray-800">{g.title}</p>
+                    <p className="text-sm font-medium text-[var(--color-text-primary)]">{g.title}</p>
                     {cleanDescription(g.description) && (
-                      <p className="truncate text-xs text-gray-500 mt-0.5">{cleanDescription(g.description)}</p>
+                      <p className="truncate text-xs text-[var(--color-text-secondary)] mt-0.5">{cleanDescription(g.description)}</p>
                     )}
                     {g.deadline && (() => {
                       const progress = calculateProgress(g.created_at, g.deadline);
@@ -426,11 +426,11 @@ export const GoalsSection: React.FC<GoalsSectionProps> = ({ goals, onAddGoal, on
                       return (
                         <div className="mt-2 w-full max-w-[200px]">
                           <div className="flex justify-between items-center mb-1">
-                            <span className={`text-[9px] font-semibold uppercase tracking-wider ${isUrgent ? 'text-rose-500' : 'text-gray-400'}`}>
+                            <span className={`text-[9px] font-semibold uppercase tracking-wider ${isUrgent ? 'text-rose-500' : 'text-[var(--color-text-muted)]'}`}>
                               {progress.daysLeft < 0 ? 'Overdue' : progress.daysLeft === 0 ? 'Due Today' : `${progress.daysLeft} Days Left`}
                             </span>
                           </div>
-                          <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+                          <div className="h-1 w-full bg-[var(--color-bg-hover)] rounded-full overflow-hidden">
                             <div 
                               className="h-full rounded-full transition-all duration-500"
                               style={{ 

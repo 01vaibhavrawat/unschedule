@@ -37,26 +37,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const handleMiniNext = () => setMiniCalendarMonth(addMonths(miniCalendarMonth, 1));
 
   return (
-    <div className={`flex h-full flex-shrink-0 flex-col overflow-y-auto overflow-x-hidden bg-[var(--color-bg-surface)] transition-[width,opacity,border] duration-300 ${isOpen ? 'w-64 border-r border-[var(--color-border-muted)] opacity-100' : 'w-0 border-none opacity-0'}`}>
+    <div className={`flex h-full flex-shrink-0 flex-col overflow-y-auto overflow-x-hidden bg-[var(--color-bg-surface)] transition-[width,opacity,border] duration-300 z-10 ${isOpen ? 'w-64 border-r border-[var(--color-border-subtle)] opacity-100' : 'w-0 border-none opacity-0'}`}>
       
       {/* Create Button */}
-      <div className="p-4 border-b border-[var(--color-border-subtle)]">
+      <div className="p-5 border-b border-[var(--color-border-subtle)]">
         <button
           id="add-task-btn"
           onClick={onCreateClick}
-          className="flex items-center gap-2 rounded-full border border-[var(--color-border-muted)] bg-[var(--color-bg-surface)] py-2 pl-2 pr-4 text-sm font-medium text-[var(--color-text-secondary)] shadow-sm transition-shadow hover:shadow-md"
+          className="flex items-center gap-3 w-full rounded-xl bg-gradient-to-br from-[var(--color-brand-primary)] to-[var(--color-brand-purple)] py-3 px-4 text-sm font-bold text-white shadow-[var(--shadow-glow)] transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
-          <div className="flex h-6 w-6 items-center justify-center rounded-full text-[var(--color-text-secondary)]">
-            <svg width="36" height="36" viewBox="0 0 36 36">
-              <path fill="#5F8D4E" d="M16 16v14h4V20z" />
-              <path fill="#5B8DEF" d="M30 16H20l-4 4h14z" />
-              <path fill="#D4A93A" d="M6 16v4h10l4-4z" />
-              <path fill="#D66A5E" d="M20 16V6h-4v14z" />
-              <path fill="none" d="M0 0h36v36H0z" />
+          <div className="flex h-5 w-5 items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
           </div>
           Create
-          <ChevronDown className="ml-1 h-4 w-4 text-[var(--color-text-muted)]" />
+          <ChevronDown className="ml-auto h-4 w-4 text-white/80" />
         </button>
       </div>
 

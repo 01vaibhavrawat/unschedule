@@ -98,7 +98,7 @@ export const AtomicHabitModal: React.FC<AtomicHabitModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="rounded-full p-1.5 transition-colors text-white hover:bg-white/20"
+            className="rounded-full p-1.5 transition-colors text-white hover:bg-[var(--color-bg-surface)]/20"
           >
             <X className="h-5 w-5" />
           </button>
@@ -108,19 +108,19 @@ export const AtomicHabitModal: React.FC<AtomicHabitModalProps> = ({
         <div className="px-6 py-6 space-y-6">
           
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">Trigger (When I...)</label>
+            <label className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider ml-1">Trigger (When I...)</label>
             <input
               type="text"
               autoFocus
               placeholder="e.g. After I brush my teeth..."
               value={trigger}
               onChange={(e) => setTrigger(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-[15px] font-medium text-gray-800 placeholder-gray-400 focus:border-amber-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-amber-400/10 transition-all"
+              className="w-full rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface-muted)]/50 px-4 py-3 text-[15px] font-medium text-[var(--color-text-primary)] placeholder-gray-400 focus:border-amber-400 focus:bg-[var(--color-bg-surface)] focus:outline-none focus:ring-4 focus:ring-amber-400/10 transition-all"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">Action (I will...)</label>
+            <label className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider ml-1">Action (I will...)</label>
             <input
               type="text"
               placeholder="e.g. Read 1 page"
@@ -129,12 +129,12 @@ export const AtomicHabitModal: React.FC<AtomicHabitModalProps> = ({
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleSave();
               }}
-              className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-[15px] font-medium text-gray-800 placeholder-gray-400 focus:border-amber-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-amber-400/10 transition-all"
+              className="w-full rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface-muted)]/50 px-4 py-3 text-[15px] font-medium text-[var(--color-text-primary)] placeholder-gray-400 focus:border-amber-400 focus:bg-[var(--color-bg-surface)] focus:outline-none focus:ring-4 focus:ring-amber-400/10 transition-all"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">Identity (I am...)</label>
+            <label className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider ml-1">Identity (I am...)</label>
             <input
               type="text"
               placeholder="e.g. I am someone who reads"
@@ -143,7 +143,7 @@ export const AtomicHabitModal: React.FC<AtomicHabitModalProps> = ({
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleSave();
               }}
-              className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-[15px] font-medium text-gray-800 placeholder-gray-400 focus:border-amber-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-amber-400/10 transition-all"
+              className="w-full rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface-muted)]/50 px-4 py-3 text-[15px] font-medium text-[var(--color-text-primary)] placeholder-gray-400 focus:border-amber-400 focus:bg-[var(--color-bg-surface)] focus:outline-none focus:ring-4 focus:ring-amber-400/10 transition-all"
             />
           </div>
           
@@ -171,7 +171,7 @@ export const AtomicHabitModal: React.FC<AtomicHabitModalProps> = ({
                 className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                   isCompletedForToday
                     ? 'bg-green-100 text-green-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    : 'bg-[var(--color-bg-hover)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border-muted)]'
                 }`}
               >
                 {isCompletedForToday ? '✓ Completed' : 'Mark Complete'}

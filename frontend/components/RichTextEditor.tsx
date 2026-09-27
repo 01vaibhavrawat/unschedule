@@ -40,7 +40,7 @@ export function RichTextEditor({
     },
     editorProps: {
       attributes: {
-        class: `prose prose-sm sm:prose-base focus:outline-none max-w-none w-full ${className}`,
+        class: `prose prose-sm sm:prose-base dark:prose-invert focus:outline-none max-w-none w-full ${className}`,
         style: `min-height: ${minHeight};`,
       },
     },
@@ -54,17 +54,17 @@ export function RichTextEditor({
   }, [value, editor]);
 
   if (!editor) {
-    return <div style={{ minHeight }} className={`w-full ${className} ${borderless ? '' : 'border border-gray-200 rounded-xl'} bg-gray-50/50 animate-pulse`} />;
+    return <div style={{ minHeight }} className={`w-full ${className} ${borderless ? '' : 'border border-[var(--color-border-default)] rounded-xl'} bg-[var(--color-bg-surface-muted)]/50 animate-pulse`} />;
   }
 
   return (
-    <div className={`w-full h-full flex flex-col ${borderless ? 'rounded-xl overflow-hidden' : 'rounded-xl border border-gray-200 bg-white overflow-hidden transition-all focus-within:ring-2 focus-within:ring-indigo-100 focus-within:border-indigo-400'}`}>
+    <div className={`w-full h-full flex flex-col ${borderless ? 'rounded-xl overflow-hidden' : 'rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] overflow-hidden transition-all focus-within:ring-2 focus-within:ring-indigo-100 focus-within:border-indigo-400'}`}>
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-0.5 p-1.5 border-b border-gray-100 bg-gray-50/60 flex-shrink-0">
+      <div className="flex flex-wrap items-center gap-0.5 p-1.5 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-surface-muted)]/60 flex-shrink-0">
         <button
           onClick={(e) => { e.preventDefault(); editor.chain().focus().toggleBold().run(); }}
           className={`p-1.5 rounded-lg transition-colors flex items-center justify-center ${
-            editor.isActive('bold') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'
+            editor.isActive('bold') ? 'bg-indigo-100 text-indigo-700' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-border-muted)] hover:text-[var(--color-text-primary)]'
           }`}
           title="Bold"
         >
@@ -73,7 +73,7 @@ export function RichTextEditor({
         <button
           onClick={(e) => { e.preventDefault(); editor.chain().focus().toggleItalic().run(); }}
           className={`p-1.5 rounded-lg transition-colors flex items-center justify-center ${
-            editor.isActive('italic') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'
+            editor.isActive('italic') ? 'bg-indigo-100 text-indigo-700' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-border-muted)] hover:text-[var(--color-text-primary)]'
           }`}
           title="Italic"
         >
@@ -85,7 +85,7 @@ export function RichTextEditor({
         <button
           onClick={(e) => { e.preventDefault(); editor.chain().focus().toggleBulletList().run(); }}
           className={`p-1.5 rounded-lg transition-colors flex items-center justify-center ${
-            editor.isActive('bulletList') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'
+            editor.isActive('bulletList') ? 'bg-indigo-100 text-indigo-700' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-border-muted)] hover:text-[var(--color-text-primary)]'
           }`}
           title="Bullet List"
         >
@@ -94,7 +94,7 @@ export function RichTextEditor({
         <button
           onClick={(e) => { e.preventDefault(); editor.chain().focus().toggleOrderedList().run(); }}
           className={`p-1.5 rounded-lg transition-colors flex items-center justify-center ${
-            editor.isActive('orderedList') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'
+            editor.isActive('orderedList') ? 'bg-indigo-100 text-indigo-700' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-border-muted)] hover:text-[var(--color-text-primary)]'
           }`}
           title="Numbered List"
         >
@@ -105,7 +105,7 @@ export function RichTextEditor({
 
         <button
           onClick={(e) => { e.preventDefault(); editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(); }}
-          className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-gray-500 hover:bg-gray-200 hover:text-gray-700`}
+          className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-[var(--color-border-muted)] hover:text-[var(--color-text-primary)]`}
           title="Insert Table"
         >
           <TableIcon className="w-4 h-4" />
@@ -116,7 +116,7 @@ export function RichTextEditor({
             <div className="w-px h-4 bg-gray-300 mx-1"></div>
             <button
               onClick={(e) => { e.preventDefault(); editor.chain().focus().addRowAfter().run(); }}
-              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-gray-500 hover:bg-gray-200 hover:text-gray-700`}
+              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-[var(--color-border-muted)] hover:text-[var(--color-text-primary)]`}
               title="Add Row After"
             >
               <div className="flex flex-col gap-0.5 items-center justify-center">
@@ -126,7 +126,7 @@ export function RichTextEditor({
             </button>
             <button
               onClick={(e) => { e.preventDefault(); editor.chain().focus().deleteRow().run(); }}
-              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-gray-500 hover:bg-red-100 hover:text-red-700`}
+              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-red-100 hover:text-red-700`}
               title="Delete Row"
             >
               <div className="flex flex-col gap-0.5 items-center justify-center">
@@ -136,7 +136,7 @@ export function RichTextEditor({
             </button>
             <button
               onClick={(e) => { e.preventDefault(); editor.chain().focus().addColumnAfter().run(); }}
-              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-gray-500 hover:bg-gray-200 hover:text-gray-700`}
+              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-[var(--color-border-muted)] hover:text-[var(--color-text-primary)]`}
               title="Add Column After"
             >
               <div className="flex flex-col gap-0.5 items-center justify-center">
@@ -146,7 +146,7 @@ export function RichTextEditor({
             </button>
             <button
               onClick={(e) => { e.preventDefault(); editor.chain().focus().deleteColumn().run(); }}
-              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-gray-500 hover:bg-red-100 hover:text-red-700`}
+              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-red-100 hover:text-red-700`}
               title="Delete Column"
             >
               <div className="flex flex-col gap-0.5 items-center justify-center">
@@ -156,7 +156,7 @@ export function RichTextEditor({
             </button>
             <button
               onClick={(e) => { e.preventDefault(); editor.chain().focus().deleteTable().run(); }}
-              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-gray-500 hover:bg-red-100 hover:text-red-700`}
+              className={`p-1.5 rounded-lg transition-colors flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-red-100 hover:text-red-700`}
               title="Delete Table"
             >
               <Trash className="w-4 h-4" />
@@ -168,7 +168,7 @@ export function RichTextEditor({
       {/* Editor Content area */}
       <div className="flex-1 overflow-auto p-4 cursor-text relative" onClick={() => editor.commands.focus()}>
         {editor.isEmpty && placeholder && (
-          <div className="pointer-events-none absolute text-gray-400">
+          <div className="pointer-events-none absolute text-[var(--color-text-muted)]">
             {placeholder}
           </div>
         )}

@@ -54,14 +54,14 @@ export default function VisibilitySettingsPage() {
     setSettings(prev => ({ ...prev, [key]: val }));
   };
 
-  if (loading) return <div className="p-8 text-center text-gray-500">Loading settings...</div>;
+  if (loading) return <div className="p-8 text-center text-[var(--color-text-secondary)]">Loading settings...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="min-h-screen bg-[var(--color-bg-surface-muted)] p-4 md:p-8">
       <div className="max-w-xl mx-auto space-y-6">
         
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 tracking-tight">Privacy Settings</h1>
+          <h1 className="text-3xl font-bold text-[var(--color-text-primary)] tracking-tight">Privacy Settings</h1>
           {user && (
             <Link href={`/profile/${user.id}`} className="text-[var(--color-brand-primary)] hover:underline">
               &larr; Back to Profile
@@ -69,8 +69,8 @@ export default function VisibilitySettingsPage() {
           )}
         </div>
 
-        <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-          <p className="text-gray-600 mb-8">
+        <div className="bg-[var(--color-bg-surface)] p-8 rounded-xl shadow-sm border border-[var(--color-border-subtle)]">
+          <p className="text-[var(--color-text-secondary)] mb-8">
             Control who can see your data when they visit your profile. 
           </p>
 
@@ -78,11 +78,11 @@ export default function VisibilitySettingsPage() {
             
             {/* Calendar */}
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Calendar (Tasks & Events)</label>
+              <label className="block text-sm font-bold text-[var(--color-text-primary)] mb-2">Calendar (Tasks & Events)</label>
               <select
                 value={settings.calendar}
                 onChange={(e) => handleChange('calendar', e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)] text-gray-700"
+                className="w-full border border-[var(--color-border-strong)] rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)] text-[var(--color-text-primary)]"
               >
                 <option value="private">Private (Only me)</option>
                 <option value="followers">Followers Only</option>
@@ -92,11 +92,11 @@ export default function VisibilitySettingsPage() {
 
             {/* Goals */}
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Goals</label>
+              <label className="block text-sm font-bold text-[var(--color-text-primary)] mb-2">Goals</label>
               <select
                 value={settings.goals}
                 onChange={(e) => handleChange('goals', e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)] text-gray-700"
+                className="w-full border border-[var(--color-border-strong)] rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)] text-[var(--color-text-primary)]"
               >
                 <option value="private">Private (Only me)</option>
                 <option value="followers">Followers Only</option>
@@ -106,11 +106,11 @@ export default function VisibilitySettingsPage() {
 
             {/* Habits */}
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Habits</label>
+              <label className="block text-sm font-bold text-[var(--color-text-primary)] mb-2">Habits</label>
               <select
                 value={settings.habits}
                 onChange={(e) => handleChange('habits', e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)] text-gray-700"
+                className="w-full border border-[var(--color-border-strong)] rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)] text-[var(--color-text-primary)]"
               >
                 <option value="private">Private (Only me)</option>
                 <option value="followers">Followers Only</option>

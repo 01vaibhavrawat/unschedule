@@ -56,7 +56,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex-1 flex overflow-hidden bg-gray-50/50">
+    <div className="flex-1 flex overflow-hidden bg-[var(--color-bg-surface-muted)]/50">
       {/* Dashboard (60%) */}
       <div className="w-[60%] flex flex-col p-3 overflow-y-auto lg:overflow-hidden min-h-0">
         <div className="h-full min-h-0 grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-[1fr_1fr] gap-3">
@@ -93,7 +93,7 @@ export default function Home() {
       </div>
 
       {/* Assistant Chat (40%) */}
-      <div className="w-[40%] flex flex-col relative z-10 border-l border-gray-100 bg-white">
+      <div className="w-[40%] flex flex-col relative z-10 border-l border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)]">
         <AssistantChat isEmbedded={true} />
       </div>
 

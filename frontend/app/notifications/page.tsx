@@ -55,19 +55,19 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="min-h-screen bg-[var(--color-bg-surface-muted)] p-4 md:p-8">
       <div className="max-w-2xl mx-auto space-y-6">
         
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 tracking-tight">Notifications</h1>
+          <h1 className="text-3xl font-bold text-[var(--color-text-primary)] tracking-tight">Notifications</h1>
           <div className="flex gap-4 items-center">
-            <Link href="/" className="text-gray-500 hover:text-gray-800">
+            <Link href="/" className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
               &larr; Home
             </Link>
             {notifications.some(n => !n.is_read) && (
               <button 
                 onClick={handleMarkAllRead}
-                className="text-sm bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-300 transition-colors"
+                className="text-sm bg-[var(--color-border-muted)] text-[var(--color-text-primary)] px-3 py-1.5 rounded-lg hover:bg-gray-300 transition-colors"
               >
                 Mark all as read
               </button>
@@ -75,15 +75,15 @@ export default function NotificationsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          {loading && <div className="p-8 text-center text-gray-500">Loading...</div>}
+        <div className="bg-[var(--color-bg-surface)] rounded-xl shadow-sm border border-[var(--color-border-subtle)] overflow-hidden">
+          {loading && <div className="p-8 text-center text-[var(--color-text-secondary)]">Loading...</div>}
           {!loading && notifications.length === 0 && (
-            <div className="p-8 text-center text-gray-500">No notifications yet.</div>
+            <div className="p-8 text-center text-[var(--color-text-secondary)]">No notifications yet.</div>
           )}
           {!loading && notifications.map((n, idx) => (
             <div 
               key={n.id} 
-              className={`p-4 border-b border-gray-50 flex justify-between items-start ${!n.is_read ? 'bg-blue-50/30' : ''} ${idx === notifications.length - 1 ? 'border-b-0' : ''}`}
+              className={`p-4 border-b border-[var(--color-border-subtle)] flex justify-between items-start ${!n.is_read ? 'bg-blue-50/30' : ''} ${idx === notifications.length - 1 ? 'border-b-0' : ''}`}
             >
               <div className="flex gap-3 items-start">
                 <div className="text-xl mt-1">
@@ -92,10 +92,10 @@ export default function NotificationsPage() {
                   {n.type === 'comment' && '💬'}
                 </div>
                 <div>
-                  <div className={`text-gray-800 ${!n.is_read ? 'font-medium' : ''}`}>
+                  <div className={`text-[var(--color-text-primary)] ${!n.is_read ? 'font-medium' : ''}`}>
                     {renderNotificationText(n)}
                   </div>
-                  <div className="text-xs text-gray-400 mt-1">
+                  <div className="text-xs text-[var(--color-text-muted)] mt-1">
                     {new Date(n.created_at).toLocaleString()}
                   </div>
                 </div>

@@ -34,22 +34,22 @@ export function PeopleSuggestions() {
   if (suggestions.length === 0) return null;
 
   return (
-    <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-      <h3 className="font-semibold text-gray-800 mb-4">People Like You</h3>
+    <div className="bg-[var(--color-bg-surface)] p-5 rounded-xl shadow-sm border border-[var(--color-border-subtle)]">
+      <h3 className="font-semibold text-[var(--color-text-primary)] mb-4">People Like You</h3>
       <div className="space-y-4">
         {suggestions.map(s => (
           <div key={s.id} className="flex justify-between items-start gap-3">
             <div>
-              <Link href={`/profile/${s.id}`} className="font-medium text-gray-900 hover:text-[var(--color-brand-primary)] text-sm block">
+              <Link href={`/profile/${s.id}`} className="font-medium text-[var(--color-text-primary)] hover:text-[var(--color-brand-primary)] text-sm block">
                 {s.name}
               </Link>
-              <div className="text-xs text-gray-500 mt-1 line-clamp-2">
+              <div className="text-xs text-[var(--color-text-secondary)] mt-1 line-clamp-2">
                 {s.reason}
               </div>
             </div>
             <button 
               onClick={() => handleFollow(s.id)}
-              className="text-xs bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full hover:bg-gray-200 transition-colors whitespace-nowrap"
+              className="text-xs bg-[var(--color-bg-hover)] text-[var(--color-text-primary)] px-3 py-1.5 rounded-full hover:bg-[var(--color-border-muted)] transition-colors whitespace-nowrap"
             >
               Follow
             </button>
