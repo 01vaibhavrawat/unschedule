@@ -13,6 +13,25 @@ from redis_client import get_recent_messages, push_message, get_user_memory
 from langchain_core.messages import HumanMessage, AIMessage
 from assistant.graph import assistant_graph
 
+QUICK_ACTIONS = {
+    "quick_action_atomic_habit": {
+        "display": "I'd like to create a new atomic habit.",
+        "prompt": "I want to build a new habit. Act as a behavioral science expert and guide me through creating an 'atomic habit'. Before creating it, ask me questions to understand my motivation, find a good trigger, and ensure it's obvious, attractive, easy, and satisfying."
+    },
+    "quick_action_journal": {
+        "display": "I want to write a daily journal entry.",
+        "prompt": "I want to write a daily journal entry. Guide me as an expert in mindfulness and psychology. Ask me thought-provoking questions about my gratitude, challenges, and intentions before I write my entry."
+    },
+    "quick_action_goal": {
+        "display": "I'd like to set a new goal.",
+        "prompt": "I'd like to set a new goal. Act as an executive coach and help me define this. Ask me clarifying questions to make it a SMART goal and help me break it down into actionable milestones before we add it."
+    },
+    "quick_action_plan": {
+        "display": "Help me plan my day and schedule tasks.",
+        "prompt": "Help me plan my day and schedule tasks. Act as a productivity expert. Ask me about my most important tasks (MITs), my energy levels, and any fixed meetings so we can time-block my day effectively."
+    }
+}
+
 router = APIRouter()
 
 @router.get("/history", response_model=List[AssistantMessage])
@@ -35,10 +54,14 @@ async def chat_with_assistant_stream(
 ):
     now_str = datetime.utcnow().isoformat()
     
+    action_info = QUICK_ACTIONS.get(message)
+    display_message = action_info["display"] if action_info else message
+    llm_message = action_info["prompt"] if action_info else message
+
     user_msg_data = {
         "user_id": str(user.id),
         "role": "user",
-        "content": message,
+        "content": display_message,
         "created_at": now_str
     }
     
@@ -54,7 +77,11 @@ async def chat_with_assistant_stream(
     lc_messages = []
     for m in recent_messages_data:
         if m["role"] == "user":
-            lc_messages.append(HumanMessage(content=m["content"]))
+            content_to_use = m["content"]
+            # Swap with the long prompt if this is the current quick action message
+            if m is user_msg_data and action_info:
+                content_to_use = action_info["prompt"]
+            lc_messages.append(HumanMessage(content=content_to_use))
         else:
             lc_messages.append(AIMessage(content=m["content"]))
             
@@ -122,10 +149,14 @@ async def chat_with_assistant(
     # Backward compatibility endpoint using new Redis logic
     now_str = datetime.utcnow().isoformat()
     
+    action_info = QUICK_ACTIONS.get(message)
+    display_message = action_info["display"] if action_info else message
+    llm_message = action_info["prompt"] if action_info else message
+
     user_msg_data = {
         "user_id": str(user.id),
         "role": "user",
-        "content": message,
+        "content": display_message,
         "created_at": now_str
     }
     
@@ -141,7 +172,11 @@ async def chat_with_assistant(
     lc_messages = []
     for m in recent_messages_data:
         if m["role"] == "user":
-            lc_messages.append(HumanMessage(content=m["content"]))
+            content_to_use = m["content"]
+            # Swap with the long prompt if this is the current quick action message
+            if m is user_msg_data and action_info:
+                content_to_use = action_info["prompt"]
+            lc_messages.append(HumanMessage(content=content_to_use))
         else:
             lc_messages.append(AIMessage(content=m["content"]))
             

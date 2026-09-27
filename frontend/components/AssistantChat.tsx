@@ -44,10 +44,21 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
 
     setShowQuickActions(false);
 
+    let displayContent = textToSend;
+    if (textToSend === 'quick_action_atomic_habit') {
+      displayContent = "I'd like to create a new atomic habit.";
+    } else if (textToSend === 'quick_action_journal') {
+      displayContent = "I want to write a daily journal entry.";
+    } else if (textToSend === 'quick_action_goal') {
+      displayContent = "I'd like to set a new goal.";
+    } else if (textToSend === 'quick_action_plan') {
+      displayContent = "Help me plan my day and schedule tasks.";
+    }
+
     const userMessage = {
       _id: Date.now().toString(),
       role: 'user',
-      content: textToSend,
+      content: displayContent,
       created_at: new Date().toISOString()
     };
 
@@ -69,7 +80,7 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
     setIsTyping(true);
 
     try {
-      await api.streamAssistantMessage({ message: userMessage.content }, (event: any) => {
+      await api.streamAssistantMessage({ message: textToSend }, (event: any) => {
         setIsTyping(false); // Hide generic typing once streaming starts
 
         if (event.type === 'token') {
@@ -212,28 +223,28 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
           <div className="absolute inset-x-0 top-0 p-2 bg-gradient-to-b from-[var(--color-bg-app)] via-[var(--color-bg-app)] to-transparent pb-16 z-10">
             <div className="bg-[var(--color-bg-surface-soft)] backdrop-blur-xl rounded-2xl p-1.5 shadow-[var(--shadow-modal)] border border-[var(--color-border-subtle)]">
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => handleSend(undefined, "I'd like to create a new atomic habit.")} className="cursor-pointer p-3 text-left bg-[var(--color-bg-surface)] hover:bg-[var(--color-bg-hover)] border border-[var(--color-border-subtle)] rounded-xl transition-all duration-300 group hover:shadow-md">
+                <button onClick={() => handleSend(undefined, "quick_action_atomic_habit")} className="cursor-pointer p-3 text-left bg-[var(--color-bg-surface)] hover:bg-[var(--color-bg-hover)] border border-[var(--color-border-subtle)] rounded-xl transition-all duration-300 group hover:shadow-md">
                   <div className="w-8 h-8 rounded-lg bg-[var(--color-brand-primary-soft)] flex items-center justify-center mb-2 shadow-sm border border-[var(--color-brand-primary-softer)]">
                     <Target className="w-4 h-4 text-[var(--color-brand-primary)] group-hover:scale-110 transition-transform" />
                   </div>
                   <div className="text-xs font-bold text-[var(--color-text-primary)]">Atomic Habit</div>
                   <div className="text-[10px] text-[var(--color-text-secondary)] mt-0.5 font-medium">Build a new routine</div>
                 </button>
-                <button onClick={() => handleSend(undefined, "I want to write a daily journal entry.")} className="cursor-pointer p-3 text-left bg-[var(--color-bg-surface)] hover:bg-[var(--color-bg-hover)] border border-[var(--color-border-subtle)] rounded-xl transition-all duration-300 group hover:shadow-md">
+                <button onClick={() => handleSend(undefined, "quick_action_journal")} className="cursor-pointer p-3 text-left bg-[var(--color-bg-surface)] hover:bg-[var(--color-bg-hover)] border border-[var(--color-border-subtle)] rounded-xl transition-all duration-300 group hover:shadow-md">
                   <div className="w-8 h-8 rounded-lg bg-[var(--color-brand-primary-soft)] flex items-center justify-center mb-2 shadow-sm border border-[var(--color-brand-primary-softer)]">
                     <BookOpen className="w-4 h-4 text-[var(--color-brand-purple)] group-hover:scale-110 transition-transform" />
                   </div>
                   <div className="text-xs font-bold text-[var(--color-text-primary)]">Daily Journal</div>
                   <div className="text-[10px] text-[var(--color-text-secondary)] mt-0.5 font-medium">Reflect on your day</div>
                 </button>
-                <button onClick={() => handleSend(undefined, "I'd like to set a new goal or priority.")} className="cursor-pointer p-3 text-left bg-[var(--color-bg-surface)] hover:bg-[var(--color-bg-hover)] border border-[var(--color-border-subtle)] rounded-xl transition-all duration-300 group hover:shadow-md">
+                <button onClick={() => handleSend(undefined, "quick_action_goal")} className="cursor-pointer p-3 text-left bg-[var(--color-bg-surface)] hover:bg-[var(--color-bg-hover)] border border-[var(--color-border-subtle)] rounded-xl transition-all duration-300 group hover:shadow-md">
                   <div className="w-8 h-8 rounded-lg bg-[var(--color-brand-primary-soft)] flex items-center justify-center mb-2 shadow-sm border border-[var(--color-brand-primary-softer)]">
                     <Flag className="w-4 h-4 text-[var(--color-brand-cyan)] group-hover:scale-110 transition-transform" />
                   </div>
                   <div className="text-xs font-bold text-[var(--color-text-primary)]">New Goal</div>
                   <div className="text-[10px] text-[var(--color-text-secondary)] mt-0.5 font-medium">Set a milestone</div>
                 </button>
-                <button onClick={() => handleSend(undefined, "Help me plan my day and schedule tasks.")} className="cursor-pointer p-3 text-left bg-[var(--color-bg-surface)] hover:bg-[var(--color-bg-hover)] border border-[var(--color-border-subtle)] rounded-xl transition-all duration-300 group hover:shadow-md">
+                <button onClick={() => handleSend(undefined, "quick_action_plan")} className="cursor-pointer p-3 text-left bg-[var(--color-bg-surface)] hover:bg-[var(--color-bg-hover)] border border-[var(--color-border-subtle)] rounded-xl transition-all duration-300 group hover:shadow-md">
                   <div className="w-8 h-8 rounded-lg bg-[var(--color-brand-primary-soft)] flex items-center justify-center mb-2 shadow-sm border border-[var(--color-brand-primary-softer)]">
                     <CalendarCheck className="w-4 h-4 text-[var(--color-brand-success)] group-hover:scale-110 transition-transform" />
                   </div>
