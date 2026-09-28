@@ -16,19 +16,19 @@ from assistant.graph import assistant_graph
 QUICK_ACTIONS = {
     "quick_action_atomic_habit": {
         "display": "I'd like to create a new atomic habit.",
-        "prompt": "I want to build a new habit. Act as a behavioral science expert and guide me through creating an 'atomic habit'. Before creating it, ask me questions to understand my motivation, find a good trigger, and ensure it's obvious, attractive, easy, and satisfying."
+        "prompt": "I want to build a new habit. Act as a behavioral science expert and guide me through creating an 'atomic habit'. CRITICAL INSTRUCTIONS: Keep your responses very brief and conversational. Ask me ONLY ONE question at a time to understand my motivation, find a trigger, and make it obvious/attractive/easy/satisfying. Wait for my answer before moving to the next step. Start with the first question now."
     },
     "quick_action_journal": {
         "display": "I want to write a daily journal entry.",
-        "prompt": "I want to write a daily journal entry. Guide me as an expert in mindfulness and psychology. Ask me thought-provoking questions about my gratitude, challenges, and intentions before I write my entry."
+        "prompt": "I want to write a daily journal entry. Guide me as an expert in mindfulness and psychology. CRITICAL INSTRUCTIONS: Keep your responses very brief. Ask me ONLY ONE thought-provoking question at a time about my gratitude, challenges, or intentions. Wait for my answer before asking the next question. Start by asking the first question now."
     },
     "quick_action_goal": {
         "display": "I'd like to set a new goal.",
-        "prompt": "I'd like to set a new goal. Act as an executive coach and help me define this. Ask me clarifying questions to make it a SMART goal and help me break it down into actionable milestones before we add it."
+        "prompt": "I'd like to set a new goal. Act as an executive coach and help me define this. CRITICAL INSTRUCTIONS: Keep your responses brief, summarized, and punchy. Ask me ONLY ONE clarifying question at a time to make it a SMART goal and break it down into milestones. Wait for my answer before asking the next question. Start with the first question now."
     },
     "quick_action_plan": {
         "display": "Help me plan my day and schedule tasks.",
-        "prompt": "Help me plan my day and schedule tasks. Act as a productivity expert. Ask me about my most important tasks (MITs), my energy levels, and any fixed meetings so we can time-block my day effectively."
+        "prompt": "Help me plan my day and schedule tasks. Act as a productivity expert. CRITICAL INSTRUCTIONS: Keep your responses very brief and concise. Ask me ONLY ONE question at a time about my most important tasks (MITs), energy levels, or fixed meetings to help time-block my day. Wait for my answer before asking the next question. Start with the first question now."
     }
 }
 
@@ -65,11 +65,14 @@ async def chat_with_assistant_stream(
         "created_at": now_str
     }
     
-    # Fetch recent history from Redis (BEFORE pushing new message to avoid cache miss overwrite or race condition)
-    recent_messages_data = await get_recent_messages(str(user.id), 19)
+    # Fetch history and memory concurrently
+    recent_messages_data, memory_profile = await asyncio.gather(
+        get_recent_messages(str(user.id), 19),
+        get_user_memory(str(user.id))
+    )
     
-    # Save user message to Redis + async Mongo sync
-    user_msg_data = await push_message(str(user.id), user_msg_data)
+    # Save user message in the background
+    asyncio.create_task(push_message(str(user.id), user_msg_data.copy()))
     
     # Append the new message to our local list
     recent_messages_data.append(user_msg_data)
@@ -81,6 +84,12 @@ async def chat_with_assistant_stream(
             # Swap with the long prompt if this is the current quick action message
             if m is user_msg_data and action_info:
                 content_to_use = action_info["prompt"]
+            else:
+                # Reconstruct long prompt for past quick actions
+                for qa in QUICK_ACTIONS.values():
+                    if content_to_use == qa["display"]:
+                        content_to_use = qa["prompt"]
+                        break
             lc_messages.append(HumanMessage(content=content_to_use))
         else:
             lc_messages.append(AIMessage(content=m["content"]))
@@ -90,18 +99,18 @@ async def chat_with_assistant_stream(
             action_data = None
             final_content = ""
             
-            # Fetch memory profile from Redis
-            memory_profile = await get_user_memory(str(user.id))
-            
-            # Using langgraph streaming
-            async for event in assistant_graph.astream_events(
-                {"messages": lc_messages, "user_id": str(user.id), "memory_profile": memory_profile},
-                config={"configurable": {"user_id": str(user.id)}},
-                version="v2"
-            ):
-                kind = event["event"]
-                if kind == "on_chat_model_stream":
-                    chunk = event["data"]["chunk"]
+            if action_info:
+                # FAST PATH: Quick actions don't need tools for the first response.
+                # Bypassing LangGraph & tool binding makes the response blazing fast.
+                from assistant.nodes import llm
+                from langchain_core.messages import SystemMessage
+                
+                memory_context = f"\n\nUSER MEMORY PROFILE:\n{memory_profile}\n\n" if memory_profile else ""
+                system_msg = SystemMessage(
+                    content="You are Unschedule, a highly capable productivity assistant. " + memory_context
+                )
+                
+                async for chunk in llm.astream([system_msg] + lc_messages):
                     chunk_text = ""
                     if isinstance(chunk.content, list):
                         for part in chunk.content:
@@ -115,12 +124,35 @@ async def chat_with_assistant_stream(
                     if chunk_text:
                         final_content += chunk_text
                         yield f"data: {json.dumps({'type': 'token', 'content': chunk_text})}\n\n"
-                        
-                elif kind == "on_tool_start":
-                    tool_name = event["name"]
-                    tool_args = event["data"].get("input", {})
-                    action_data = {"action": tool_name, "data": tool_args}
-                    yield f"data: {json.dumps({'type': 'tool_start', 'action': tool_name, 'data': tool_args})}\n\n"
+            else:
+                # Using langgraph streaming
+                async for event in assistant_graph.astream_events(
+                    {"messages": lc_messages, "user_id": str(user.id), "memory_profile": memory_profile},
+                    config={"configurable": {"user_id": str(user.id)}},
+                    version="v2"
+                ):
+                    kind = event["event"]
+                    if kind == "on_chat_model_stream":
+                        chunk = event["data"]["chunk"]
+                        chunk_text = ""
+                        if isinstance(chunk.content, list):
+                            for part in chunk.content:
+                                if isinstance(part, dict) and part.get("type") == "text":
+                                    chunk_text += part.get("text", "")
+                                elif isinstance(part, str):
+                                    chunk_text += part
+                        elif isinstance(chunk.content, str):
+                            chunk_text = chunk.content
+                            
+                        if chunk_text:
+                            final_content += chunk_text
+                            yield f"data: {json.dumps({'type': 'token', 'content': chunk_text})}\n\n"
+                            
+                    elif kind == "on_tool_start":
+                        tool_name = event["name"]
+                        tool_args = event["data"].get("input", {})
+                        action_data = {"action": tool_name, "data": tool_args}
+                        yield f"data: {json.dumps({'type': 'tool_start', 'action': tool_name, 'data': tool_args})}\n\n"
             
             # Save assistant message to Redis + async Mongo sync
             asst_msg_data = {
@@ -130,7 +162,7 @@ async def chat_with_assistant_stream(
                 "action_data": action_data,
                 "created_at": datetime.utcnow().isoformat()
             }
-            asst_msg_data = await push_message(str(user.id), asst_msg_data)
+            asyncio.create_task(push_message(str(user.id), asst_msg_data.copy()))
             
             # Yield final done event
             yield f"data: {json.dumps({'type': 'done', 'message': asst_msg_data})}\n\n"
@@ -160,11 +192,14 @@ async def chat_with_assistant(
         "created_at": now_str
     }
     
-    # Fetch recent history from Redis (BEFORE pushing new message)
-    recent_messages_data = await get_recent_messages(str(user.id), 19)
+    # Fetch history and memory concurrently
+    recent_messages_data, memory_profile = await asyncio.gather(
+        get_recent_messages(str(user.id), 19),
+        get_user_memory(str(user.id))
+    )
     
-    # Save user message to Redis + async Mongo sync
-    user_msg_data = await push_message(str(user.id), user_msg_data)
+    # Save user message in the background
+    asyncio.create_task(push_message(str(user.id), user_msg_data.copy()))
     
     # Append the new message to our local list
     recent_messages_data.append(user_msg_data)
@@ -176,42 +211,67 @@ async def chat_with_assistant(
             # Swap with the long prompt if this is the current quick action message
             if m is user_msg_data and action_info:
                 content_to_use = action_info["prompt"]
+            else:
+                # Reconstruct long prompt for past quick actions
+                for qa in QUICK_ACTIONS.values():
+                    if content_to_use == qa["display"]:
+                        content_to_use = qa["prompt"]
+                        break
             lc_messages.append(HumanMessage(content=content_to_use))
         else:
             lc_messages.append(AIMessage(content=m["content"]))
             
     try:
-        # Fetch memory profile from Redis
-        memory_profile = await get_user_memory(str(user.id))
-        
-        result = await assistant_graph.ainvoke(
-            {"messages": lc_messages, "user_id": str(user.id), "memory_profile": memory_profile},
-            config={"configurable": {"user_id": str(user.id)}}
-        )
-        
-        final_messages = result.get("messages", [])
-        if not final_messages:
-            raise ValueError("No messages returned")
+        if action_info:
+            from assistant.nodes import llm
+            from langchain_core.messages import SystemMessage
             
-        final_msg = final_messages[-1]
-        
-        action_data = None
-        new_msgs = final_messages[len(lc_messages):]
-        for msg in new_msgs:
-            if hasattr(msg, "tool_calls") and msg.tool_calls:
-                tc = msg.tool_calls[0]
-                action_data = {"action": tc["name"], "data": tc["args"]}
-                break
-
-        content_str = ""
-        if isinstance(final_msg.content, list):
-            for part in final_msg.content:
-                if isinstance(part, dict) and part.get("type") == "text":
-                    content_str += part.get("text", "")
-                elif isinstance(part, str):
-                    content_str += part
+            memory_context = f"\n\nUSER MEMORY PROFILE:\n{memory_profile}\n\n" if memory_profile else ""
+            system_msg = SystemMessage(
+                content="You are Unschedule, a highly capable productivity assistant. " + memory_context
+            )
+            response = await llm.ainvoke([system_msg] + lc_messages)
+            
+            content_str = ""
+            if isinstance(response.content, list):
+                for part in response.content:
+                    if isinstance(part, dict) and part.get("type") == "text":
+                        content_str += part.get("text", "")
+                    elif isinstance(part, str):
+                        content_str += part
+            else:
+                content_str = str(response.content)
+            
+            action_data = None
         else:
-            content_str = str(final_msg.content)
+            result = await assistant_graph.ainvoke(
+                {"messages": lc_messages, "user_id": str(user.id), "memory_profile": memory_profile},
+                config={"configurable": {"user_id": str(user.id)}}
+            )
+            
+            final_messages = result.get("messages", [])
+            if not final_messages:
+                raise ValueError("No messages returned")
+                
+            final_msg = final_messages[-1]
+            
+            action_data = None
+            new_msgs = final_messages[len(lc_messages):]
+            for msg in new_msgs:
+                if hasattr(msg, "tool_calls") and msg.tool_calls:
+                    tc = msg.tool_calls[0]
+                    action_data = {"action": tc["name"], "data": tc["args"]}
+                    break
+
+            content_str = ""
+            if isinstance(final_msg.content, list):
+                for part in final_msg.content:
+                    if isinstance(part, dict) and part.get("type") == "text":
+                        content_str += part.get("text", "")
+                    elif isinstance(part, str):
+                        content_str += part
+            else:
+                content_str = str(final_msg.content)
 
         asst_msg_data = {
             "user_id": str(user.id),
@@ -221,7 +281,7 @@ async def chat_with_assistant(
             "created_at": datetime.utcnow().isoformat()
         }
         
-        asst_msg_data = await push_message(str(user.id), asst_msg_data)
+        asyncio.create_task(push_message(str(user.id), asst_msg_data.copy()))
         
         return AssistantMessage(**asst_msg_data)
         
