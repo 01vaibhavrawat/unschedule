@@ -24,7 +24,7 @@ function NoteEditor({ note, updateNote, isSidebarOpen, setIsSidebarOpen }: { not
       <div className="px-8 py-6 border-b border-[var(--color-border-subtle)] flex justify-between items-center bg-[var(--color-bg-surface)] sticky top-0 z-10 shrink-0">
         <div className="flex items-center gap-4 min-w-0 flex-1">
           {!isSidebarOpen && (
-            <button 
+            <button
               onClick={() => setIsSidebarOpen(true)}
               className="p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] rounded-lg flex-shrink-0"
             >
@@ -52,7 +52,7 @@ function NoteEditor({ note, updateNote, isSidebarOpen, setIsSidebarOpen }: { not
           </button>
         </div>
       </div>
-      
+
       <div className="flex-1 overflow-auto p-8">
         <RichTextEditor
           value={localContent}
@@ -101,8 +101,8 @@ function NotesContent() {
 
   const activeNote = notes.find(n => n._id === activeNoteId);
 
-  const filteredNotes = notes.filter(n => 
-    n.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  const filteredNotes = notes.filter(n =>
+    n.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     n.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -167,14 +167,14 @@ function NotesContent() {
               My Notes
             </h2>
             <div className="flex items-center gap-1">
-              <button 
+              <button
                 onClick={handleCreateNote}
                 className="w-8 h-8 flex items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-colors"
                 title="Create Note"
               >
                 <Plus className="w-4 h-4" />
               </button>
-              <button 
+              <button
                 onClick={() => setIsSidebarOpen(false)}
                 className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--color-text-secondary)] hover:bg-[var(--color-border-muted)] transition-colors"
                 title="Close Sidebar"
@@ -185,33 +185,32 @@ function NotesContent() {
           </div>
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
-            <input 
-              type="text" 
-              placeholder="Search notes..." 
+            <input
+              type="text"
+              placeholder="Search notes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-4 py-2 bg-[var(--color-bg-surface)] border border-[var(--color-border-default)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 transition-all"
             />
           </div>
         </div>
-        
+
         <div className="flex-1 overflow-y-auto p-2 space-y-1">
-          {/* Focus Tasks Section */}
-          <div 
+          {/* Tasks Section */}
+          <div
             onClick={() => {
               sessionStorage.removeItem('activeNoteId');
               router.push('/notes');
             }}
-            className={`p-3 rounded-lg cursor-pointer transition-colors group flex items-center gap-3 ${
-              activeNoteId === 'focus-tasks' ? 'bg-indigo-50 border border-indigo-100' : 'hover:bg-[var(--color-bg-hover)] border border-transparent'
-            }`}
+            className={`p-3 rounded-lg cursor-pointer transition-colors group flex items-center gap-3 ${activeNoteId === 'focus-tasks' ? 'bg-indigo-50 border border-indigo-100' : 'hover:bg-[var(--color-bg-hover)] border border-transparent'
+              }`}
           >
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${activeNoteId === 'focus-tasks' ? 'bg-indigo-100 text-indigo-600' : 'bg-[var(--color-border-muted)] text-[var(--color-text-secondary)]'}`}>
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
               <h4 className={`font-semibold text-sm ${activeNoteId === 'focus-tasks' ? 'text-indigo-900' : 'text-[var(--color-text-primary)]'}`}>
-                Focus Tasks
+                Tasks
               </h4>
               <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
                 Manage your priorities
@@ -220,7 +219,7 @@ function NotesContent() {
           </div>
 
           <div className="px-3 py-2 mt-2 mb-1">
-             <h3 className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider">My Notes</h3>
+            <h3 className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider">My Notes</h3>
           </div>
 
           {filteredNotes.length === 0 ? (
@@ -229,12 +228,11 @@ function NotesContent() {
             </div>
           ) : (
             filteredNotes.map(note => (
-              <div 
+              <div
                 key={note._id}
                 onClick={() => handleSelectNote(note._id)}
-                className={`p-3 rounded-lg cursor-pointer transition-colors group relative ${
-                  activeNoteId === note._id ? 'bg-indigo-50 border border-indigo-100' : 'hover:bg-[var(--color-bg-hover)] border border-transparent'
-                }`}
+                className={`p-3 rounded-lg cursor-pointer transition-colors group relative ${activeNoteId === note._id ? 'bg-indigo-50 border border-indigo-100' : 'hover:bg-[var(--color-bg-hover)] border border-transparent'
+                  }`}
               >
                 <h4 className={`font-medium text-sm truncate pr-6 ${activeNoteId === note._id ? 'text-indigo-900' : 'text-[var(--color-text-primary)]'}`}>
                   {note.title || 'Untitled Note'}
@@ -242,7 +240,7 @@ function NotesContent() {
                 <p className="text-xs text-[var(--color-text-muted)] mt-1 truncate">
                   {note.content?.replace(/<[^>]+>/g, '') || 'No content...'}
                 </p>
-                
+
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -265,7 +263,7 @@ function NotesContent() {
             <div className="w-full max-w-4xl h-full flex flex-col min-h-0">
               <div className="mb-6 flex items-center gap-3 flex-shrink-0">
                 {!isSidebarOpen && (
-                  <button 
+                  <button
                     onClick={() => setIsSidebarOpen(true)}
                     className="p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] rounded-lg bg-[var(--color-bg-surface)] shadow-sm border border-[var(--color-border-default)]"
                   >
@@ -273,7 +271,7 @@ function NotesContent() {
                   </button>
                 )}
                 <h1 className="text-2xl font-bold text-[var(--color-text-primary)] flex items-center gap-2">
-                  Focus Tasks
+                  Tasks
                 </h1>
               </div>
               <div className="flex-1 min-h-0">
@@ -291,7 +289,7 @@ function NotesContent() {
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-[var(--color-text-muted)] bg-[var(--color-bg-surface-muted)]/30 relative">
             {!isSidebarOpen && (
-              <button 
+              <button
                 onClick={() => setIsSidebarOpen(true)}
                 className="absolute top-6 left-6 p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] rounded-lg bg-[var(--color-bg-surface)] shadow-sm border border-[var(--color-border-default)]"
               >

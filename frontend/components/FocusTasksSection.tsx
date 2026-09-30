@@ -84,7 +84,7 @@ export const FocusTasksSection: React.FC<FocusTasksSectionProps> = ({
       <div className="flex items-center justify-between gap-2 mb-3 flex-shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-          <h2 className="text-[var(--color-text-primary)] font-bold text-base truncate">Focus Tasks</h2>
+          <h2 className="text-[var(--color-text-primary)] font-bold text-base truncate">Tasks</h2>
           {pendingCount > 0 && (
             <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 flex-shrink-0">
               {pendingCount}
@@ -97,31 +97,28 @@ export const FocusTasksSection: React.FC<FocusTasksSectionProps> = ({
           <div className="flex items-center bg-[var(--color-bg-hover)]/80 p-0.5 rounded-lg text-xs font-medium text-[var(--color-text-secondary)]">
             <button
               onClick={() => setFilter('today')}
-              className={`px-2 py-1 rounded-md transition-all ${
-                filter === 'today'
+              className={`px-2 py-1 rounded-md transition-all ${filter === 'today'
                   ? 'bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] font-semibold shadow-xs'
                   : 'hover:text-[var(--color-text-primary)]'
-              }`}
+                }`}
             >
               Today
             </button>
             <button
               onClick={() => setFilter('all')}
-              className={`px-2 py-1 rounded-md transition-all ${
-                filter === 'all'
+              className={`px-2 py-1 rounded-md transition-all ${filter === 'all'
                   ? 'bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] font-semibold shadow-xs'
                   : 'hover:text-[var(--color-text-primary)]'
-              }`}
+                }`}
             >
               All
             </button>
             <button
               onClick={() => setFilter('done')}
-              className={`px-2 py-1 rounded-md transition-all ${
-                filter === 'done'
+              className={`px-2 py-1 rounded-md transition-all ${filter === 'done'
                   ? 'bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] font-semibold shadow-xs'
                   : 'hover:text-[var(--color-text-primary)]'
-              }`}
+                }`}
             >
               Done
             </button>
@@ -145,8 +142,8 @@ export const FocusTasksSection: React.FC<FocusTasksSectionProps> = ({
               {filter === 'today'
                 ? 'No tasks due today. Take a breather or add one!'
                 : filter === 'done'
-                ? 'No completed tasks yet.'
-                : 'No tasks found. Click "+" to create one.'}
+                  ? 'No completed tasks yet.'
+                  : 'No tasks found. Click "+" to create one.'}
             </p>
           </div>
         ) : (
@@ -166,11 +163,10 @@ export const FocusTasksSection: React.FC<FocusTasksSectionProps> = ({
               <div
                 key={task._id}
                 onClick={() => onEditTask(task)}
-                className={`group flex items-start gap-2.5 p-2.5 rounded-xl border transition-all cursor-pointer ${
-                  isCompleted
+                className={`group flex items-start gap-2.5 p-2.5 rounded-xl border transition-all cursor-pointer ${isCompleted
                     ? 'border-[var(--color-border-subtle)] bg-[var(--color-bg-surface-muted)]/60 opacity-60'
                     : 'border-[var(--color-border-subtle)] hover:border-emerald-200 bg-[var(--color-bg-surface)] hover:shadow-xs'
-                }`}
+                  }`}
               >
                 {/* Complete checkbox */}
                 <button
@@ -178,9 +174,8 @@ export const FocusTasksSection: React.FC<FocusTasksSectionProps> = ({
                     e.stopPropagation();
                     onToggleTaskStatus(task);
                   }}
-                  className={`mt-0.5 transition-colors flex-shrink-0 ${
-                    isCompleted ? 'text-emerald-500' : 'text-gray-300 hover:text-emerald-500'
-                  }`}
+                  className={`mt-0.5 transition-colors flex-shrink-0 ${isCompleted ? 'text-emerald-500' : 'text-gray-300 hover:text-emerald-500'
+                    }`}
                   title={isCompleted ? 'Mark as incomplete' : 'Mark as completed'}
                 >
                   <Circle className={`w-4 h-4 ${isCompleted ? 'fill-emerald-500 text-emerald-500' : ''}`} />
@@ -189,9 +184,8 @@ export const FocusTasksSection: React.FC<FocusTasksSectionProps> = ({
                 {/* Details */}
                 <div className="flex-1 min-w-0">
                   <span
-                    className={`text-xs font-semibold block truncate leading-snug ${
-                      isCompleted ? 'line-through text-[var(--color-text-muted)]' : 'text-[var(--color-text-primary)]'
-                    }`}
+                    className={`text-xs font-semibold block truncate leading-snug ${isCompleted ? 'line-through text-[var(--color-text-muted)]' : 'text-[var(--color-text-primary)]'
+                      }`}
                   >
                     {task.title}
                   </span>

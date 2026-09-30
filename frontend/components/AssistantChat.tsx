@@ -131,7 +131,7 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-[var(--color-text-primary)] font-heading">Unschedule AI</h2>
+            <h2 className="text-sm font-bold text-[var(--color-text-primary)] font-heading">MoolaAI</h2>
             <p className="text-xs text-[var(--color-brand-primary)] font-medium">Always here to help</p>
           </div>
         </div>
@@ -227,7 +227,7 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
                   <div className="w-8 h-8 rounded-lg bg-[var(--color-brand-primary-soft)] flex items-center justify-center mb-2 shadow-sm border border-[var(--color-brand-primary-softer)]">
                     <Target className="w-4 h-4 text-[var(--color-brand-primary)] group-hover:scale-110 transition-transform" />
                   </div>
-                  <div className="text-xs font-bold text-[var(--color-text-primary)]">Atomic Habit</div>
+                  <div className="text-xs font-bold text-[var(--color-text-primary)]">Habit</div>
                   <div className="text-[10px] text-[var(--color-text-secondary)] mt-0.5 font-medium">Build a new routine</div>
                 </button>
                 <button onClick={() => handleSend(undefined, "quick_action_journal")} className="cursor-pointer p-3 text-left bg-[var(--color-bg-surface)] hover:bg-[var(--color-bg-hover)] border border-[var(--color-border-subtle)] rounded-xl transition-all duration-300 group hover:shadow-md">

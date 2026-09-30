@@ -25,17 +25,17 @@ const calculateProgress = (created_at?: string, deadline?: string) => {
   const end = new Date(deadline);
   const now = new Date();
   const start = created_at ? new Date(created_at) : new Date(end.getTime() - 7 * 24 * 60 * 60 * 1000); // fallback to 7 days if no created_at
-  
+
   const total = end.getTime() - start.getTime();
   const elapsed = now.getTime() - start.getTime();
-  
+
   const daysLeft = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-  
+
   let percent = 100;
   if (total > 0) {
     percent = Math.max(0, Math.min(100, (elapsed / total) * 100));
   }
-  
+
   return { daysLeft, percent };
 };
 
@@ -305,11 +305,11 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
                           </span>
                         </div>
                         <div className="h-1.5 w-full bg-[var(--color-bg-hover)] rounded-full overflow-hidden">
-                          <div 
+                          <div
                             className="h-full rounded-full transition-all duration-500"
-                            style={{ 
+                            style={{
                               width: `${progress.percent}%`,
-                              backgroundColor: isUrgent ? '#f43f5e' : color 
+                              backgroundColor: isUrgent ? '#f43f5e' : color
                             }}
                           />
                         </div>
@@ -388,7 +388,7 @@ export const GoalsSection: React.FC<GoalsSectionProps> = ({ goals, onAddGoal, on
           <Plus className="h-4 w-4" />
         </button>
       </div>
-      
+
       <div className="flex-1 min-h-0 overflow-y-auto pr-1 -mr-1">
         {goals.length === 0 ? (
           <div className="h-full min-h-[100px] flex items-center justify-center">
@@ -431,11 +431,11 @@ export const GoalsSection: React.FC<GoalsSectionProps> = ({ goals, onAddGoal, on
                             </span>
                           </div>
                           <div className="h-1 w-full bg-[var(--color-bg-hover)] rounded-full overflow-hidden">
-                            <div 
+                            <div
                               className="h-full rounded-full transition-all duration-500"
-                              style={{ 
+                              style={{
                                 width: `${progress.percent}%`,
-                                backgroundColor: isUrgent ? '#f43f5e' : color 
+                                backgroundColor: isUrgent ? '#f43f5e' : color
                               }}
                             />
                           </div>

@@ -48,7 +48,7 @@ export const MiniHabitsSection: React.FC<MiniHabitsSectionProps> = ({
       <div className="flex items-center justify-between gap-2 mb-3 flex-shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           <Zap className="w-5 h-5 text-[var(--color-brand-break)] flex-shrink-0" />
-          <h2 className="text-base font-bold text-[var(--color-text-primary)] truncate">Atomic Habits</h2>
+          <h2 className="text-base font-bold text-[var(--color-text-primary)] truncate">Habits</h2>
           {habits.length > 0 && (
             <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[var(--color-brand-break-soft)] text-[var(--color-brand-break)] border border-[var(--color-brand-break-soft)] flex-shrink-0">
               {habits.length}
@@ -88,7 +88,7 @@ export const MiniHabitsSection: React.FC<MiniHabitsSectionProps> = ({
                       <ChevronRight className={`h-3.5 w-3.5 flex-shrink-0 transition-transform ${expandedHabitId === habit._id ? 'rotate-90 text-[var(--color-text-secondary)]' : 'text-[var(--color-text-muted)]'}`} />
                       <div className="flex flex-col min-w-0">
                         <span className={`text-[11px] uppercase tracking-wider font-semibold text-[var(--color-text-secondary)] ${isDone ? 'opacity-50 line-through' : ''}`}>
-                          {habit.trigger ? `When I ${habit.trigger}` : 'Atomic Habit'}
+                          {habit.trigger ? `When I ${habit.trigger}` : 'Habit'}
                         </span>
                         <span className={`truncate text-sm font-bold ${isDone ? 'text-[var(--color-text-muted)] line-through' : 'text-[var(--color-text-primary)]'}`}>
                           {habit.title ? `I will ${habit.title}` : habit.title}

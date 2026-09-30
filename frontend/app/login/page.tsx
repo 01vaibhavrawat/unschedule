@@ -48,7 +48,7 @@ export default function LoginPage() {
           <div className="auth-brand-icon">
             <Calendar className="w-7 h-7 text-white" />
           </div>
-          <span className="auth-brand-name">Unschedule</span>
+          <span className="auth-brand-name">Moola</span>
         </div>
 
         <div className="auth-hero">
@@ -85,7 +85,7 @@ export default function LoginPage() {
               <Calendar className="w-5 h-5 text-white" />
             </div>
             <span className="auth-brand-name" style={{ color: 'var(--color-brand-primary)', fontSize: 20 }}>
-              Unschedule
+              Moola
             </span>
           </div>
 

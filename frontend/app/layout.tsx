@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Unschedule",
-  description: "Unschedule Weekly Planner",
+  title: "Moola",
+  description: "Moola Weekly Planner",
 };
 
 import { ClientLayout } from "@/components/ClientLayout";
