@@ -54,9 +54,11 @@ interface AppState {
   journals: any[];
   board: Board | null;
   assistantOpen: boolean;
+  userMenuOpen: boolean;
   theme: 'light' | 'dark';
 
   setAssistantOpen: (open: boolean) => void;
+  setUserMenuOpen: (open: boolean) => void;
   toggleTheme: () => void;
   setUser: (user: AuthUser | null) => void;
   logout: () => Promise<void>;
@@ -99,9 +101,11 @@ export const useStore = create<AppState>((set, get) => ({
   journals: [],
   board: null,
   assistantOpen: false,
+  userMenuOpen: false,
   theme: 'dark', // default to dark
 
   setAssistantOpen: (open) => set({ assistantOpen: open }),
+  setUserMenuOpen: (open) => set({ userMenuOpen: open }),
   toggleTheme: () => set((state) => {
     const newTheme = state.theme === 'light' ? 'dark' : 'light';
     if (typeof window !== 'undefined') {

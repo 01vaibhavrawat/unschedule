@@ -229,33 +229,34 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     return `Weekly on ${dayLabels.join(', ')}`;
   };
 
-  const isEditingHabit = false;
-  const isCompletedForSelectedDay = false;
-
   return (
-    <div className="fixed top-0 left-0 z-[100] flex h-full w-full items-center justify-center p-4 shadow-xl">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200">
       <div
-        className="absolute inset-0 bg-transparent"
+        className="fixed inset-0"
         onClick={onClose}
+        aria-hidden="true"
       />
 
-      <div className="relative z-10 flex w-full max-w-[480px] flex-col overflow-visible rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] shadow-[var(--shadow-modal)] pointer-events-auto">
+      <div className="relative z-10 flex w-full max-w-[480px] max-h-[90dvh] flex-col overflow-y-auto rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] shadow-[var(--shadow-modal)] pointer-events-auto my-auto animate-in zoom-in-95 duration-200">
 
         {/* Header */}
-        <div className={`flex items-center justify-between border-b border-[var(--color-border-subtle)] px-4 py-3 bg-[var(--color-bg-surface-muted)]`}>
-          <div />
+        <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] px-4 py-3 bg-[var(--color-bg-surface-muted)]">
+          <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-muted)]">
+            {editingTask ? 'Edit Event' : 'New Event'}
+          </span>
           <button
             onClick={onClose}
-            className={`rounded-full p-1.5 transition-colors text-[var(--color-text-secondary)] hover:bg-[var(--color-border-strong)]`}
+            className="rounded-full p-1.5 transition-colors text-[var(--color-text-secondary)] hover:bg-[var(--color-border-strong)] active:scale-95"
+            aria-label="Close"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Body */}
-        <div className="px-6 py-4">
+        <div className="p-4 sm:p-6 space-y-4">
           {/* Title */}
-          <div className="mb-4 ml-10">
+          <div>
             <input
               type="text"
               autoFocus
@@ -266,21 +267,22 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                 if (e.key === 'Enter') handleSave();
                 if (e.key === 'Escape') onClose();
               }}
-              className="w-full border-b-2 border-[var(--color-brand-primary-hover)] bg-transparent pb-1 text-[22px] font-normal text-[var(--color-text-secondary)] placeholder-[var(--color-text-muted)] focus:outline-none"
+              className="w-full border-b-2 border-[var(--color-brand-primary)] bg-transparent pb-2 text-xl sm:text-2xl font-bold text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:outline-none"
             />
           </div>
 
-          {/* Tabs */}
+          {/* Type Tabs */}
           {!hideTypeSelector && (
-            <div className="mb-6 ml-10 flex items-center gap-2 overflow-x-auto whitespace-nowrap">
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-1">
               {['event', 'task', 'break'].map(type => (
                 <button
                   key={type}
                   onClick={() => setTaskType(type as any)}
-                  className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${taskType === type
-                      ? 'bg-[var(--color-brand-primary-soft)] text-[var(--color-brand-primary)]'
-                      : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'
-                    }`}
+                  className={`rounded-xl px-3.5 py-1.5 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                    taskType === type
+                      ? 'bg-[var(--color-brand-primary)] text-white shadow-xs'
+                      : 'bg-[var(--color-bg-surface-muted)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'
+                  }`}
                 >
                   {type.charAt(0).toUpperCase() + type.slice(1)}
                 </button>
@@ -289,67 +291,69 @@ export const TaskModal: React.FC<TaskModalProps> = ({
           )}
 
           {/* Time Section */}
-          <div className="space-y-4">
-            <div className="flex items-start gap-4">
-              <Clock className="mt-1 h-5 w-5 text-[var(--color-text-muted)]" />
+          <div className="space-y-3 pt-2">
+            <div className="flex items-start gap-3">
+              <Clock className="mt-2 h-5 w-5 text-[var(--color-text-muted)] flex-shrink-0" />
 
-              <div>
-                <div className="mb-1 flex items-center gap-2">
+              <div className="flex-1 space-y-2.5 min-w-0">
+                {/* Date Input */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                  <label className="text-xs font-semibold text-[var(--color-text-muted)] sm:w-12">Date</label>
                   <input
                     type="date"
                     value={dateInput}
                     onChange={(e) => setDateInput(e.target.value)}
-                    className="rounded border border-[var(--color-border-strong)] p-1 text-sm outline-none focus:border-[var(--color-brand-primary-hover)]"
-                  />
-
-                  <input
-                    type="time"
-                    value={startTimeInput}
-                    onChange={(e) => setStartTimeInput(e.target.value)}
-                    className="rounded border border-[var(--color-border-strong)] p-1 text-sm outline-none focus:border-[var(--color-brand-primary-hover)]"
-                  />
-
-                  <span className="text-[var(--color-text-muted)]">
-                    –
-                  </span>
-
-                  <input
-                    type="time"
-                    value={endTimeInput}
-                    onChange={(e) => setEndTimeInput(e.target.value)}
-                    className="rounded border border-[var(--color-border-strong)] p-1 text-sm outline-none focus:border-[var(--color-brand-primary-hover)]"
+                    className="flex-1 rounded-xl border border-[var(--color-border-strong)] p-2 text-base sm:text-sm bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] outline-none focus:border-[var(--color-brand-primary)]"
                   />
                 </div>
 
-                {/* Recurrence */}
-                <div className="relative mt-1 text-sm">
-                  <div
-                    className="ml-[-0.5rem] flex w-fit cursor-pointer items-center gap-1 rounded px-2 py-1 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]"
-                    onClick={() =>
-                      setShowRecDropdown(!showRecDropdown)
-                    }
-                  >
-                    <span>{getRecurrenceText()}</span>
+                {/* Time Range Inputs */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                  <label className="text-xs font-semibold text-[var(--color-text-muted)] sm:w-12">Time</label>
+                  <div className="flex-1 grid grid-cols-2 gap-2 items-center">
+                    <input
+                      type="time"
+                      value={startTimeInput}
+                      onChange={(e) => setStartTimeInput(e.target.value)}
+                      className="w-full rounded-xl border border-[var(--color-border-strong)] p-2 text-base sm:text-sm bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] outline-none focus:border-[var(--color-brand-primary)]"
+                      aria-label="Start Time"
+                    />
+                    <input
+                      type="time"
+                      value={endTimeInput}
+                      onChange={(e) => setEndTimeInput(e.target.value)}
+                      className="w-full rounded-xl border border-[var(--color-border-strong)] p-2 text-base sm:text-sm bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] outline-none focus:border-[var(--color-brand-primary)]"
+                      aria-label="End Time"
+                    />
                   </div>
+                </div>
+
+                {/* Recurrence Dropdown */}
+                <div className="relative mt-2 text-sm">
+                  <button
+                    type="button"
+                    className="flex items-center gap-1.5 rounded-xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface-muted)] px-3 py-1.5 text-xs font-semibold text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] active:scale-95 transition-all"
+                    onClick={() => setShowRecDropdown(!showRecDropdown)}
+                  >
+                    <span>🔁 {getRecurrenceText()}</span>
+                  </button>
 
                   {showRecDropdown && (
                     <>
                       <div
                         className="fixed inset-0 z-40"
-                        onClick={() =>
-                          setShowRecDropdown(false)
-                        }
+                        onClick={() => setShowRecDropdown(false)}
                       />
 
-                      <div className="absolute bottom-full left-0 z-50 mb-2 w-56 rounded-md border border-[var(--color-border-muted)] bg-[var(--color-bg-surface)] py-2 shadow-lg">
-                        <div className="mb-2 border-b border-[var(--color-border-subtle)] px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+                      <div className="absolute top-full left-0 z-50 mt-1 w-64 max-h-56 overflow-y-auto rounded-xl border border-[var(--color-border-muted)] bg-[var(--color-bg-surface)] py-2 shadow-2xl">
+                        <div className="mb-2 border-b border-[var(--color-border-subtle)] px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">
                           Repeat on
                         </div>
 
                         {DAYS_OF_WEEK.map(day => (
                           <label
                             key={day.value}
-                            className="flex cursor-pointer items-center gap-3 px-4 py-1 hover:bg-[var(--color-bg-hover-subtle)]"
+                            className="flex cursor-pointer items-center gap-3 px-3 py-1.5 hover:bg-[var(--color-bg-hover)] transition-colors"
                           >
                             <input
                               type="checkbox"
@@ -367,10 +371,10 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                                   handleUnselectDays(day.value);
                                 }
                               }}
-                              className="h-4 w-4 cursor-pointer rounded border-[var(--color-border-strong)] text-[var(--color-brand-primary-hover)] focus:ring-[var(--color-brand-primary-hover)]"
+                              className="h-4 w-4 cursor-pointer rounded border-[var(--color-border-strong)] text-[var(--color-brand-primary)] focus:ring-[var(--color-brand-primary)]"
                             />
 
-                            <span className="select-none text-sm text-[var(--color-text-secondary)]">
+                            <span className="select-none text-xs font-medium text-[var(--color-text-primary)]">
                               {day.label}
                             </span>
                           </label>
@@ -385,45 +389,33 @@ export const TaskModal: React.FC<TaskModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="mt-2 flex items-center justify-between bg-[var(--color-bg-surface)] px-6 py-4">
+        <div className="flex items-center justify-between border-t border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] px-4 sm:px-6 py-3.5">
           <div>
             {editingTask && onDelete && (
               <button
                 type="button"
                 onClick={onDelete}
-                className="rounded px-3 py-2 text-sm font-medium text-[var(--color-brand-red-strong)] transition-colors hover:bg-[var(--color-brand-red-soft)]"
+                className="rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold text-[var(--color-brand-red)] transition-colors hover:bg-[var(--color-brand-red-soft)] active:scale-95 cursor-pointer"
               >
                 Delete
               </button>
             )}
           </div>
 
-          <div className="flex items-center gap-4">
-            {isEditingHabit && onToggleHabit && (
-              <button
-                type="button"
-                onClick={() => {
-                  if (editingTask?._id) {
-                    onToggleHabit(editingTask._id, dateInput);
-                  }
-                }}
-                className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${isCompletedForSelectedDay
-                    ? 'bg-[var(--color-brand-success-soft)] text-[var(--color-brand-success-strong)]'
-                    : 'bg-[var(--color-bg-hover)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border-strong)]'
-                  }`}
-              >
-                {isCompletedForSelectedDay
-                  ? '✓ Completed'
-                  : 'Mark Complete'}
-              </button>
-            )}
-
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] active:scale-95"
+            >
+              Cancel
+            </button>
             <button
               onClick={handleSave}
               disabled={!title.trim()}
-              className="rounded-full bg-[var(--color-brand-primary)] px-6 py-2 text-sm font-medium text-[var(--color-text-inverse)] shadow-sm transition-colors hover:bg-[var(--color-brand-primary-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl bg-[var(--color-brand-primary)] px-5 py-2 text-xs sm:text-sm font-bold text-white shadow-sm transition-all hover:bg-[var(--color-brand-primary-hover)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
             >
-              Save
+              Save Event
             </button>
           </div>
         </div>

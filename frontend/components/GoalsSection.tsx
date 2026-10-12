@@ -130,45 +130,39 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ backgroundColor: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="relative flex flex-col rounded-2xl shadow-2xl overflow-hidden"
-        style={{
-          width: 520,
-          maxHeight: '88vh',
-          background: 'linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%)',
-          border: '1px solid rgba(99,102,241,0.12)',
-        }}
+        className="relative flex flex-col rounded-2xl shadow-2xl overflow-hidden w-full max-w-[520px] max-h-[90dvh] my-auto bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] animate-in zoom-in-95 duration-200"
       >
         {/* ── header ── */}
         <div
-          className="flex items-center justify-between px-6 py-5"
+          className="flex items-center justify-between px-4 sm:px-6 py-4"
           style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}
         >
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--color-bg-surface)]/20">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20">
               <Target className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-white">My Goals</h2>
-              <p className="text-xs text-white/70">Your top priorities &amp; direction</p>
+              <h2 className="text-sm sm:text-base font-bold text-white leading-tight">My Goals</h2>
+              <p className="text-[11px] sm:text-xs text-white/80">Your top priorities &amp; direction</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={startAdd}
               disabled={isFormOpen}
-              className="flex items-center gap-1.5 rounded-lg bg-[var(--color-bg-surface)]/20 px-3 py-1.5 text-xs font-medium text-white transition-all hover:bg-[var(--color-bg-surface)]/30 disabled:opacity-40"
+              className="flex items-center gap-1.5 rounded-xl bg-white/20 px-3 py-1.5 text-xs font-semibold text-white transition-all hover:bg-white/30 disabled:opacity-40 active:scale-95 cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" />
-              Add goal
+              <span>Add goal</span>
             </button>
             <button
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-bg-surface)]/20 text-white transition-all hover:bg-[var(--color-bg-surface)]/30"
+              className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/20 text-white transition-all hover:bg-white/30 active:scale-95 cursor-pointer"
+              aria-label="Close"
             >
               <X className="h-4 w-4" />
             </button>
@@ -177,8 +171,8 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
 
         {/* ── add / edit form ── */}
         {isFormOpen && (
-          <div className="px-6 pt-5 pb-4 border-b border-indigo-50">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-indigo-400">
+          <div className="px-4 sm:px-6 pt-4 pb-4 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-surface-muted)]/40 overflow-y-auto">
+            <p className="mb-2.5 text-xs font-bold uppercase tracking-wider text-[var(--color-brand-primary)]">
               {editingId ? 'Edit goal' : 'New goal'}
             </p>
 
@@ -189,7 +183,7 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
                   key={c.value}
                   title={c.label}
                   onClick={() => setForm(f => ({ ...f, color: c.value }))}
-                  className="h-6 w-6 rounded-full transition-transform hover:scale-110"
+                  className="h-7 w-7 rounded-full transition-transform hover:scale-110 active:scale-95 cursor-pointer"
                   style={{
                     backgroundColor: c.value,
                     outline: form.color === c.value ? `2.5px solid ${c.value}` : 'none',
@@ -206,42 +200,42 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
               value={form.title}
               onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
               onKeyDown={handleKey}
-              className="w-full rounded-xl border border-indigo-100 bg-[var(--color-bg-surface)] px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-gray-400 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 mb-2"
+              className="w-full rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-4 py-2.5 text-base sm:text-sm text-[var(--color-text-primary)] placeholder-gray-400 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 mb-2 shadow-xs"
             />
             <div className="mb-2 w-full">
               <RichTextEditor
                 placeholder="Why does this matter? (optional)"
                 value={form.description}
                 onChange={(value) => setForm(f => ({ ...f, description: value }))}
-                minHeight="80px"
+                minHeight="70px"
               />
             </div>
             <div className="mb-2 flex items-center gap-2">
-              <div className="relative">
+              <div className="relative w-full">
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-text-muted)]" />
                 <input
                   type="date"
                   title="Deadline (optional)"
                   value={form.deadline}
                   onChange={e => setForm(f => ({ ...f, deadline: e.target.value }))}
-                  className="w-full rounded-xl border border-indigo-100 bg-[var(--color-bg-surface)] pl-9 pr-4 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                  className="w-full rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] pl-9 pr-4 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 shadow-xs"
                 />
               </div>
             </div>
             <div className="mt-3 flex justify-end gap-2">
               <button
                 onClick={cancelEdit}
-                className="rounded-lg px-4 py-2 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] transition-colors"
+                className="rounded-xl px-4 py-2 text-xs sm:text-sm font-semibold text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] active:scale-95 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={!form.title.trim() || saving}
-                className="flex items-center gap-1.5 rounded-lg px-5 py-2 text-sm font-semibold text-white transition-all disabled:opacity-40"
+                className="flex items-center gap-1.5 rounded-xl px-5 py-2 text-xs sm:text-sm font-bold text-white shadow-xs transition-all disabled:opacity-40 active:scale-95 cursor-pointer"
                 style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
               >
-                {saving ? 'Saving…' : editingId ? 'Update' : 'Add Goal'}
+                <span>{saving ? 'Saving…' : editingId ? 'Update' : 'Add Goal'}</span>
                 {!saving && <ArrowRight className="h-3.5 w-3.5" />}
               </button>
             </div>
@@ -319,7 +313,7 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ goals, onClose, onAdd, onUpdate
                 </div>
 
                 {/* actions */}
-                <div className="flex flex-shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="flex flex-shrink-0 items-center gap-1 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => startEdit(g)}
                     className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--color-text-muted)] hover:bg-indigo-50 hover:text-indigo-500 transition-colors"

@@ -321,14 +321,20 @@ export default function SignupPage() {
 
         .auth-panel-right {
           flex: 1; display: flex; align-items: center; justify-content: center;
-          padding: 2rem 1.5rem; background: #fafafa;
+          padding: 1.25rem 1rem; background: #fafafa;
+        }
+        @media (min-width: 640px) {
+          .auth-panel-right { padding: 2rem 1.5rem; }
         }
 
         .auth-form-card {
           width: 100%; max-width: 440px;
-          background: white; border-radius: 20px; padding: 2.25rem 2rem;
+          background: white; border-radius: 20px; padding: 1.75rem 1.25rem;
           box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 20px 50px -12px rgba(92,65,93,0.12);
           border: 1px solid rgba(92,65,93,0.08);
+        }
+        @media (min-width: 480px) {
+          .auth-form-card { padding: 2.25rem 2rem; }
         }
 
         .auth-mobile-brand { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; }
@@ -352,8 +358,8 @@ export default function SignupPage() {
           width: 100%; box-sizing: border-box;
           padding: 0.7rem 1rem;
           border: 1.5px solid #e5e7eb; border-radius: 10px;
-          font-size: 0.9375rem; color: #111827; background: #fff;
-          outline: none; transition: border-color 0.18s, box-shadow 0.18s;
+          font-size: 1rem; color: #111827; background: #fff;
+          outline: none; min-height: 44px; transition: border-color 0.18s, box-shadow 0.18s;
         }
         .auth-input:focus { border-color: #5C415D; box-shadow: 0 0 0 3px rgba(92,65,93,0.12); }
         .auth-input::placeholder { color: #9ca3af; }
@@ -363,8 +369,8 @@ export default function SignupPage() {
 
         .auth-input-wrapper { position: relative; }
         .auth-eye-btn {
-          position: absolute; right: 0.875rem; top: 50%; transform: translateY(-50%);
-          background: none; border: none; padding: 0; cursor: pointer; color: #9ca3af;
+          position: absolute; right: 0.25rem; top: 50%; transform: translateY(-50%);
+          background: none; border: none; padding: 0; width: 44px; height: 44px; cursor: pointer; color: #9ca3af;
           display: flex; align-items: center; justify-content: center; transition: color 0.15s;
         }
         .auth-eye-btn:hover { color: #5C415D; }
@@ -378,9 +384,9 @@ export default function SignupPage() {
 
         .auth-submit-btn {
           display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-          width: 100%; padding: 0.8125rem;
+          width: 100%; min-height: 48px; padding: 0.8125rem;
           border: none; border-radius: 10px;
-          font-size: 0.9375rem; font-weight: 600; color: white;
+          font-size: 1rem; font-weight: 600; color: white;
           background: linear-gradient(135deg, #5C415D 0%, #7a5a7c 100%);
           cursor: pointer;
           transition: opacity 0.18s, transform 0.12s, box-shadow 0.18s;

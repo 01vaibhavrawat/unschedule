@@ -182,3 +182,85 @@ label,
 .resize-cursor {
   cursor: col-resize;
 }
+
+/* ── Mobile & Touch Enhancements ── */
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Safe Area Utility Classes */
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+}
+
+.pt-safe {
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+}
+
+.bottom-safe {
+  bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Hide scrollbar for mobile carousels / tabbars while allowing scroll */
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar,
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Ensure inputs on mobile are at least 16px to prevent iOS Safari auto-zoom */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Touch-friendly active feedback for buttons */
+@media (hover: none) and (pointer: coarse) {
+  button:active,
+  a:active,
+  [role="button"]:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* FullCalendar mobile adjustments */
+@media (max-width: 640px) {
+  .fc .fc-timegrid-slot {
+    height: 2.25rem !important;
+  }
+  .fc .fc-col-header-cell-cushion {
+    font-size: 11px !important;
+    padding: 4px 2px !important;
+  }
+  .fc .fc-timegrid-slot-label-cushion {
+    font-size: 9px !important;
+    padding: 0 2px !important;
+  }
+  .fc-timegrid-axis-cushion {
+    font-size: 9px !important;
+  }
+}

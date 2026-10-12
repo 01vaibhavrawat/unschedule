@@ -8,6 +8,7 @@ import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
 import { TaskModal } from '@/components/TaskModal';
 import { api } from '@/lib/api';
+import { Plus } from 'lucide-react';
 
 const DynamicCalendar = dynamic(() => import('@/components/CalendarComponent'), {
   ssr: false,
@@ -167,13 +168,14 @@ export default function Home() {
       <div className="flex flex-1 overflow-hidden">
         <Sidebar 
           isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
           onCreateClick={() => openCreateModal()}
           todayStr={todayStr}
           onMiniCalendarSelect={handleMiniCalendarSelect}
           currentDate={currentDate}
         />
         
-        <main id="calendar-view" className="flex-1 overflow-hidden p-2 flex flex-col">
+        <main id="calendar-view" className="flex-1 overflow-hidden p-1 sm:p-2 flex flex-col relative">
           <DynamicCalendar 
             tasks={tasks}
             streaks={streaks}
@@ -191,6 +193,16 @@ export default function Home() {
             onDateSelect={(start: Date, end: Date | null) => openCreateModal(start, end)}
             onEventClick={handleEventClick}
           />
+
+          {/* Mobile Quick Add Task FAB */}
+          <button
+            onClick={() => openCreateModal()}
+            className="md:hidden fixed bottom-20 right-4 z-30 h-13 w-13 rounded-2xl bg-gradient-to-br from-[var(--color-brand-primary)] to-[var(--color-brand-purple)] text-white flex items-center justify-center shadow-[var(--shadow-glow)] active:scale-95 transition-all border border-white/20"
+            aria-label="Create Task"
+            title="Create Task"
+          >
+            <Plus className="w-6 h-6" />
+          </button>
         </main>
       </div>
 

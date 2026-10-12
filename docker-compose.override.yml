@@ -12,8 +12,8 @@ services:
     
     environment:
       - NODE_ENV=development
-      # Next.js needs to bind to all network interfaces inside the container
       - HOSTNAME=0.0.0.0
+      - INTERNAL_API_URL=http://backend:8000
       
     volumes:
       # Map your local frontend directory to the container for live reloading

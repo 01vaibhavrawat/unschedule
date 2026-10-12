@@ -269,8 +269,11 @@ export default function LoginPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 2rem 1.5rem;
+          padding: 1.25rem 1rem;
           background: #fafafa;
+        }
+        @media (min-width: 640px) {
+          .auth-panel-right { padding: 2rem 1.5rem; }
         }
 
         .auth-form-card {
@@ -278,9 +281,12 @@ export default function LoginPage() {
           max-width: 420px;
           background: white;
           border-radius: 20px;
-          padding: 2.5rem 2rem;
+          padding: 1.75rem 1.25rem;
           box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 20px 50px -12px rgba(92,65,93,0.12);
           border: 1px solid rgba(92,65,93,0.08);
+        }
+        @media (min-width: 480px) {
+          .auth-form-card { padding: 2.5rem 2rem; }
         }
 
         .auth-mobile-brand {
@@ -334,10 +340,11 @@ export default function LoginPage() {
           padding: 0.75rem 1rem;
           border: 1.5px solid #e5e7eb;
           border-radius: 10px;
-          font-size: 0.9375rem;
+          font-size: 1rem;
           color: #111827;
           background: #fff;
           outline: none;
+          min-height: 44px;
           transition: border-color 0.18s, box-shadow 0.18s;
         }
         .auth-input:focus {
@@ -349,12 +356,14 @@ export default function LoginPage() {
         .auth-input-wrapper { position: relative; }
         .auth-eye-btn {
           position: absolute;
-          right: 0.875rem;
+          right: 0.25rem;
           top: 50%;
           transform: translateY(-50%);
           background: none;
           border: none;
           padding: 0;
+          width: 44px;
+          height: 44px;
           cursor: pointer;
           color: #9ca3af;
           display: flex;
@@ -371,10 +380,11 @@ export default function LoginPage() {
           justify-content: center;
           gap: 0.5rem;
           width: 100%;
+          min-height: 48px;
           padding: 0.8125rem;
           border: none;
           border-radius: 10px;
-          font-size: 0.9375rem;
+          font-size: 1rem;
           font-weight: 600;
           color: white;
           background: linear-gradient(135deg, #5C415D 0%, #7a5a7c 100%);

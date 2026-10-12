@@ -110,21 +110,22 @@ export const MiniHabitsSection: React.FC<MiniHabitsSectionProps> = ({
                        {onEditHabit && (
                          <button
                            onClick={(e) => { e.stopPropagation(); onEditHabit(habit); }}
-                           className="opacity-0 group-hover:opacity-100 p-1 text-[var(--color-text-muted)] hover:text-[var(--color-brand-break)] transition-opacity"
+                           className="opacity-80 md:opacity-0 md:group-hover:opacity-100 p-1 text-[var(--color-text-muted)] hover:text-[var(--color-brand-break)] transition-opacity"
+                           aria-label="Edit habit"
                          >
                            <Edit2 className="h-4 w-4" />
                          </button>
                        )}
-                       <button onClick={(e) => { e.stopPropagation(); toggleHabitLog(habit._id, todayStr); }} className={`flex h-6 w-6 items-center justify-center rounded-full border transition-colors ${isDone ? 'bg-[var(--color-brand-success)] border-[var(--color-brand-success)] text-white' : 'border-[var(--color-border-strong)] bg-[var(--color-bg-surface)] text-transparent hover:border-[var(--color-brand-break)]'}`}>
+                       <button onClick={(e) => { e.stopPropagation(); toggleHabitLog(habit._id, todayStr); }} className={`flex h-7 w-7 items-center justify-center rounded-full border transition-colors active:scale-95 ${isDone ? 'bg-[var(--color-brand-success)] border-[var(--color-brand-success)] text-white' : 'border-[var(--color-border-strong)] bg-[var(--color-bg-surface)] text-transparent hover:border-[var(--color-brand-break)]'}`} aria-label={isDone ? 'Mark habit uncompleted' : 'Mark habit completed'}>
                          <Check className="h-4 w-4" />
                        </button>
                      </div>
-                     <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-1 flex gap-1">
+                     <div className="opacity-90 md:opacity-0 md:group-hover:opacity-100 transition-opacity mt-1 flex gap-1">
                        {!isSkipped && setHabitStatus && (
-                         <button onClick={(e) => { e.stopPropagation(); setHabitStatus(habit._id, todayStr, 'skipped'); }} className="text-[10px] text-[var(--color-text-secondary)] hover:text-[var(--color-brand-break)] font-medium bg-[var(--color-bg-surface)] rounded px-1.5 py-0.5 shadow-sm border border-[var(--color-border-default)]">Skip</button>
+                         <button onClick={(e) => { e.stopPropagation(); setHabitStatus(habit._id, todayStr, 'skipped'); }} className="text-[10px] text-[var(--color-text-secondary)] hover:text-[var(--color-brand-break)] font-medium bg-[var(--color-bg-surface)] rounded px-1.5 py-0.5 shadow-sm border border-[var(--color-border-default)] active:scale-95">Skip</button>
                        )}
                        {isSkipped && setHabitStatus && (
-                         <button onClick={(e) => { e.stopPropagation(); setHabitStatus(habit._id, todayStr, 'none'); }} className="text-[10px] text-[var(--color-text-secondary)] hover:text-[var(--color-brand-break)] font-medium bg-[var(--color-bg-surface)] rounded px-1.5 py-0.5 shadow-sm border border-[var(--color-border-default)]">Undo</button>
+                         <button onClick={(e) => { e.stopPropagation(); setHabitStatus(habit._id, todayStr, 'none'); }} className="text-[10px] text-[var(--color-text-secondary)] hover:text-[var(--color-brand-break)] font-medium bg-[var(--color-bg-surface)] rounded px-1.5 py-0.5 shadow-sm border border-[var(--color-border-default)] active:scale-95">Undo</button>
                        )}
                      </div>
                   </div>
