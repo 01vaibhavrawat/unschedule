@@ -1,0 +1,26 @@
+{
+    email vaibhrawat@gmail.com
+}
+
+www.moola.guide {
+    redir https://moola.guide{uri} permanent
+}
+
+moola.guide {
+    # Interactive API docs
+    handle /docs* {
+        reverse_proxy backend:8000
+    }
+    handle /openapi.json {
+        reverse_proxy backend:8000
+    }
+
+    # All frontend traffic and Next.js /api/backend proxy
+    handle {
+        reverse_proxy frontend:3000
+    }
+}
+
+http://16.192.66.228 {
+    redir https://moola.guide{uri} permanent
+}

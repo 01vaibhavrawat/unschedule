@@ -1,9 +1,9 @@
 param (
-    [Parameter(Mandatory=$true, Position=0)]
-    [string]$IP,
+    [Parameter(Mandatory=$false, Position=0)]
+    [string]$IP = "16.192.66.228",
 
-    [Parameter(Mandatory=$true, Position=1)]
-    [string]$KeyPath
+    [Parameter(Mandatory=$false, Position=1)]
+    [string]$KeyPath = ".\uschedule_key_pair.pem"
 )
 
 $ErrorActionPreference = "Stop"
@@ -55,9 +55,11 @@ tar -xzf ~/app_deploy.tar.gz -C ~/unschedule
 rm -f ~/app_deploy.tar.gz
 
 cd ~/unschedule
+echo "Stopping previous containers..."
+sudo docker compose down --remove-orphans || true
 echo "Cleaning old Docker build artifacts..."
 sudo docker system prune -f
-echo "Building and starting Docker containers..."
+echo "Building and starting Docker containers with SSL..."
 sudo docker compose up --build -d
 
 echo "Containers are up and running!"
@@ -71,6 +73,7 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "`n==========================================" -ForegroundColor Green
 Write-Host "Deployment complete!" -ForegroundColor Green
-Write-Host "Frontend: http://$IP" -ForegroundColor Green
-Write-Host "Backend API:  http://$IP:8000" -ForegroundColor Green
+Write-Host "Website:     https://moola.guide" -ForegroundColor Green
+Write-Host "Alternative: https://www.moola.guide" -ForegroundColor Green
+Write-Host "API Docs:    https://moola.guide/docs" -ForegroundColor Green
 Write-Host "==========================================" -ForegroundColor Green

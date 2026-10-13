@@ -14,7 +14,7 @@ services:
       - JWT_SECRET=${JWT_SECRET:-unschedule-super-secret-jwt-key-change-in-production-2026}
       - JWT_ALGORITHM=HS256
       - JWT_EXPIRE_DAYS=7
-      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,http://localhost}
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://moola.guide,https://www.moola.guide,http://moola.guide,http://www.moola.guide,http://localhost:3000,http://localhost}
       - GEMINI_API_KEY=${GEMINI_API_KEY:-AQ.Ab8RN6Jlb7dst5BKtzCBL-snfD5K7eHm_IyZKhjpOP_swwKwJQ}
       - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
     restart: always
@@ -26,8 +26,8 @@ services:
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api/backend}
     container_name: unschedule-frontend
-    ports:
-      - "80:3000"
+    expose:
+      - "3000"
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-/api/backend}
       - INTERNAL_API_URL=http://backend:8000
@@ -39,5 +39,23 @@ services:
     image: redis:7-alpine
     container_name: unschedule-redis
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     restart: always
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: unschedule-caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+
+volumes:
+  caddy_data:
+  caddy_config:

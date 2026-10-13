@@ -2,14 +2,8 @@
 # Local script to easily deploy to an Ubuntu EC2 instance
 # Usage: ./deploy.sh <EC2_IP_ADDRESS> <PATH_TO_PEM_KEY>
 
-IP=$1
-KEY=$2
-
-if [ -z "$IP" ] || [ -z "$KEY" ]; then
-  echo "Usage: ./deploy.sh <EC2_IP_ADDRESS> <PATH_TO_PEM_KEY>"
-  echo "Example: ./deploy.sh 13.63.125.147 ./uschedule_key_pair.pem"
-  exit 1
-fi
+IP=${1:-"16.192.66.228"}
+KEY=${2:-"./uschedule_key_pair.pem"}
 
 # Detect whether we should use native Windows ssh.exe (if in Git Bash/MSYS) to avoid permission issues
 SSH_CMD="ssh"
@@ -58,9 +52,11 @@ $SSH_CMD -i "$KEY" -o StrictHostKeyChecking=no ubuntu@$IP bash << EOF
   cd ~/unschedule
 
   # Start the application using Docker Compose
+  echo "Stopping previous containers..."
+  sudo docker compose down --remove-orphans || true
   echo "Cleaning old Docker build artifacts..."
   sudo docker system prune -f
-  echo "Building and starting containers..."
+  echo "Building and starting containers with SSL..."
   sudo docker compose up --build -d
 
   echo ""
@@ -70,6 +66,7 @@ EOF
 echo ""
 echo "=========================================="
 echo "🎉 Deployment complete!"
-echo "🌍 Access your frontend at: http://$IP"
-echo "🔌 Access your backend API at: http://$IP:8000"
+echo "🌍 Website:     https://moola.guide"
+echo "🌐 Alternative: https://www.moola.guide"
+echo "🔌 API Docs:    https://moola.guide/docs"
 echo "=========================================="
