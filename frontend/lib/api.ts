@@ -34,6 +34,13 @@ export const fetchAPI = async (endpoint: string, options: RequestInit = {}) => {
       if (typeof window !== "undefined") {
         document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         window.localStorage.removeItem("auth_token");
+        try {
+          Object.keys(sessionStorage).forEach((key) => {
+            if (key.startsWith('quick_prompts_dismissed')) {
+              sessionStorage.removeItem(key);
+            }
+          });
+        } catch (e) {}
         window.location.href = "/login";
       }
     }

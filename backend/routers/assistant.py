@@ -71,28 +71,27 @@ async def chat_with_assistant_stream(
         get_user_memory(str(user.id))
     )
     
-    # Save user message in the background
-    asyncio.create_task(push_message(str(user.id), user_msg_data.copy()))
-    
-    # Append the new message to our local list
-    recent_messages_data.append(user_msg_data)
+    # Save user message in the background only if not a quick action
+    if not action_info:
+        asyncio.create_task(push_message(str(user.id), user_msg_data.copy()))
+        # Append the new message to our local list
+        recent_messages_data.append(user_msg_data)
     
     lc_messages = []
     for m in recent_messages_data:
         if m["role"] == "user":
             content_to_use = m["content"]
-            # Swap with the long prompt if this is the current quick action message
-            if m is user_msg_data and action_info:
-                content_to_use = action_info["prompt"]
-            else:
-                # Reconstruct long prompt for past quick actions
-                for qa in QUICK_ACTIONS.values():
-                    if content_to_use == qa["display"]:
-                        content_to_use = qa["prompt"]
-                        break
+            # Reconstruct long prompt for past quick actions
+            for qa in QUICK_ACTIONS.values():
+                if content_to_use == qa["display"]:
+                    content_to_use = qa["prompt"]
+                    break
             lc_messages.append(HumanMessage(content=content_to_use))
         else:
             lc_messages.append(AIMessage(content=m["content"]))
+
+    if action_info:
+        lc_messages.append(HumanMessage(content=action_info["prompt"]))
             
     async def event_generator():
         try:
@@ -198,28 +197,27 @@ async def chat_with_assistant(
         get_user_memory(str(user.id))
     )
     
-    # Save user message in the background
-    asyncio.create_task(push_message(str(user.id), user_msg_data.copy()))
-    
-    # Append the new message to our local list
-    recent_messages_data.append(user_msg_data)
+    # Save user message in the background only if not a quick action
+    if not action_info:
+        asyncio.create_task(push_message(str(user.id), user_msg_data.copy()))
+        # Append the new message to our local list
+        recent_messages_data.append(user_msg_data)
     
     lc_messages = []
     for m in recent_messages_data:
         if m["role"] == "user":
             content_to_use = m["content"]
-            # Swap with the long prompt if this is the current quick action message
-            if m is user_msg_data and action_info:
-                content_to_use = action_info["prompt"]
-            else:
-                # Reconstruct long prompt for past quick actions
-                for qa in QUICK_ACTIONS.values():
-                    if content_to_use == qa["display"]:
-                        content_to_use = qa["prompt"]
-                        break
+            # Reconstruct long prompt for past quick actions
+            for qa in QUICK_ACTIONS.values():
+                if content_to_use == qa["display"]:
+                    content_to_use = qa["prompt"]
+                    break
             lc_messages.append(HumanMessage(content=content_to_use))
         else:
             lc_messages.append(AIMessage(content=m["content"]))
+
+    if action_info:
+        lc_messages.append(HumanMessage(content=action_info["prompt"]))
             
     try:
         if action_info:

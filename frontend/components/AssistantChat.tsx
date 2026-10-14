@@ -10,8 +10,24 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [showQuickActions, setShowQuickActions] = useState(true);
+  const [showQuickActions, setShowQuickActions] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && user) {
+      const isDismissed = sessionStorage.getItem(`quick_prompts_dismissed_${user.id}`);
+      if (!isDismissed) {
+        setShowQuickActions(true);
+      }
+    }
+  }, [user]);
+
+  const dismissQuickActions = () => {
+    setShowQuickActions(false);
+    if (typeof window !== 'undefined' && user) {
+      sessionStorage.setItem(`quick_prompts_dismissed_${user.id}`, 'true');
+    }
+  };
 
   useEffect(() => {
     if ((isOpen || isEmbedded) && user) {
@@ -42,25 +58,9 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
     const textToSend = overrideInput || input;
     if (!textToSend.trim()) return;
 
-    setShowQuickActions(false);
+    dismissQuickActions();
 
-    let displayContent = textToSend;
-    if (textToSend === 'quick_action_atomic_habit') {
-      displayContent = "I'd like to create a new atomic habit.";
-    } else if (textToSend === 'quick_action_journal') {
-      displayContent = "I want to write a daily journal entry.";
-    } else if (textToSend === 'quick_action_goal') {
-      displayContent = "I'd like to set a new goal.";
-    } else if (textToSend === 'quick_action_plan') {
-      displayContent = "Help me plan my day and schedule tasks.";
-    }
-
-    const userMessage = {
-      _id: Date.now().toString(),
-      role: 'user',
-      content: displayContent,
-      created_at: new Date().toISOString()
-    };
+    const isQuickAction = textToSend.startsWith('quick_action_');
 
     const tempAsstId = (Date.now() + 1).toString();
     const asstMessage = {
@@ -73,7 +73,18 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
       is_running_tool: null as string | null
     };
 
-    setMessages(prev => [...prev, userMessage, asstMessage]);
+    if (isQuickAction) {
+      setMessages(prev => [...prev, asstMessage]);
+    } else {
+      const userMessage = {
+        _id: Date.now().toString(),
+        role: 'user',
+        content: textToSend,
+        created_at: new Date().toISOString()
+      };
+      setMessages(prev => [...prev, userMessage, asstMessage]);
+    }
+
     if (!overrideInput) {
       setInput('');
     }
@@ -160,6 +171,17 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
           )}
 
           {messages.map((msg, idx) => {
+            if (
+              msg.role === 'user' &&
+              typeof msg.content === 'string' &&
+              (msg.content.startsWith('quick_action_') ||
+                msg.content === "I'd like to create a new atomic habit." ||
+                msg.content === "I want to write a daily journal entry." ||
+                msg.content === "I'd like to set a new goal." ||
+                msg.content === "Help me plan my day and schedule tasks.")
+            ) {
+              return null;
+            }
             const isAssistant = msg.role === 'assistant';
             return (
               <div key={msg._id || idx} className={`flex gap-2.5 sm:gap-3 ${isAssistant ? '' : 'flex-row-reverse'}`}>
@@ -224,8 +246,20 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
 
         {/* Quick Actions Overlay */}
         {showQuickActions && (
-          <div className="absolute inset-x-0 top-0 p-2 sm:p-3 bg-gradient-to-b from-[var(--color-bg-app)] via-[var(--color-bg-app)] to-transparent pb-16 z-10">
-            <div className="bg-[var(--color-bg-surface-soft)] backdrop-blur-xl rounded-2xl p-2 shadow-lg border border-[var(--color-border-subtle)]">
+          <div className="absolute inset-x-0 top-0 p-2 sm:p-3 bg-gradient-to-b from-[var(--color-bg-app)] via-[var(--color-bg-app)] to-transparent pb-16 z-10 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="bg-[var(--color-bg-surface-soft)] backdrop-blur-xl rounded-2xl p-2.5 shadow-lg border border-[var(--color-border-subtle)]">
+              <div className="flex items-center justify-between px-1 mb-2">
+                <span className="text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">Quick Suggestions</span>
+                <button
+                  type="button"
+                  onClick={dismissQuickActions}
+                  className="h-6 w-6 flex items-center justify-center text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)] rounded-lg transition-colors cursor-pointer active:scale-95"
+                  aria-label="Dismiss quick suggestions"
+                  title="Dismiss suggestions"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 <button onClick={() => handleSend(undefined, "quick_action_atomic_habit")} className="cursor-pointer p-2.5 text-left bg-[var(--color-bg-surface)] hover:bg-[var(--color-bg-hover)] active:scale-98 border border-[var(--color-border-subtle)] rounded-xl transition-all group">
                   <div className="w-7 h-7 rounded-lg bg-[var(--color-brand-primary-soft)] flex items-center justify-center mb-1.5 shadow-xs">

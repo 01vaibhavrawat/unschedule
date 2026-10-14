@@ -122,6 +122,17 @@ export const useStore = create<AppState>((set, get) => ({
 
   logout: async () => {
     await api.logout();
+    if (typeof window !== 'undefined') {
+      try {
+        Object.keys(sessionStorage).forEach((key) => {
+          if (key.startsWith('quick_prompts_dismissed')) {
+            sessionStorage.removeItem(key);
+          }
+        });
+      } catch (e) {
+        // Ignore sessionStorage errors
+      }
+    }
     set({ user: null, tasks: [], habits: [], goals: [], habitLogs: {}, streaks: {}, notes: [], journals: [], board: null });
     window.location.href = '/login';
   },
