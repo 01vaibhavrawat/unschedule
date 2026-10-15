@@ -6,28 +6,13 @@ import { useStore } from '@/store/useStore';
 import { api } from '@/lib/api';
 
 export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?: boolean; onClose?: () => void; isEmbedded?: boolean }) => {
-  const { user, fetchInitialData } = useStore();
+  const { user, fetchInitialData, quickPromptsDismissed, dismissQuickPrompts } = useStore();
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [showQuickActions, setShowQuickActions] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined' && user) {
-      const isDismissed = sessionStorage.getItem(`quick_prompts_dismissed_${user.id}`);
-      if (!isDismissed) {
-        setShowQuickActions(true);
-      }
-    }
-  }, [user]);
-
-  const dismissQuickActions = () => {
-    setShowQuickActions(false);
-    if (typeof window !== 'undefined' && user) {
-      sessionStorage.setItem(`quick_prompts_dismissed_${user.id}`, 'true');
-    }
-  };
+  const showQuickActions = !quickPromptsDismissed;
 
   useEffect(() => {
     if ((isOpen || isEmbedded) && user) {
@@ -58,7 +43,7 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
     const textToSend = overrideInput || input;
     if (!textToSend.trim()) return;
 
-    dismissQuickActions();
+    dismissQuickPrompts();
 
     const isQuickAction = textToSend.startsWith('quick_action_');
 
@@ -252,7 +237,7 @@ export const AssistantChat = ({ isOpen, onClose, isEmbedded = false }: { isOpen?
                 <span className="text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">Quick Suggestions</span>
                 <button
                   type="button"
-                  onClick={dismissQuickActions}
+                  onClick={dismissQuickPrompts}
                   className="h-6 w-6 flex items-center justify-center text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)] rounded-lg transition-colors cursor-pointer active:scale-95"
                   aria-label="Dismiss quick suggestions"
                   title="Dismiss suggestions"

@@ -56,11 +56,13 @@ interface AppState {
   assistantOpen: boolean;
   userMenuOpen: boolean;
   theme: 'light' | 'dark';
+  quickPromptsDismissed: boolean;
 
   setAssistantOpen: (open: boolean) => void;
   setUserMenuOpen: (open: boolean) => void;
   toggleTheme: () => void;
   setUser: (user: AuthUser | null) => void;
+  dismissQuickPrompts: () => void;
   logout: () => Promise<void>;
 
   fetchInitialData: () => Promise<void>;
@@ -103,9 +105,18 @@ export const useStore = create<AppState>((set, get) => ({
   assistantOpen: false,
   userMenuOpen: false,
   theme: 'dark', // default to dark
+  quickPromptsDismissed: typeof window !== 'undefined' ? sessionStorage.getItem('quick_prompts_dismissed') === 'true' : false,
 
   setAssistantOpen: (open) => set({ assistantOpen: open }),
   setUserMenuOpen: (open) => set({ userMenuOpen: open }),
+  dismissQuickPrompts: () => {
+    if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.setItem('quick_prompts_dismissed', 'true');
+      } catch (e) {}
+    }
+    set({ quickPromptsDismissed: true });
+  },
   toggleTheme: () => set((state) => {
     const newTheme = state.theme === 'light' ? 'dark' : 'light';
     if (typeof window !== 'undefined') {
@@ -124,6 +135,7 @@ export const useStore = create<AppState>((set, get) => ({
     await api.logout();
     if (typeof window !== 'undefined') {
       try {
+        sessionStorage.removeItem('quick_prompts_dismissed');
         Object.keys(sessionStorage).forEach((key) => {
           if (key.startsWith('quick_prompts_dismissed')) {
             sessionStorage.removeItem(key);
@@ -133,7 +145,7 @@ export const useStore = create<AppState>((set, get) => ({
         // Ignore sessionStorage errors
       }
     }
-    set({ user: null, tasks: [], habits: [], goals: [], habitLogs: {}, streaks: {}, notes: [], journals: [], board: null });
+    set({ user: null, quickPromptsDismissed: false, tasks: [], habits: [], goals: [], habitLogs: {}, streaks: {}, notes: [], journals: [], board: null });
     window.location.href = '/login';
   },
 

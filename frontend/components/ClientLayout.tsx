@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useStore } from '@/store/useStore';
 import { api } from '@/lib/api';
@@ -12,8 +12,17 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const prevPathnameRef = useRef<string | null>(null);
 
   const isAuthPage = pathname === '/login' || pathname === '/signup';
+
+  useEffect(() => {
+    if (prevPathnameRef.current !== null && prevPathnameRef.current !== pathname) {
+      // User switched pages; dismiss quick prompts so they never appear on page change
+      useStore.getState().dismissQuickPrompts();
+    }
+    prevPathnameRef.current = pathname;
+  }, [pathname]);
 
   useEffect(() => {
     // Sync theme on mount
